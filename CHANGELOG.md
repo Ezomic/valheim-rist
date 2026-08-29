@@ -3,6 +3,16 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [1.1.1] - 2026-08-29
+
+### Fixed
+
+- **The plugin announced the wrong version of itself.** 1.1.0 moved the csproj, the
+  manifest and the toml and missed the `BepInPlugin` constant, which is the version the
+  plugin actually reports and half of what Core's gate compares - so the package read
+  1.1.0 on Thunderstore and introduced itself as 1.0.1 on every connection. Harmless
+  while everyone runs identical builds, and not harmless the moment they do not.
+
 ## [1.1.0] - 2026-08-18
 
 XP is now weighted by **which** skill it came from, not only by how far that skill got.

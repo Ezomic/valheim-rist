@@ -1,7 +1,7 @@
 {
   "name": "Rist",
   "author": "Robbin Thijssen",
-  "version_number": "1.1.0",
+  "version_number": "1.1.1",
   "website_url": "https://github.com/Ezomic/valheim-rist",
   "description": "A character level beside the skills, carved into runestones you choose and deepen.",
   "dependencies": [
