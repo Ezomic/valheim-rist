@@ -3,6 +3,21 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [1.2.0] - 2026-09-09
+
+Rebuilt for Valheim 1.0. This version does not run on pre-1.0 Valheim, and the previous
+one does not run on 1.0.
+
+### Changed
+
+- **Which stat fields count from 1 is now read off the game rather than from a list in the
+  mod.** A fresh `SE_Stats` carries its declared defaults, and a `= 1f` initialiser is exactly
+  what "the neutral value is one" means, so the set can be asked for instead of remembered. It
+  reproduces the same four fields today; the difference is a balance pass that makes another
+  modifier multiplicative, which would otherwise have this writing `0.03` into a damage
+  multiplier and cutting damage to 3% instead of raising it by 3%. Any disagreement with the
+  four it was written against is logged.
+
 ## [1.1.1] - 2026-08-29
 
 ### Fixed
