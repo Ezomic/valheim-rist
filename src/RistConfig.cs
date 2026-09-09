@@ -25,6 +25,7 @@ namespace Rist
 
         internal static ConfigEntry<int> MaxRank;
         internal static ConfigEntry<int> BonusEvery;
+        internal static ConfigEntry<float> ReconcileMaxLoss;
         internal static ConfigEntry<float> AttackSpeedMax;
         internal static ConfigEntry<int> PanelColumns;
 
@@ -257,6 +258,24 @@ namespace Rist
                 "Ranks between capstones. A card that names a bonus effect in its last two " +
                 "cards.txt fields grants it once per this many ranks. At the default MaxRank " +
                 "of 5 that means once, on the final upgrade.");
+
+            // A floor under the one operation that can delete progress. Removing a card from
+            // cards.txt hands its picks back and drops the ranks bought in it, which is right
+            // when it was meant and is a permanent server-side wipe when the catalogue simply
+            // failed to load - and from inside the ledger the two look identical.
+            ReconcileMaxLoss = cfg.Bind("Cards", "ReconcileMaxLoss", 0.34f,
+                "How much of the ledger's card history may vanish from cards.txt in one go " +
+                "before Rist refuses to reconcile at all, as a fraction of the distinct card " +
+                "ids players actually hold.\n" +
+                "A third, because a pack or two being retired is a normal edit and losing " +
+                "half of what everyone is carrying is not. Over this, nothing is returned and " +
+                "nothing is removed: the server logs why on every login and leaves every " +
+                "record untouched until you either fix the catalogue or raise this and " +
+                "restart. Stranded picks are recoverable, a deleted history is not.\n" +
+                "Judged once, when the ledger is read. A catalogue that is missing, unreadable " +
+                "or empty is refused whatever this says - there is no edit that legitimately " +
+                "empties it, so 1 does not disable that half.\n" +
+                "Server-side only; the ledger exists nowhere else.");
 
             AttackSpeedMax = cfg.Bind("Cards", "AttackSpeedMax", 1f,
                 "Ceiling on the attack-speed cards, as a fraction. 1 means the animation can " +

@@ -102,6 +102,19 @@ namespace Rist
         /// </summary>
         internal bool Reconcile()
         {
+            // The floor, and it belongs before the loop rather than inside it. "Cards.Get
+            // returned null" means the same thing for a card somebody deleted on purpose and
+            // for a catalogue that never loaded, and in the second case this loop walks off
+            // with every card every player holds - server-side, flushed to disk ten seconds
+            // later by Ledger.Tick, with no copy anywhere. Ledger.ReconcileAllowed is where
+            // the two are told apart, because it can see the whole ledger and the whole
+            // catalogue at once and this method can see neither.
+            if (!Ledger.ReconcileAllowed(out var why))
+            {
+                RistPlugin.Log.LogWarning("Kept " + Owner + "'s cards as they are: " + why + ".");
+                return false;
+            }
+
             List<string> gone = null;
 
             foreach (var kv in Taken)

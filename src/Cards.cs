@@ -249,6 +249,22 @@ namespace Rist
 
         internal static IReadOnlyList<Card> All => _all;
 
+        /// <summary>
+        /// The hard flag: the catalogue is not usable at all. cards.txt is missing, could not
+        /// be read, or produced no cards whatsoever.
+        ///
+        /// It exists because an empty catalogue and a deliberately emptied one are the same
+        /// data structure, and one of the two is a server-side delete of every player's card
+        /// history: Reconcile hands back the picks spent on cards that no longer exist, and
+        /// with nothing in the catalogue that is every card everyone holds, flushed to disk
+        /// about ten seconds later. So the failure is recorded as a fact rather than inferred
+        /// from Count, and both Ledger's reconcile gate and the plugin's ready line read it.
+        /// </summary>
+        internal static bool Unavailable { get; private set; }
+
+        /// <summary>How many cards actually parsed. Read by the reconcile gate.</summary>
+        internal static int Count => _all.Count;
+
         internal static Card Get(string id)
         {
             return id != null && _byId.TryGetValue(id, out var c) ? c : null;
@@ -258,14 +274,39 @@ namespace Rist
         {
             _all.Clear();
             _byId.Clear();
+            Unavailable = false;
 
             var dir = Path.GetDirectoryName(typeof(Cards).Assembly.Location);
             var path = Path.Combine(dir ?? ".", "cards.txt");
 
             if (!File.Exists(path))
             {
+                Unavailable = true;
                 RistPlugin.Log.LogError("cards.txt not found beside the DLL at " + path +
-                                        " - no cards can be taken.");
+                                        " - no cards can be taken, and no card history will be " +
+                                        "reconciled. Reinstall the mod: the catalogue ships with " +
+                                        "it and is not optional.");
+                return;
+            }
+
+            // Read once, up front and inside a try, rather than twice inline further down. An
+            // IO exception here used to escape Load and abort the whole of Awake - which meant
+            // a locked or half-written cards.txt cost every patch in the mod, silently, with
+            // the reason landing somewhere nobody reads. A file that cannot be read is the
+            // same fact as a file that is not there, and is recorded as such.
+            string contents;
+            string[] rawLines;
+            try
+            {
+                contents = File.ReadAllText(path);
+                rawLines = File.ReadAllLines(path);
+            }
+            catch (Exception e)
+            {
+                Unavailable = true;
+                RistPlugin.Log.LogError("cards.txt at " + path + " could not be read (" + e.Message +
+                                        ") - no cards can be taken, and no card history will be " +
+                                        "reconciled.");
                 return;
             }
 
@@ -277,10 +318,10 @@ namespace Rist
             // Without Core there is nothing to declare it to, and that check is simply gone.
             // Not a fallback worth inventing: a hash Rist computes and compares against itself
             // proves nothing, since the disagreement being looked for is between two machines.
-            if (RistPlugin.CorePresent) DeclareCatalogue(File.ReadAllText(path));
+            if (RistPlugin.CorePresent) DeclareCatalogue(contents);
 
             var lineNo = 0;
-            foreach (var raw in File.ReadAllLines(path))
+            foreach (var raw in rawLines)
             {
                 lineNo++;
                 var line = raw.Trim();
@@ -354,6 +395,21 @@ namespace Rist
 
                 _all.Add(card);
                 _byId[card.Id] = card;
+            }
+
+            // A file that is present and yields nothing is the same disaster as one that is
+            // absent, and it is the likelier of the two after a game update: every effect name
+            // is a field on the game's own SE_Stats, so a rename in Valheim leaves cards.txt
+            // untouched and drops every line that referenced it. Recorded as unavailable so
+            // the reconcile gate refuses and the ready line says so.
+            if (_all.Count == 0)
+            {
+                Unavailable = true;
+                RistPlugin.Log.LogError("cards.txt parsed to zero usable cards. Every line was " +
+                                        "blank, commented out or rejected - see the warnings " +
+                                        "above. No card can be taken, and no card history will " +
+                                        "be reconciled.");
+                return;
             }
 
             RistPlugin.Log.LogInfo("Loaded " + _all.Count + " cards from cards.txt.");

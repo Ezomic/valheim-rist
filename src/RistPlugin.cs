@@ -51,18 +51,67 @@ namespace Rist
             Cards.Load();
 
             _harmony = new Harmony(PluginGuid);
-            _harmony.PatchAll(typeof(SkillWatch));
-            _harmony.PatchAll(typeof(DeathPenalty));
-            _harmony.PatchAll(typeof(UiInput));
-            _harmony.PatchAll(typeof(AttackSpeed));
 
+            // OwnInventoryRows goes first, ahead of every cosmetic and gameplay patch, and the
+            // order is load-bearing. Its Player.Load prefix is the only thing standing between
+            // a claimed row and the game deleting what is standing in it, and a PatchAll that
+            // throws takes every patch after it with it. Patched last - as this was until
+            // today - a failure anywhere above left the rows still being granted from Update
+            // with nothing protecting them, which is the bug in its purest form: the feature
+            // still works, and what is standing in the extra rows is silently at risk. Found
+            // by the pre-1.0 audit, in this mod and in Core's InventoryRows together.
+            //
             // Patched in only when Core is absent, so the two row owners can never both write
             // Inventory.m_height. Applying it unconditionally would mean two Player.Load
             // prefixes each widening the grid and each capturing the other's widened value as
             // the vanilla baseline, which is precisely the compounding both guard against.
-            if (!CorePresent) _harmony.PatchAll(typeof(OwnInventoryRows));
+            if (!CorePresent)
+            {
+                Patch(typeof(OwnInventoryRows));
 
-            Log.LogInfo(PluginName + " " + PluginVersion + " by " + PluginAuthor + " - ready.");
+                // Asked of Harmony rather than assumed from PatchAll returning: the tick will
+                // not grant a single row until this says the guard is really attached.
+                OwnInventoryRows.ConfirmLoadGuard(PluginGuid);
+            }
+
+            Patch(typeof(SkillWatch));
+            Patch(typeof(DeathPenalty));
+            Patch(typeof(UiInput));
+            Patch(typeof(AttackSpeed));
+
+            // Not "ready" when the catalogue never loaded. Rist with no cards is not a quieter
+            // Rist - picks cannot be spent, and on a server the reconcile pass would read the
+            // empty catalogue as "every card was deleted". The line a person greps for has to
+            // say so rather than reporting a clean start.
+            if (Cards.Unavailable)
+                Log.LogError(PluginName + " " + PluginVersion + " by " + PluginAuthor
+                    + " - NOT READY: the card catalogue is empty or unreadable. No card can be "
+                    + "taken, and no card history will be reconciled until cards.txt is fixed "
+                    + "and the game restarted.");
+            else
+                Log.LogInfo(PluginName + " " + PluginVersion + " by " + PluginAuthor + " - ready.");
+        }
+
+        /// <summary>
+        /// One class's patches, applied so that a failure costs that class and nothing else.
+        ///
+        /// PatchAll throws a HarmonyException when a target method has moved, gained an
+        /// overload or changed signature - which is exactly what a game update does, and
+        /// Valheim 1.0 landed today. Uncaught, the first one aborts Awake: every class after
+        /// it goes unpatched, and Rist is left half-applied with no line saying which half.
+        /// Naming the class here means the log answers "what stopped working" directly.
+        /// </summary>
+        private void Patch(System.Type type)
+        {
+            try
+            {
+                _harmony.PatchAll(type);
+            }
+            catch (System.Exception e)
+            {
+                Log.LogError("Rist could not patch " + type.Name + " - that part of the mod is "
+                    + "off for this session, the rest continues. " + e);
+            }
         }
 
         /// <summary>
