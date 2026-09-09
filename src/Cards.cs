@@ -100,10 +100,83 @@ namespace Rist
         /// </summary>
         internal static bool IsOneBased(string effect)
         {
-            return OneBased.Contains(effect);
+            return Neutrals().Contains(effect);
         }
 
-        private static readonly HashSet<string> OneBased = new HashSet<string>
+        private static HashSet<string> _oneBased;
+
+        /// <summary>
+        /// Which fields count from 1, asked of the game rather than remembered.
+        ///
+        /// A fresh SE_Stats carries its declared defaults, and "the neutral value is 1" is
+        /// exactly what a `= 1f` initialiser means - so the set can be read instead of listed.
+        /// Today that reproduces the four below exactly. The difference is what happens when
+        /// the game changes: a balance pass that makes another modifier multiplicative, or that
+        /// makes one of these additive, moves this set with it, where a hardcoded list would
+        /// keep converting on the old rule and produce the one failure this whole mechanism
+        /// exists to prevent - writing 0.03 into a multiplier and cutting damage to 3%.
+        ///
+        /// Falls back to the known four if the probe cannot be made, because being wrong about
+        /// m_damageModifier is much worse than being out of date about a field no card targets.
+        /// </summary>
+        private static HashSet<string> Neutrals()
+        {
+            if (_oneBased != null) return _oneBased;
+
+            try
+            {
+                var probe = ScriptableObject.CreateInstance<SE_Stats>();
+
+                // Plain == null, never ?. - Unity overloads equality and the null-propagating
+                // operators bypass the overload.
+                if (probe == null)
+                {
+                    _oneBased = Fallback;
+                    return _oneBased;
+                }
+
+                var found = new HashSet<string>();
+                foreach (var field in typeof(SE_Stats).GetFields(BindingFlags.Public
+                                                                 | BindingFlags.Instance))
+                {
+                    if (field.FieldType != typeof(float)) continue;
+                    if (Mathf.Approximately((float)field.GetValue(probe), 1f))
+                        found.Add(field.Name);
+                }
+
+                UnityEngine.Object.Destroy(probe);
+
+                // Said once, and only when it disagrees with what this mod was written against.
+                // A card converting on the wrong rule is silent in play, so the log is the only
+                // place it can ever surface.
+                foreach (var name in Fallback)
+                    if (!found.Contains(name))
+                        RistPlugin.Log.LogWarning("SE_Stats." + name + " no longer defaults to 1, "
+                            + "so Rist has stopped treating it as a multiplier. Check the cards "
+                            + "that target it - the game has changed what neutral means.");
+
+                foreach (var name in found)
+                    if (!Fallback.Contains(name))
+                        RistPlugin.Log.LogInfo("SE_Stats." + name + " defaults to 1 and is being "
+                            + "treated as a multiplier; it was not one when Rist was written.");
+
+                _oneBased = found;
+            }
+            catch (Exception e)
+            {
+                RistPlugin.Log.LogWarning("Could not read SE_Stats' neutral values, so Rist is "
+                    + "using the four multipliers it was written against. " + e.Message);
+                _oneBased = Fallback;
+            }
+
+            return _oneBased;
+        }
+
+        /// <summary>
+        /// The four that counted from 1 when this was written, kept as the fallback and as the
+        /// baseline the probe is reported against.
+        /// </summary>
+        private static readonly HashSet<string> Fallback = new HashSet<string>
         {
             "m_healthRegenMultiplier", "m_staminaRegenMultiplier", "m_eitrRegenMultiplier",
             "m_damageModifier",
