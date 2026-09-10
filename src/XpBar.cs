@@ -21,6 +21,9 @@ namespace Rist
     internal static class XpBar
     {
         private static Texture2D _track, _fill;
+
+        /// <summary>The canvas scale the styles were built at, so a HUD-scale change rebuilds them.</summary>
+        private static float _builtAt = float.NaN;
         private static GUIStyle _label, _waiting;
 
         private static readonly Color TrackColour = new Color(0.227f, 0.188f, 0.145f, 0.9f);
@@ -59,8 +62,10 @@ namespace Rist
 
                 if (!HudBar.HasText)
                 {
+                    var s = HudBar.Scale;
+
                     _label.alignment = TextAnchor.UpperCenter;
-                    GUI.Label(new Rect(centreX - 24f, centreY + half + 3f, 48f, 18f),
+                    GUI.Label(new Rect(centreX - 24f * s, centreY + half + 3f * s, 48f * s, 18f * s),
                               ClientState.Level.ToString(), _label);
                 }
 
@@ -74,11 +79,17 @@ namespace Rist
                     // offset from the root's height put the note on top of the bar, because
                     // the clone's root is the whole borrowed eitr panel and its height is not
                     // the visible bar's thickness.
+                    var scale = HudBar.Scale;
                     var barTop = HudBar.ScreenTop ?? centreY;
-                    var noteBottom = barTop - Mathf.Max(0f, RistConfig.BarNoteGap.Value);
+                    var noteBottom = barTop - Mathf.Max(0f, RistConfig.BarNoteGap.Value) * scale;
+
+                    // The box scales with the text it has to hold, or the label clips on a
+                    // screen where the font has grown.
+                    var w = 240f * scale;
+                    var h = 22f * scale;
 
                     _waiting.alignment = TextAnchor.LowerCenter;
-                    GUI.Label(new Rect(centreX - 120f, noteBottom - 22f, 240f, 22f),
+                    GUI.Label(new Rect(centreX - w * 0.5f, noteBottom - h, w, h),
                               "rist waiting", _waiting);
                 }
 
@@ -126,21 +137,29 @@ namespace Rist
             // Rebuilt when the colour changes, so nudging it in the cfg shows up without a
             // restart - the same reason HudBar re-reads its own size and tint.
             var tint = RistConfig.BarTint();
-            if (_label != null && FillColour == tint) return;
+            var scale = HudBar.Scale;
+
+            if (_label != null && FillColour == tint && Mathf.Approximately(_builtAt, scale)) return;
 
             FillColour = tint;
+            _builtAt = scale;
             _track = Solid(TrackColour);
             _fill = Solid(FillColour);
 
+            // 12 is the floor rather than the size: it is the smallest that reads on this
+            // setup, and on a screen where the HUD is scaled up a fixed 12 would be a speck
+            // beside a bar that grew with it.
+            var font = Mathf.Max(12, Mathf.RoundToInt(12f * scale));
+
             _label = new GUIStyle(GUI.skin.label)
             {
-                fontSize = 12,
+                fontSize = font,
                 normal = { textColor = FillColour },
                 wordWrap = false,
                 richText = false,
             };
 
-            _waiting = new GUIStyle(_label) { fontSize = 12, wordWrap = false };
+            _waiting = new GUIStyle(_label) { fontSize = font, wordWrap = false };
         }
 
         private static Texture2D Solid(Color colour)

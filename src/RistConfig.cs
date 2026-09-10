@@ -197,11 +197,14 @@ namespace Rist
             // (0,130 normally, 0,285 with the build HUD up), so it is never a stable thing to
             // copy. The defaults put the bar where the hand-drawn one was tuned to sit.
             BarPosX = cfg.Bind("Bar", "BarPosX", 172f,
-                "Pixels from the left edge of the screen to the centre of the cloned bar.");
+                "Distance from the left edge of the screen to the centre of the cloned bar, " +
+                "multiplied by your HUD's canvas scale. Only used when BarFollowStamina is " +
+                "off or the stamina bar cannot be found.");
 
             BarPosY = cfg.Bind("Bar", "BarPosY", 105f,
-                "Pixels from the bottom of the screen to the centre of the cloned bar. Depends " +
-                "on your resolution and HUD scale, so it will probably need nudging once.");
+                "Distance from the bottom of the screen to the centre of the cloned bar, " +
+                "multiplied by your HUD's canvas scale - so unlike before it does NOT need " +
+                "re-measuring per machine. Only used when BarFollowStamina is off.");
 
             // Vanilla sizes these bars from max stamina or max eitr, which means nothing for a
             // bar that is always 0..1. 64 is what a starting stamina bar measures (50/25*32).
@@ -234,10 +237,11 @@ namespace Rist
                 "Only applies to the cloned bar.");
 
             BarNoteGap = cfg.Bind("Bar", "BarNoteGap", 6f,
-                "Pixels between the top of the bar and the 'rist waiting' note above it. " +
-                "Measured from the bar's own edge rather than from a fixed screen position, " +
-                "so it holds at any resolution and HUD scale and follows the bar when the " +
-                "build panel shoves it upward.");
+                "Gap between the top of the bar and the 'rist waiting' note above it. " +
+                "Measured from the bar's own top edge rather than from a fixed screen " +
+                "position, so it follows the bar when the build panel shoves it upward. " +
+                "Like every pixel number here it is multiplied by your HUD's canvas scale, " +
+                "so one value is the same gap on every screen.");
 
             // Pixels rather than an anchor to the real health bar: converting a scaled Canvas
             // RectTransform into IMGUI screen space breaks differently at every HUD scale, and

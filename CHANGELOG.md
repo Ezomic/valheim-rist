@@ -45,10 +45,26 @@ and the mod uses [semantic versioning](https://semver.org).
 - The bar no longer re-pins itself during a cutscene, when `Hud` has parked its whole root off
   screen at x=10000.
 
+### Changed
+
+- **Every position in the `[Bar]` block is now measured against your HUD's canvas scale
+  instead of in raw screen pixels.** The bar's placement is a server setting - the host
+  decides where it sits so that everyone on a server sees the same layout - and a raw pixel
+  offset could not deliver that: 70 pixels below the stamina bar is a different place on a
+  1080p screen, a 1440p screen, and for a player running the HUD at 1.4. Multiplying by the
+  scale factor Valheim's own `CanvasScaler` applies turns one imposed number into the same
+  *visual* position on every screen. The IMGUI text scales with it too, with 12px as a floor
+  rather than a fixed size.
+
+  `BarSize` is deliberately untouched: it is set in canvas units and the scaler is already
+  applying the same factor to it.
+
+  On a screen at scale 0.93 this moves the bar about five pixels; the defaults are kept as
+  round numbers rather than retuned to cancel that out on one particular monitor.
+
 ### Added
 
-- `BarNoteGap`, the pixels between the top of the bar and the note above it. Declared
-  `Suite.Local`, so it is the player's setting and a host cannot impose it.
+- `BarNoteGap`, the gap between the top of the bar and the note above it.
 
 ## [1.2.0] - 2026-09-09
 

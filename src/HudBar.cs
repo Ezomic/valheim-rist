@@ -155,11 +155,31 @@ namespace Rist
                 {
                     _loggedTop = top;
                     RistPlugin.Log.LogInfo("Bar top edge measured at y=" + Mathf.RoundToInt(top)
-                                           + " of " + Screen.height + ".");
+                                           + " of " + Screen.height + ", canvas scale "
+                                           + Scale.ToString("0.00") + ".");
                 }
 
                 return top;
             }
+        }
+
+        /// <summary>
+        /// The HUD canvas's scale factor, or 1 while there is no canvas.
+        ///
+        /// Every pixel number in this mod's config is written against this. The bar's position
+        /// is a server setting - the host decides where it sits, so that everyone on a server
+        /// sees the same layout - and a raw pixel offset cannot deliver that: 70 pixels below
+        /// the stamina bar is a different place on a 1080p screen, a 1440p screen and a player
+        /// running the HUD at 1.4. The scale factor is what Valheim's own CanvasScaler applies
+        /// to the HUD, so multiplying by it turns one imposed number into the same *visual*
+        /// position on every screen.
+        ///
+        /// The bar's length needs no such treatment: BarSize is set in canvas units through
+        /// SetSizeWithCurrentAnchors, and the scaler is already applying this to it.
+        /// </summary>
+        internal static float Scale
+        {
+            get { return _canvas != null ? _canvas.scaleFactor : 1f; }
         }
 
         internal static float HalfLength
@@ -600,8 +620,10 @@ namespace Rist
                 ? _canvas.worldCamera
                 : null;
 
-            var point = new Vector2(RistConfig.BarPosX.Value,
-                                    RistConfig.BarPosY.Value + (raised ? RistConfig.BarBuildRaise.Value : 0f));
+            var scale = Scale;
+
+            var point = new Vector2(RistConfig.BarPosX.Value * scale,
+                                    (RistConfig.BarPosY.Value + (raised ? RistConfig.BarBuildRaise.Value : 0f)) * scale);
 
             // Following the stamina bar is worth more than two pixel numbers: "below the
             // stamina bar" is then true at every resolution and HUD scale rather than on the
@@ -612,9 +634,11 @@ namespace Rist
                 var anchor = Hud.instance.m_staminaBar2Root;
                 if (anchor != null)
                 {
+                    // The anchor is already in real screen pixels, so only the offsets need
+                    // scaling - they are the part written down in the config.
                     var onScreen = RectTransformUtility.WorldToScreenPoint(cam, anchor.position);
-                    point = new Vector2(onScreen.x + RistConfig.BarOffsetX.Value,
-                                        onScreen.y - RistConfig.BarOffsetY.Value);
+                    point = new Vector2(onScreen.x + RistConfig.BarOffsetX.Value * scale,
+                                        onScreen.y - RistConfig.BarOffsetY.Value * scale);
                 }
             }
 
