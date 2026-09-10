@@ -5,6 +5,6 @@
   "website_url": "https://github.com/Ezomic/valheim-rist",
   "description": "A character level beside the skills, carved into runestones you choose and deepen.",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2333"
+    "denikson-BepInExPack_Valheim-5.4.2350"
   ]
 }

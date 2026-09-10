@@ -13,7 +13,7 @@ websiteUrl = "https://github.com/Ezomic/valheim-rist"
 containsNsfwContent = false
 
 [package.dependencies]
-denikson-BepInExPack_Valheim = "5.4.2333"
+denikson-BepInExPack_Valheim = "5.4.2350"
 
 [build]
 icon = "./icon.png"

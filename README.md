@@ -2,7 +2,7 @@
 
 A character level beside the skills, carved into runestones you choose and deepen.
 
-Built against the installed game (0.221.12, Unity 6000.0.61, BepInEx 5.4.23.3, Harmony 2.9).
+Built against the installed game (1.0.7, Unity 6000.0.75, BepInEx 5.4.23.5, Harmony 2.9).
 Single DLL plus a text file, no asset bundle.
 
 ## What it is
