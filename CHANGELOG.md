@@ -3,6 +3,26 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- **A Rist line above other players' heads** - level, total XP, and days since their last
+  death - written into the game's own nameplate rather than drawn beside it, so it inherits
+  the plate's font, fade and distance rules. `ShowPlate` turns it off, `PlateFormat` is the
+  whole of the presentation: fields, order, colours, and whether it wraps to a second line.
+
+  The HUD half was one postfix. The data half is why this is more than that: nothing about
+  another player's Rist state is on the wire, since the server pushes a record to the peer it
+  belongs to and to nobody else. Each client now publishes its own level, XP and last-death
+  day onto its own character's network object, which every client in range already replicates.
+  The server cannot publish them instead - a write to a network object you do not own is
+  discarded in silence - so a modded client can lie about its own plate. Accepted knowingly:
+  the plate is decoration and the server's ledger still decides every pick.
+
+  Days alive counts from the day the plate first saw a character, not from its creation. The
+  game keeps no birthday, so every existing character reads 0 on the day this ships.
+
 ## [1.2.2] - 2026-09-10
 
 ### Fixed

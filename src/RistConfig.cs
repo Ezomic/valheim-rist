@@ -43,6 +43,8 @@ namespace Rist
         internal static ConfigEntry<bool> Verbose;
 
         internal static ConfigEntry<bool> ShowInfoTab;
+        internal static ConfigEntry<bool> ShowPlate;
+        internal static ConfigEntry<string> PlateFormat;
         internal static ConfigEntry<bool> ShowXpBar;
         internal static ConfigEntry<bool> VanillaBar;
         internal static ConfigEntry<bool> BarUpright;
@@ -154,6 +156,33 @@ namespace Rist
                 "opens your rists. Cloned from a tab already there, so it carries the game's " +
                 "own frame, hover and click sound.");
 
+
+            ShowPlate = cfg.Bind("Plate", "ShowPlate", true,
+                "Write a Rist line above other players' heads: level, total XP, and days " +
+                "since they last died.\n" +
+                "Off also stops this character publishing its own three numbers, so nobody " +
+                "else can read them either. The numbers travel on the character's own network " +
+                "object, which means a player without Rist is simply shown their plain name.\n" +
+                "Days alive counts from the day this character first logged in with the plate " +
+                "on, not from the day it was created - the game keeps no birthday, so every " +
+                "existing character starts at 0 and grows from there.");
+
+            // A format string rather than three booleans, because the fields are not the only
+            // thing anyone will want to change: dropping {xp} removes the field, and the
+            // colours, the brackets, the order and whether it wraps to a second line are all
+            // in here too. \n is the two characters, since a cfg line cannot hold a real one.
+            PlateFormat = cfg.Bind("Plate", "PlateFormat",
+                "<size=65%>(LVL <color=#E8C86E>{lvl}</color>)" +
+                "[<color=#4FB3A5>{xp} XP</color>]" +
+                "(<color=#C86464>{days} DAYS ALIVE</color>)</size>\\n{name}",
+                "How the line above a player's head is written.\n" +
+                "Tokens: {lvl} character level, {xp} total experience, {days} days since " +
+                "their last death, {name} the name the game would have shown. Drop a token to " +
+                "drop that field. \\n starts a new line.\n" +
+                "The plate is a TextMeshPro label, so it takes rich text: <color=#RRGGBB>, " +
+                "<size=65%>, <b> and the rest all work. Gold is the level, the bar's verdigris " +
+                "is the XP, and the days are red because that is the field that resets.\n" +
+                "For one line rather than two, put {name} first and delete the \\n.");
 
             ShowXpBar = cfg.Bind("Bar", "ShowXpBar", true,
                 "Show the experience bar beside the health bar. It hides itself with the rest " +

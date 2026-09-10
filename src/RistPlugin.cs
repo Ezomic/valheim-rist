@@ -79,6 +79,12 @@ namespace Rist
             Patch(typeof(UiInput));
             Patch(typeof(AttackSpeed));
 
+            // Three classes rather than one, so a game update that moves EnemyHud's private
+            // UpdateHuds costs the plate's gate and not the death stamp beside it.
+            Patch(typeof(NameplateText));
+            Patch(typeof(NameplateScope));
+            Patch(typeof(NameplateDeath));
+
             // Not "ready" when the catalogue never loaded. Rist with no cards is not a quieter
             // Rist - picks cannot be spent, and on a server the reconcile pass would read the
             // empty catalogue as "every card was deleted". The line a person greps for has to
@@ -214,8 +220,10 @@ namespace Rist
             var player = Player.m_localPlayer;
             if (player == null)
             {
-                // Left the world; the next one starts the introductions again.
+                // Left the world; the next one starts the introductions again, and the plate
+                // republishes rather than trusting what the last world's ZDO was told.
                 _saidHello = false;
+                Nameplate.Forget();
                 return;
             }
 
@@ -226,6 +234,10 @@ namespace Rist
             // The cloned bar lives in the HUD canvas rather than in OnGUI, so it is driven
             // from here. It rebuilds itself whenever the Hud is, which is once per world.
             HudBar.Update();
+
+            // The three numbers other players read off this character. Throttled inside, and
+            // silent until the server has said what the level is.
+            Nameplate.Publish(player);
 
             // The compendium bar needs its fifth tab put back whenever the inventory window
             // is rebuilt. The extra rows and the backdrop behind them are Core's, because two

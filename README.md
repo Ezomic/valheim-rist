@@ -100,6 +100,32 @@ carries the real frame, track and fill sprites at whatever HUD scale you have se
 rather than snapping to empty on a level-up, and flashes while a pick is waiting. If a game
 update ever breaks the clone it falls back to a plain drawn bar rather than to an empty corner.
 
+## Plates
+
+Other players carry their Rist line above their heads: level, total XP, and days since they
+last died. It is the game's own nameplate with a second line written into it, so it inherits
+the plate's font, fade and distance rules and there is nothing new on screen to place.
+
+The numbers ride on the character's own network object rather than coming from the server.
+Nothing about another player's Rist state is on the wire otherwise - the server tells each
+client about itself and about nobody else - and a server cannot write the numbers onto a
+character it does not own. So each client publishes its own three, which means a player
+running a changed Rist can put whatever it likes on its own plate. That is accepted: the plate
+is decoration, and the ledger the server keeps is still the only thing that grants a pick.
+
+A player without Rist, or one still in their first seconds in the world, simply shows a plain
+name.
+
+**Days alive counts from the day the plate first saw the character, not from the day it was
+created.** The game keeps no birthday - the only thing close to one is real seconds of play,
+private to the machine it is on - so every character in the world reads 0 on the day this
+arrives and grows from there. It restarts on death, and it is counted in world days, so it
+means the same to everyone on a server.
+
+`PlateFormat` is the whole of the presentation: the fields shown, their order, their colours
+and whether it wraps to a second line. Dropping `{xp}` drops that field. It is a TextMeshPro
+label, so rich text works.
+
 ## Joining a server
 
 Progress is kept **on the server**, keyed by the platform identity of the connection and the
@@ -201,6 +227,9 @@ Rist logs a warning at startup when it starts without Core, naming all three.
 | `MaxXpPerMinute` | `600` | XP paid per minute of connected time; `0` is off |
 | `XpBurst` | `1800` | How much unspent allowance banks, so honest bursts still pay |
 | `Verbose` | `false` | Log every grant, rejection and runestone applied |
+| `ShowPlate` | `true` | Rist line above other players' heads; off also stops publishing your own |
+| `PlateFormat` | see above | `{lvl}` `{xp}` `{days}` `{name}`, rich text, `
+` for a second line |
 | `ShowXpBar` | `true` | Show the experience bar at all |
 | `VanillaBar` | `true` | Clone one of the game's own bars; off draws the plain fallback |
 | `BarFollowStamina` | `true` | Anchor to the stamina bar; off falls back to `BarPosX`/`BarPosY` |
