@@ -23,7 +23,7 @@ namespace Rist
     {
         public const string PluginGuid = "ezomic.valheim.rist";
         public const string PluginName = "Rist";
-        public const string PluginVersion = "1.2.0";
+        public const string PluginVersion = "1.2.1";
         public const string PluginAuthor = "Robbin Thijssen";
 
         /// <summary>Core's plugin GUID. Optional - see TryRegisterWithCore.</summary>
@@ -171,6 +171,21 @@ namespace Rist
             // hash discards the ZDO rather than erroring - destroying what is already standing
             // in the world - and item data that differs desyncs inventories.
             Suite.Register(PluginGuid, PluginName, PluginVersion, Config);
+
+            // Where the note sits is the player's business, not the host's.
+            //
+            // Suite.Local is the declaration for a setting a mismatch cannot desync and a
+            // player would resent losing, and the gap between the bar and its note is as
+            // cosmetic as that gets. Without it Core absorbs the key into the synced set and
+            // the host's value is imposed and re-imposed - the same shape as Vaettir's grid
+            // angle, which turned in singleplayer and refused to turn online because every
+            // adjustment was reverted in the frame that made it.
+            //
+            // The rest of the [Bar] block is in the same position and is deliberately NOT
+            // changed here: it is currently host-controlled, players are living with that, and
+            // taking control away from a live server's config is a decision rather than a
+            // tidy-up.
+            Suite.Local(RistConfig.BarNoteGap);
 
             // The host's curve is the one that counts. Without this a client with a different
             // LevelBaseXp reads a different level out of the same xp, and every number on its

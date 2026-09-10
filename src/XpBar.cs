@@ -46,8 +46,15 @@ namespace Rist
             // HudBar already converted to pixels.
             if (HudBar.Live)
             {
-                var centreX = RistConfig.BarPosX.Value;
-                var centreY = Screen.height - RistConfig.BarPosY.Value;
+                // Asked of the bar rather than recomputed from config. BarPosX/BarPosY are
+                // only where the bar is when BarFollowStamina is off, and it has defaulted to
+                // on since the bar started following the stamina bar - so this drew the note at
+                // a point the bar had long since left, which is what put it over the guardian
+                // power. ScreenCentre is wherever Place() actually put it, at any resolution,
+                // HUD scale, and with the build panel up.
+                var centre = HudBar.ScreenCentre;
+                var centreX = centre.HasValue ? centre.Value.x : RistConfig.BarPosX.Value;
+                var centreY = centre.HasValue ? centre.Value.y : Screen.height - RistConfig.BarPosY.Value;
                 var half = HudBar.HalfLength;
 
                 if (!HudBar.HasText)
@@ -59,9 +66,20 @@ namespace Rist
 
                 if (ClientState.HasPick)
                 {
-                    _waiting.alignment = TextAnchor.MiddleLeft;
-                    GUI.Label(new Rect(centreX + 16f, centreY - 24f, 200f, 48f),
-                              "rist\nwaiting", _waiting);
+                    // Centred above the bar, on one line. Beside it meant reserving room next
+                    // to a bar whose length is config and whose neighbours are vanilla's; above
+                    // it there is nothing to collide with, and it reads as belonging to the bar
+                    // rather than floating next to it.
+                    // Off the bar's measured top edge, not off its centre. Deriving the
+                    // offset from the root's height put the note on top of the bar, because
+                    // the clone's root is the whole borrowed eitr panel and its height is not
+                    // the visible bar's thickness.
+                    var barTop = HudBar.ScreenTop ?? centreY;
+                    var noteBottom = barTop - Mathf.Max(0f, RistConfig.BarNoteGap.Value);
+
+                    _waiting.alignment = TextAnchor.LowerCenter;
+                    GUI.Label(new Rect(centreX - 120f, noteBottom - 22f, 240f, 22f),
+                              "rist waiting", _waiting);
                 }
 
                 return;

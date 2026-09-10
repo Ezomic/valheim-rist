@@ -29,14 +29,24 @@ namespace Rist
 
         private static GameObject _root;
         private static RectTransform _rect;
-        private static GuiBar _fast, _slow;
+        /// <summary>
+        /// The two fills, held as the RectTransform and Image they really are rather than as
+        /// GuiBar components - because the GuiBars are destroyed at build time. See Build.
+        /// </summary>
+        private static RectTransform _fastBar, _slowBar;
+        private static Image _fastFill, _slowFill;
+
+        /// <summary>Hides the bar without ever deactivating it. See Update.</summary>
+        private static CanvasGroup _group;
+
         private static TMP_Text _text;
         private static Animator _animator;
         private static Canvas _canvas;
 
-        private static bool _hasVisible, _hasFlash;
+
+        /// <summary>True while Announce is driving the fill colour, so it knows to put it back.</summary>
+        private static bool _pulsing;
         private static bool _failed;
-        private static float _nextFlash;
         private static int _shownLevel = -1;
         private static int _shownPercent = -1;
         private static bool _shownOwed;
@@ -63,6 +73,95 @@ namespace Rist
         /// lives in canvas units. The canvas scale is the whole conversion: the bar's length
         /// is set in canvas units and the scaler multiplies it to pixels.
         /// </summary>
+        /// <summary>
+        /// Where the bar actually is, in IMGUI screen pixels, or null while it is not up.
+        ///
+        /// IMGUI measures y from the top and Unity's screen space from the bottom, so the
+        /// flip is done here rather than at every call site.
+        ///
+        /// This exists because the note beside the bar was drawn from BarPosX/BarPosY, which
+        /// are only where the bar is when BarFollowStamina is off - and it has defaulted to on
+        /// since the bar started following the stamina bar. The note was left at the old fixed
+        /// point and drifted away from the thing it labels.
+        /// </summary>
+        internal static Vector2? ScreenCentre
+        {
+            get
+            {
+                if (_rect == null) return null;
+
+                var cam = _canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay
+                    ? _canvas.worldCamera
+                    : null;
+
+                var point = RectTransformUtility.WorldToScreenPoint(cam, _rect.position);
+                return new Vector2(point.x, Screen.height - point.y);
+            }
+        }
+
+        /// <summary>Reused so a per-frame OnGUI read does not allocate four corners each time.</summary>
+        private static readonly Vector3[] Corners = new Vector3[4];
+
+        /// <summary>Last measured top, so the Verbose line prints on change rather than per frame.</summary>
+        private static float _loggedTop = float.NaN;
+
+        /// <summary>
+        /// The bar's top edge in IMGUI screen pixels, or null while it is not up.
+        ///
+        /// Measured from the rect's own world corners rather than derived from a centre and a
+        /// half-height. The first attempt did the latter and put the note on top of the bar:
+        /// the clone's root is the whole borrowed eitr panel, whose height is not the visible
+        /// bar's thickness, so the offset it produced was too small to clear it.
+        ///
+        /// Taking the smallest IMGUI y across all four corners also makes this correct when
+        /// BarUpright rotates the bar ninety degrees, where "height" and "thickness" swap over
+        /// and any single-axis arithmetic would be wrong.
+        /// </summary>
+        internal static float? ScreenTop
+        {
+            get
+            {
+                if (_rect == null) return null;
+
+                var cam = _canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay
+                    ? _canvas.worldCamera
+                    : null;
+
+                var top = float.MaxValue;
+
+                // Every child, not just the root. The root's own rect is a thin strip and the
+                // panel's frame and track are children that extend past it, so measuring the
+                // root alone returned a line that runs through the middle of what you can see
+                // - which put the note on the bar twice running.
+                //
+                // GetComponentsInChildren(true) rather than the active ones: nothing here is
+                // ever deactivated now, but a rect that is off still occupies space and a note
+                // that jumps when something toggles is worse than one placed slightly high.
+                foreach (var rect in _rect.GetComponentsInChildren<RectTransform>(true))
+                {
+                    rect.GetWorldCorners(Corners);
+
+                    foreach (var corner in Corners)
+                    {
+                        var point = RectTransformUtility.WorldToScreenPoint(cam, corner);
+                        var y = Screen.height - point.y;   // IMGUI measures from the top
+                        if (y < top) top = y;
+                    }
+                }
+
+                if (top == float.MaxValue) return null;
+
+                if (RistConfig.Verbose.Value && !Mathf.Approximately(top, _loggedTop))
+                {
+                    _loggedTop = top;
+                    RistPlugin.Log.LogInfo("Bar top edge measured at y=" + Mathf.RoundToInt(top)
+                                           + " of " + Screen.height + ".");
+                }
+
+                return top;
+            }
+        }
+
         internal static float HalfLength
         {
             get
@@ -90,8 +189,27 @@ namespace Rist
 
             if (_root == null && !Build()) return;
 
+            // Hidden by alpha, never by SetActive, and this is the whole bug of 2026-09-10.
+            //
+            // Disabling a GameObject disables its Animator, and Unity's
+            // keepAnimatorStateOnDisable defaults to false - so re-enabling REBINDS the
+            // animator, resetting every parameter to its controller default. The clone's
+            // entire appearance came from one SetBool("Visible", true) written once in Build,
+            // and vanilla's hide clip deactivates the bar's children by name through
+            // AnimationObjectToggle. So the first time this bar was hidden it came back with
+            // Visible false, the show clip never replayed, the children stayed inactive, and
+            // the bar was gone for the rest of the session.
+            //
+            // It was reported as a dedicated-server bug because ClientState.Known is false for
+            // the first frames after a remote join, so Visible() returned false immediately
+            // after Build and killed the bar before anyone saw it. It was never server-only:
+            // pressing the hide-HUD key twice, or dying once, did it in singleplayer too.
+            // Confirmed by doing exactly that.
+            //
+            // A CanvasGroup has none of that history. Nothing is ever disabled, so nothing
+            // rebinds.
             var wanted = Visible();
-            if (_root.activeSelf != wanted) _root.SetActive(wanted);
+            if (_group != null) _group.alpha = wanted ? 1f : 0f;
             if (!wanted) return;
 
             Place();
@@ -143,6 +261,12 @@ namespace Rist
         {
             if (!ClientState.Known) return false;
             if (Player.m_localPlayer.IsDead()) return false;
+
+            // Hud parks its whole root at x=10000 during a cutscene rather than hiding it, and
+            // Place() re-pins this bar to a screen point every frame - so without this the bar
+            // is being positioned against a HUD that is not where it appears to be.
+            if (Player.m_localPlayer.InCutscene()) return false;
+
             return !Hud.instance.m_userHidden;
         }
 
@@ -154,11 +278,29 @@ namespace Rist
         /// </summary>
         private static void Announce()
         {
-            if (!_hasFlash || !ClientState.HasPick) return;
-            if (Time.time < _nextFlash) return;
+            // By hand, because the donor's animator is destroyed at build time now and its
+            // Flash trigger went with it. That is the right trade: the trigger was reached
+            // through the same borrowed controller that was hiding the whole bar.
+            //
+            // A slow brightening of the leading fill rather than a blink. It has to be undone
+            // as well as applied, so the pulse writes the fill directly and Colour() is asked
+            // to restore the flat colour on the frame the pick is spent - otherwise the bar
+            // keeps whatever brightness the pulse was at when the star went away.
+            if (_fastFill == null) return;
 
-            _nextFlash = Time.time + Mathf.Max(1f, RistConfig.BarFlashSeconds.Value);
-            _animator.SetTrigger("Flash");
+            if (!ClientState.HasPick)
+            {
+                if (_pulsing) { _pulsing = false; Colour(); }
+                return;
+            }
+
+            _pulsing = true;
+
+            var period = Mathf.Max(1f, RistConfig.BarFlashSeconds.Value);
+            var phase = Mathf.PingPong(Time.time / period * 2f, 1f);
+            var tint = RistConfig.BarTint();
+
+            _fastFill.color = Color.Lerp(tint, Color.white, phase * 0.5f);
         }
 
         private static bool Build()
@@ -187,39 +329,73 @@ namespace Rist
             // Which bar is which is read off the components rather than off child names: the
             // trailing one is the one told to smooth. Names are scene data and would be a
             // guess, m_smoothDrain is public API and is not.
+            GuiBar fast = null, slow = null;
+
             foreach (var bar in go.GetComponentsInChildren<GuiBar>(true))
             {
-                if (bar.m_smoothDrain || bar.m_smoothFill) { if (_slow == null) _slow = bar; }
-                else if (_fast == null) _fast = bar;
+                if (bar.m_smoothDrain || bar.m_smoothFill) { if (slow == null) slow = bar; }
+                else if (fast == null) fast = bar;
             }
 
-            if (_fast == null) _fast = _slow;
-            if (_slow == null) _slow = _fast;
+            if (fast == null) fast = slow;
+            if (slow == null) slow = fast;
 
-            if (_fast == null)
+            if (fast == null)
             {
                 Object.Destroy(go);
                 Fail("the cloned bar has no GuiBar - falling back to the plain bar.");
                 return false;
             }
 
+            // Take what the GuiBars point at, then destroy the GuiBars themselves.
+            //
+            // Rist already drives both fills by hand and the comment on Fill explains why: the
+            // component caches m_barImage in Awake and re-reads m_width on the first SetValue,
+            // and on a clone neither has happened. That comment also says GuiBar.LateUpdate
+            // "never runs, because the donor's parts are inactive" - which was true, and stops
+            // being true the moment Unfade activates them below. Then LateUpdate runs
+            // SetBar(m_smoothValue) -> m_bar.SetSizeWithCurrentAnchors(Horizontal, m_width * i)
+            // AFTER this class has written the width, with an m_width captured from a donor
+            // whose fills are zero wide for a character with no eitr. The bar would come back
+            // and immediately be squashed to nothing.
+            //
+            // Destroying the component removes the LateUpdate overwrite, the Awake-cached
+            // image and the Awake-captured width in one move, permanently, rather than racing
+            // all three. DestroyImmediate because the fields below are read in this same frame
+            // and a deferred Destroy leaves them alive until the end of it.
+            _fastBar = fast.m_bar;
+            _slowBar = slow.m_bar;
+            _fastFill = _fastBar != null ? _fastBar.GetComponent<Image>() : null;
+            _slowFill = _slowBar != null ? _slowBar.GetComponent<Image>() : null;
+
+            if (slow != fast) Object.DestroyImmediate(slow);
+            Object.DestroyImmediate(fast);
+
             _text = go.GetComponentInChildren<TMP_Text>(true);
 
             _animator = go.GetComponent<Animator>();
             if (_animator == null) _animator = go.GetComponentInChildren<Animator>(true);
-            ReadParameters();
 
             Size();
             Colour();
             Lay();
 
-            // The donor's own hide animation may have left it transparent at the moment it
-            // was copied - the eitr bar in particular sits faded out for anyone who has no
-            // eitr. Driving the animator's Visible bool rather than hunting for alpha values
-            // reuses vanilla's fade-in and cannot get the frame and the fill out of step with
-            // each other.
-            if (_hasVisible) _animator.SetBool("Visible", true);
-            else Unfade(go);
+            // Always by hand, never by driving the donor's animator.
+            //
+            // This used to be "if (_hasVisible) _animator.SetBool("Visible", true);" and that
+            // one write was the only thing making the whole bar visible - frame, track, both
+            // fills and text. It is a borrowed controller whose entire job is to hide this
+            // panel when the player has no eitr, and it takes the panel back down at the first
+            // opportunity. Handing a permanent bar's visibility to it was never going to hold.
+            //
+            // Unfade destroys the animator and brings the parts up directly, which is what
+            // this bar wants in every case rather than only when the parameter is missing.
+            _group = go.GetComponent<CanvasGroup>();
+            if (_group == null) _group = go.AddComponent<CanvasGroup>();
+            _group.blocksRaycasts = false;
+            _group.interactable = false;
+
+            Unfade(go);
 
             _root = go;
             _shownLevel = -1;
@@ -241,9 +417,19 @@ namespace Rist
         {
             if (_animator != null) Object.Destroy(_animator);
 
-            // Gone with it goes the flash, whether or not the controller had that trigger.
+            // Gone with it goes the donor's Flash trigger; Announce drives the pulse itself.
             _animator = null;
-            _hasFlash = false;
+
+            // The children first, and this is the half that was missing. Vanilla's hide clip
+            // does not fade this panel out, it DEACTIVATES its parts by name through
+            // AnimationObjectToggle - so for a character with no eitr the donor's fills are
+            // inactive GameObjects at the moment they are cloned, and no amount of alpha
+            // raising brings back an object that is switched off.
+            //
+            // The clone is ours and every part of it is meant to be up, so this is
+            // unconditional rather than a repair of specific names.
+            foreach (var child in go.GetComponentsInChildren<Transform>(true))
+                if (!child.gameObject.activeSelf) child.gameObject.SetActive(true);
 
             foreach (var group in go.GetComponentsInChildren<CanvasGroup>(true))
                 if (group.alpha < 0.05f) group.alpha = 1f;
@@ -257,21 +443,8 @@ namespace Rist
                 graphic.color = c;
             }
 
-            RistPlugin.Log.LogInfo("Cloned bar has no Visible animator parameter; unfaded by hand.");
-        }
-
-        private static void ReadParameters()
-        {
-            _hasVisible = false;
-            _hasFlash = false;
-
-            if (_animator == null || _animator.runtimeAnimatorController == null) return;
-
-            foreach (var p in _animator.parameters)
-            {
-                if (p.type == AnimatorControllerParameterType.Bool && p.name == "Visible") _hasVisible = true;
-                if (p.type == AnimatorControllerParameterType.Trigger && p.name == "Flash") _hasFlash = true;
-            }
+            if (RistConfig.Verbose.Value)
+                RistPlugin.Log.LogInfo("Cloned bar detached from the donor's animator and brought up by hand.");
         }
 
         /// <summary>
@@ -325,14 +498,14 @@ namespace Rist
             if (_trail < 0f || progress > _trail) _trail = progress;
             else _trail = Mathf.MoveTowards(_trail, progress, Time.deltaTime * TrailSpeed);
 
-            Draw(_slow, length * Mathf.Max(_trail, progress));
-            Draw(_fast, length * progress);
+            Draw(_slowBar, length * Mathf.Max(_trail, progress));
+            Draw(_fastBar, length * progress);
         }
 
-        private static void Draw(GuiBar bar, float width)
+        private static void Draw(RectTransform bar, float width)
         {
-            if (bar == null || bar.m_bar == null) return;
-            bar.m_bar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Max(0f, width));
+            if (bar == null) return;
+            bar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Max(0f, width));
         }
 
         /// <summary>
@@ -363,8 +536,8 @@ namespace Rist
             // Only the fill is tinted, so the borrowed frame and track keep their own colours.
             // The trailing bar is the same hue held back, which is how vanilla distinguishes
             // the pair.
-            Tint(_fast, tint);
-            Tint(_slow, new Color(tint.r * 0.55f, tint.g * 0.55f, tint.b * 0.55f, tint.a));
+            Tint(_fastFill, tint);
+            Tint(_slowFill, new Color(tint.r * 0.55f, tint.g * 0.55f, tint.b * 0.55f, tint.a));
 
             if (_text != null) _text.color = tint;
         }
@@ -388,15 +561,8 @@ namespace Rist
         /// SetColor is still called first: once Awake has run it is the same write, and doing
         /// both keeps this correct if the caching ever moves.
         /// </summary>
-        private static void Tint(GuiBar bar, Color colour)
+        private static void Tint(Image image, Color colour)
         {
-            if (bar == null) return;
-
-            bar.SetColor(colour);
-
-            if (bar.m_bar == null) return;
-
-            var image = bar.m_bar.GetComponent<Image>();
             if (image == null) return;
 
             // Worth keeping behind Verbose: the first time this ran it printed
@@ -468,8 +634,12 @@ namespace Rist
 
             _root = null;
             _rect = null;
-            _fast = null;
-            _slow = null;
+            _fastBar = null;
+            _slowBar = null;
+            _fastFill = null;
+            _slowFill = null;
+            _group = null;
+            _pulsing = false;
             _text = null;
             _animator = null;
             _canvas = null;

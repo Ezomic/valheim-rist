@@ -3,6 +3,53 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [1.2.1] - 2026-09-10
+
+### Fixed
+
+- **The experience bar disappeared and never came back.** It went the first time it was
+  hidden - which on a dedicated server was immediately, before anyone saw it, and in
+  singleplayer was the first time you died or pressed the hide-HUD key.
+
+  The bar is a clone of the eitr panel, and the eitr panel spends its life switched off for a
+  character with no eitr: vanilla's hide clip does not fade it, it *deactivates its parts by
+  name* through `AnimationObjectToggle`. Everything the clone showed - frame, track, both
+  fills, text - came from one `SetBool("Visible", true)` written once when it was built. The
+  bar was then hidden and shown with `SetActive`, and disabling a GameObject disables its
+  Animator; Unity's `keepAnimatorStateOnDisable` defaults to false, so re-enabling **rebinds**
+  it and resets every parameter to its authored default. `Visible` went back to false, the
+  show clip never played again, the parts stayed inactive, and nothing re-asserted it.
+
+  It is hidden by a `CanvasGroup` alpha now, so nothing is ever disabled and nothing rebinds.
+  The clone is also detached from the borrowed animator entirely at build time and brought up
+  by hand instead - handing a permanently visible bar's visibility to a controller whose whole
+  job is hiding the eitr panel was the mistake underneath. The flash on a waiting pick is
+  driven here now rather than through the donor's trigger.
+
+  Both `GuiBar` components are destroyed at build time as well, with what they point at cached
+  first. That was the next failure waiting: this file already drives both fills by hand
+  because `GuiBar` caches `m_barImage` in `Awake` and re-reads `m_width` on the first
+  `SetValue`, and its comment noted that `LateUpdate` "never runs, because the donor's parts
+  are inactive". Activating those parts made it run, and it would have squashed every width to
+  `m_width * value` with an `m_width` captured from a donor whose fills are zero wide.
+
+  Reported from the live server by a player and reproduced on two machines.
+
+- **The "rist waiting" note is above the bar, and follows it.** It was drawn at `BarPosX`
+  and `BarPosY`, which are only where the bar is when `BarFollowStamina` is off - and that has
+  defaulted to on since the bar started following the stamina bar, so the note sat at a point
+  the bar had long since left. It is measured off the bar's real top edge now, taken from the
+  union of its child rects rather than the root's own, which is a thin strip that runs through
+  the middle of what you can see.
+
+- The bar no longer re-pins itself during a cutscene, when `Hud` has parked its whole root off
+  screen at x=10000.
+
+### Added
+
+- `BarNoteGap`, the pixels between the top of the bar and the note above it. Declared
+  `Suite.Local`, so it is the player's setting and a host cannot impose it.
+
 ## [1.2.0] - 2026-09-09
 
 Rebuilt for Valheim 1.0. This version does not run on pre-1.0 Valheim, and the previous

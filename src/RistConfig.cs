@@ -55,6 +55,7 @@ namespace Rist
         internal static ConfigEntry<float> BarBuildRaise;
         internal static ConfigEntry<string> BarColour;
         internal static ConfigEntry<float> BarFlashSeconds;
+        internal static ConfigEntry<float> BarNoteGap;
         internal static ConfigEntry<float> BarX;
         internal static ConfigEntry<float> BarBottom;
         internal static ConfigEntry<float> BarThickness;
@@ -229,8 +230,14 @@ namespace Rist
                 "the fill at all, and the bar simply showed the eitr donor's own purple.");
 
             BarFlashSeconds = cfg.Bind("Bar", "BarFlashSeconds", 4f,
-                "How often the bar flashes while a pick is waiting to be spent, in seconds. " +
-                "Uses the flash the borrowed bar already has. Only applies to the cloned bar.");
+                "How often the bar pulses while a pick is waiting to be spent, in seconds. " +
+                "Only applies to the cloned bar.");
+
+            BarNoteGap = cfg.Bind("Bar", "BarNoteGap", 6f,
+                "Pixels between the top of the bar and the 'rist waiting' note above it. " +
+                "Measured from the bar's own edge rather than from a fixed screen position, " +
+                "so it holds at any resolution and HUD scale and follows the bar when the " +
+                "build panel shoves it upward.");
 
             // Pixels rather than an anchor to the real health bar: converting a scaled Canvas
             // RectTransform into IMGUI screen space breaks differently at every HUD scale, and
