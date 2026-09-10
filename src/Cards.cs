@@ -184,6 +184,17 @@ namespace Rist
 
         // Only for display. A field with no entry falls back to its own name, which is ugly
         // but never wrong, and is a visible prompt to add it here.
+        /// <summary>
+        /// Whether an effect has a readable name, so the catalogue can be checked at load.
+        ///
+        /// A method rather than exposing Labels: the table stays private and the question the
+        /// caller actually has is answered directly.
+        /// </summary>
+        internal static bool HasLabel(string effect)
+        {
+            return !string.IsNullOrEmpty(effect) && Labels.ContainsKey(effect);
+        }
+
         private static readonly Dictionary<string, string> Labels = new Dictionary<string, string>
         {
             { "m_addMaxCarryWeight", "carry weight" },
@@ -203,6 +214,7 @@ namespace Rist
             { "m_noiseModifier", "noise" },
             { "m_staggerModifier", "stagger taken" },
             { "m_raiseSkillModifier", "skill gain" },
+            { "m_skillLevelModifier", "skill levels" },
             { "m_speedModifier", "movement speed" },
             { "m_damageModifier", "damage" },
             { "m_dodgeStaminaUseModifier", "dodge stamina" },
@@ -413,6 +425,42 @@ namespace Rist
             }
 
             RistPlugin.Log.LogInfo("Loaded " + _all.Count + " cards from cards.txt.");
+
+            WarnAboutMissingLabels();
+        }
+
+        /// <summary>
+        /// Say so when a card's effect has no readable name.
+        ///
+        /// Format falls back to the raw field when Labels has no entry, which is the right
+        /// behaviour - a card with an unnamed effect still works and still says how much it
+        /// gives. What was wrong is that the fallback was silent, so Quick study's capstone
+        /// read "+2 m_skillLevelModifier at rank 5" on a player's screen for a whole release
+        /// and the only way to find out was for somebody to send a screenshot.
+        ///
+        /// Checked here rather than in Format because Format runs per frame per card while the
+        /// panel is open, and because the useful moment to hear about it is once, at load,
+        /// naming the card - which is what makes it actionable rather than decorative.
+        /// </summary>
+        private static void WarnAboutMissingLabels()
+        {
+            var missing = new List<string>();
+
+            foreach (var card in _all)
+            {
+                if (!string.IsNullOrEmpty(card.Effect) && !Card.HasLabel(card.Effect))
+                    missing.Add(card.Id + " (" + card.Effect + ")");
+
+                if (!string.IsNullOrEmpty(card.BonusEffect) && !Card.HasLabel(card.BonusEffect))
+                    missing.Add(card.Id + " capstone (" + card.BonusEffect + ")");
+            }
+
+            if (missing.Count == 0) return;
+
+            RistPlugin.Log.LogWarning("These card effects have no readable name, so the panel "
+                                      + "shows the game's own field name to the player: "
+                                      + string.Join(", ", missing.ToArray())
+                                      + ". Add them to Cards.Labels.");
         }
 
         /// <summary>

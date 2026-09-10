@@ -3,6 +3,28 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [1.2.2] - 2026-09-10
+
+### Fixed
+
+- **Quick study's capstone read "+2 m_skillLevelModifier at rank 5".** The panel builds each
+  card's green line from a table of readable names and falls back to the game's own field name
+  when there is no entry, and `m_skillLevelModifier` had none. It is "skill levels" now, and
+  correctly not a percentage - the game adds it to the skill's level rather than scaling it.
+
+  The card itself was always working. This was the label only.
+
+  Checked against the whole catalogue rather than the one card that was reported: 25 effects
+  are in use and this was the only one missing a name.
+
+### Changed
+
+- **An effect with no readable name now says so at load, naming the card.** The fallback to
+  the raw field name is right - a card with an unnamed effect still works and still says how
+  much it gives - but it was silent, so this sat on a player's screen for a release and was
+  found by somebody sending a screenshot. `Cards.Load` cross-checks every card's effect and
+  capstone against the label table and warns once.
+
 ## [1.2.1] - 2026-09-10
 
 ### Fixed
