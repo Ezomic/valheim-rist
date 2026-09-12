@@ -3,7 +3,10 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [1.3.1] - 2026-09-12
+
+**Far sight and Weatherly did nothing in 1.3.0. They work now.** Update if you carved either one;
+your ranks are kept and take effect.
 
 ### Changed
 
@@ -16,8 +19,8 @@ and the mod uses [semantic versioning](https://semver.org).
 - Weatherly's capstone makes you row faster rather than tack faster. Rowing is a separate force
   from the sail, and it is what you are left doing when you still cannot point high enough. It
   applies forward and back.
-- Far sight and Weatherly apply only to a ship you are steering, read from the helm itself, so a
-  passenger cannot sail someone else's boat on their own runestones.
+- Weatherly and its rowing capstone apply only to a ship you are steering, read from the helm
+  itself, so a passenger cannot sail someone else's boat on their own runestones.
 - With Weatherly carved, the wind ring's black dead zone narrows to match. It used to keep showing
   vanilla's, so the boat sailed with the wind pointer sitting in the black. The black now ends
   where the sail is half drawn, on both sides of the bow. Without the card the ring is untouched.

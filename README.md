@@ -157,7 +157,10 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*attackspeed:melee` | Faster swings with a weapon |
 | `*attackspeed:tools` | Faster swings with a pickaxe, axe, hammer, hoe or cultivator |
 | `*attackspeed:ranged` | Faster draw with a bow or crossbow |
-| `*inventoryrow` | Adds rows to the player inventory grid |
+| `*exploreradius` | The map reveals a wider circle as you walk. A fraction: `0.05` is 5% further |
+| `*windcone` | Narrows the sailing dead zone and turns the sail's push toward the bow inside the arc it opens, so you can sail closer to the wind. Sailing dead upwind still stalls. A fraction of the zone, capped at `0.8`. Only applies to a ship you are steering, and the wind ring's dead zone narrows to match |
+| `*rowspeed` | Rows faster, forward and back. A fraction of top rowing speed: `0.20` is 20% faster. Only applies to a ship you are steering |
+| `*inventoryrow` | Adds rows to the player inventory grid. Not used by the default catalogue, since Valheim 1.0 sells rows from the trader, but still recognised for custom ones |
 
 The header comment in `cards.txt` carries the sign conventions, which are the game's rather than
 Rist's. The stamina-use modifiers are fractions where negative means cheaper, so `-0.05` is a 5%
