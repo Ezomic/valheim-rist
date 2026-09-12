@@ -104,6 +104,7 @@ namespace Rist
             Patch(typeof(Horizon.WindAngle));
             Patch(typeof(Horizon.Sail));
             Patch(typeof(Horizon.Row));
+            Patch(typeof(Horizon.Ring));
 
             AuditPatches();
 

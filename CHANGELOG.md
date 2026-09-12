@@ -18,6 +18,9 @@ and the mod uses [semantic versioning](https://semver.org).
   applies forward and back.
 - Far sight and Weatherly apply only to a ship you are steering, read from the helm itself, so a
   passenger cannot sail someone else's boat on their own runestones.
+- With Weatherly carved, the wind ring's black dead zone narrows to match. It used to keep showing
+  vanilla's, so the boat sailed with the wind pointer sitting in the black. The black now ends
+  where the sail is half drawn, on both sides of the bow. Without the card the ring is untouched.
 
 ### Fixed
 

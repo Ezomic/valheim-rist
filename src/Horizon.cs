@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Rist
 {
@@ -144,6 +146,15 @@ namespace Rist
         /// </summary>
         private const float MaxNarrowing = 0.8f;
 
+        /// <summary>The same ceiling, for the wind ring, which has to warp to the zone the boat has.</summary>
+        internal const float MaxNarrowingValue = MaxNarrowing;
+
+        /// <summary>Vanilla's live edge in degrees, for the wind ring.</summary>
+        internal static float VanillaLiveAngleDeg { get { return VanillaLiveAngle; } }
+
+        /// <summary>Vanilla's dead edge in degrees, for the wind ring: where the wind drops to zero.</summary>
+        internal static float VanillaDeadAngleDeg { get { return VanillaDeadAngle; } }
+
         /// <summary>
         /// The dead zone's two edges under the current narrowing, as half-angles off dead upwind
         /// in degrees. Shared by the sailing patch and the wind ring, so the ring draws the zone
@@ -261,6 +272,86 @@ namespace Rist
 
                 __result = force;
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Keeps the wind ring's dead-zone black in step with Weatherly.
+        ///
+        /// The ring is drawn by RingWarp, a mesh effect on the game's own two ring images - see that
+        /// class for why it warps rather than recolours. This patch only finds those images, attaches
+        /// the effect once, and hands it the narrowing every frame the ship HUD is up.
+        ///
+        /// Found by sprite name, ship_circle and ship_circle_bw, rather than by child name or index:
+        /// both came off a rip of the live HUD, and a sprite name is the thing least likely to be
+        /// shuffled by a game update. Both images carry the chart - the coloured one sits under the
+        /// gold one - so both are warped, or the lower one would show through the day either changes.
+        ///
+        /// The narrowing is the local player's, and only for a ship they are steering - the same helm
+        /// check the sailing uses, so the ring never draws a zone the boat is not actually sailing by.
+        /// The images are cached against the root they came from and looked up again only when that
+        /// root changes or one is destroyed, because this runs every frame at sea.
+        /// </summary>
+        [HarmonyPatch(typeof(Hud), "UpdateShipHud")]
+        internal static class Ring
+        {
+            private static Transform _root;
+            private static readonly List<RingWarp> Warps = new List<RingWarp>();
+            private static bool _warned;
+
+            [HarmonyPostfix]
+            private static void Track(Hud __instance, Player player)
+            {
+                if (__instance == null) return;
+
+                var root = __instance.m_shipWindIndicatorRoot;
+                if (root == null || !root.gameObject.activeInHierarchy) return;
+
+                if (root != _root || Stale()) Find(root);
+
+                var narrowing = 0f;
+                if (player != null)
+                {
+                    var ship = player.GetControlledShip();
+                    if (ship != null && LocalIsHelmsman(ship)) narrowing = ConeNarrowing;
+                }
+
+                foreach (var warp in Warps)
+                    if (warp != null) warp.SetNarrowing(narrowing);
+            }
+
+            private static bool Stale()
+            {
+                foreach (var warp in Warps)
+                    if (warp == null) return true;
+                return false;
+            }
+
+            private static void Find(Transform root)
+            {
+                _root = root;
+                Warps.Clear();
+
+                foreach (var image in root.GetComponentsInChildren<Image>(true))
+                {
+                    if (image == null || image.sprite == null) continue;
+
+                    var name = image.sprite.name;
+                    if (name != "ship_circle" && name != "ship_circle_bw") continue;
+
+                    RingWarp warp;
+                    if (!image.TryGetComponent(out warp)) warp = image.gameObject.AddComponent<RingWarp>();
+                    Warps.Add(warp);
+                }
+
+                if (Warps.Count > 0 || _warned) return;
+
+                // Found once per session at most. The sailing still works; only the ring's black stays
+                // vanilla's, which is a drawing that disagrees with the boat rather than a broken card.
+                _warned = true;
+                RistPlugin.Log.LogWarning("Weatherly cannot redraw the wind ring: no ship_circle or "
+                    + "ship_circle_bw sprite under the ship HUD. The dead zone still narrows; the ring "
+                    + "will show vanilla's.");
             }
         }
 
