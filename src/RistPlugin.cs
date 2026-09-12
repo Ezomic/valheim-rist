@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx;
 using BepInEx.Bootstrap;
@@ -73,6 +75,12 @@ namespace Rist
                 // not grant a single row until this says the guard is really attached.
                 OwnInventoryRows.ConfirmLoadGuard(PluginGuid);
             }
+            else
+            {
+                // Deliberately not patched: Core owns the rows. Recorded as considered so the
+                // audit below does not report a decision as an omission.
+                _considered.Add(typeof(OwnInventoryRows));
+            }
 
             Patch(typeof(SkillWatch));
             Patch(typeof(DeathPenalty));
@@ -84,6 +92,20 @@ namespace Rist
             Patch(typeof(NameplateText));
             Patch(typeof(NameplateScope));
             Patch(typeof(NameplateDeath));
+
+            // One class per patch rather than Patch(typeof(Horizon)), because Horizon keeps its
+            // patches in nested classes and PatchAll(type) reads only the type it is handed.
+            // These were missing from this list entirely when Far sight and Weatherly shipped
+            // in 1.3.0, so both runestones did nothing at all - no wider map, no narrower dead
+            // zone, no faster rowing - on Thunderstore and on the live server, and a rank-5
+            // Weatherly felt identical to none. Nothing failed and nothing was logged: an
+            // unregistered patch class is simply never applied. AuditPatches exists because of it.
+            Patch(typeof(Horizon.Radius));
+            Patch(typeof(Horizon.WindAngle));
+            Patch(typeof(Horizon.Sail));
+            Patch(typeof(Horizon.Row));
+
+            AuditPatches();
 
             // Not "ready" when the catalogue never loaded. Rist with no cards is not a quieter
             // Rist - picks cannot be spent, and on a server the reconcile pass would read the
@@ -109,6 +131,8 @@ namespace Rist
         /// </summary>
         private void Patch(System.Type type)
         {
+            _considered.Add(type);
+
             try
             {
                 _harmony.PatchAll(type);
@@ -118,6 +142,69 @@ namespace Rist
                 Log.LogError("Rist could not patch " + type.Name + " - that part of the mod is "
                     + "off for this session, the rest continues. " + e);
             }
+        }
+
+        /// <summary>Every patch class handed to Patch, or deliberately skipped.</summary>
+        private readonly HashSet<System.Type> _considered = new HashSet<System.Type>();
+
+        /// <summary>
+        /// Reports any class carrying Harmony patches that was never handed to Patch.
+        ///
+        /// Patches here are applied from an explicit list, on purpose - one class failing then
+        /// costs that class and nothing after it. The price of a list is that a new patch class
+        /// can be written, compile cleanly, and never be applied, and nothing says so. That is
+        /// exactly how Far sight and Weatherly shipped in 1.3.0 doing nothing. So the list is
+        /// checked against the assembly: anything carrying a [HarmonyPatch], on the class or on a
+        /// method, that is not on it is an error naming the class.
+        /// </summary>
+        private void AuditPatches()
+        {
+            System.Type[] types;
+            try
+            {
+                types = typeof(RistPlugin).Assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                // A type touching Core fails to load when Core is absent. The rest still count.
+                types = e.Types;
+            }
+
+            var missed = new List<string>();
+
+            foreach (var type in types)
+            {
+                if (type == null || _considered.Contains(type)) continue;
+
+                try
+                {
+                    if (BearsPatches(type)) missed.Add(type.FullName);
+                }
+                catch
+                {
+                    // A type whose members cannot be read cannot be judged; not a reason to fail.
+                }
+            }
+
+            if (missed.Count == 0) return;
+
+            Log.LogError("Rist has patch classes that are never applied, so what they do is off: "
+                + string.Join(", ", missed.ToArray())
+                + ". Add each to the Patch list in RistPlugin.Awake.");
+        }
+
+        private static bool BearsPatches(System.Type type)
+        {
+            if (type.IsDefined(typeof(HarmonyPatch), false)) return true;
+
+            const BindingFlags all = BindingFlags.Static | BindingFlags.Instance
+                                     | BindingFlags.Public | BindingFlags.NonPublic
+                                     | BindingFlags.DeclaredOnly;
+
+            foreach (var method in type.GetMethods(all))
+                if (method.IsDefined(typeof(HarmonyPatch), false)) return true;
+
+            return false;
         }
 
         /// <summary>

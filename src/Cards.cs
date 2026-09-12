@@ -195,6 +195,23 @@ namespace Rist
             return !string.IsNullOrEmpty(effect) && Labels.ContainsKey(effect);
         }
 
+        /// <summary>
+        /// True when a value is plainly a fraction but its effect is not in Percent, so the
+        /// panel would print it as a raw decimal.
+        ///
+        /// "Plainly a fraction" is a non-whole number below 1. Every additive card in the
+        /// catalogue writes a whole number - 30 carry weight, 2 armour, 2 skill levels - and
+        /// every fractional one is meant as a percentage, so the line between them is clean
+        /// today. A card that genuinely wants "+0.5 of something" would be the first to trip it,
+        /// and a warning in the log is the right cost for that.
+        /// </summary>
+        internal static bool ReadsAsRawFraction(string effect, float value)
+        {
+            if (string.IsNullOrEmpty(effect) || Percent.Contains(effect)) return false;
+            if (Mathf.Abs(value) >= 1f) return false;
+            return !Mathf.Approximately(value, Mathf.Round(value));
+        }
+
         private static readonly Dictionary<string, string> Labels = new Dictionary<string, string>
         {
             { "m_addMaxCarryWeight", "carry weight" },
@@ -202,8 +219,9 @@ namespace Rist
             { "*inventoryrow", "inventory row" },
             { "*exploreradius", "map sight" },
             { "*windcone", "sailing into the wind" },
-            { "*tackspeed", "tacking speed" },
+            { "*rowspeed", "rowing speed" },
             { "m_runStaminaUseModifier", "run stamina" },
+            { "m_runStaminaDrainModifier", "run stamina drain" },
             { "m_attackStaminaUseModifier", "attack stamina" },
             { "m_blockStaminaUseModifier", "block stamina" },
             { "m_swimStaminaUseModifier", "swim stamina" },
@@ -240,6 +258,13 @@ namespace Rist
             "m_dodgeStaminaUseModifier", "m_swimSpeedModifier", "m_timedBlockBonus",
             AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged,
             "*stamina:move", "*stamina:fight",
+            // Every one of these is a fraction the card means as a percentage, and leaving one
+            // out does not fail - it prints the raw number instead. 1.3.0 shipped four that way:
+            // Tireless's capstone read "-0.2 m_runStaminaDrainModifier" (the field had no label
+            // either, and -0.15 rounded to one decimal), and Far sight and Weatherly read "+0.1
+            // map sight" where they meant +5%. WarnAboutMissingLabels checks for both at load.
+            "m_runStaminaDrainModifier",
+            Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
         };
 
         /// <summary>
@@ -250,7 +275,7 @@ namespace Rist
         internal static readonly HashSet<string> Specials = new HashSet<string>
         {
             "*inventoryrow", AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged,
-            Horizon.ExploreRadius, Horizon.WindCone, Horizon.TackSpeed,
+            Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             "*stamina:move", "*stamina:fight",
         };
     }
@@ -450,6 +475,8 @@ namespace Rist
         {
             var missing = new List<string>();
 
+            var raw = new List<string>();
+
             foreach (var card in _all)
             {
                 if (!string.IsNullOrEmpty(card.Effect) && !Card.HasLabel(card.Effect))
@@ -457,14 +484,28 @@ namespace Rist
 
                 if (!string.IsNullOrEmpty(card.BonusEffect) && !Card.HasLabel(card.BonusEffect))
                     missing.Add(card.Id + " capstone (" + card.BonusEffect + ")");
+
+                if (Card.ReadsAsRawFraction(card.Effect, card.PerRank))
+                    raw.Add(card.Id + " (" + card.Effect + " " + card.PerRank + ")");
+
+                if (Card.ReadsAsRawFraction(card.BonusEffect, card.BonusPerRank))
+                    raw.Add(card.Id + " capstone (" + card.BonusEffect + " " + card.BonusPerRank + ")");
             }
 
-            if (missing.Count == 0) return;
+            if (missing.Count > 0)
+                RistPlugin.Log.LogWarning("These card effects have no readable name, so the panel "
+                                          + "shows the game's own field name to the player: "
+                                          + string.Join(", ", missing.ToArray())
+                                          + ". Add them to Cards.Labels.");
 
-            RistPlugin.Log.LogWarning("These card effects have no readable name, so the panel "
-                                      + "shows the game's own field name to the player: "
-                                      + string.Join(", ", missing.ToArray())
-                                      + ". Add them to Cards.Labels.");
+            // The label check alone let 1.3.0 ship Far sight and Weatherly reading "+0.1 map
+            // sight", because both had a label and were only missing from Percent - which does
+            // not fail either, it just prints the fraction. Nothing else would have noticed.
+            if (raw.Count > 0)
+                RistPlugin.Log.LogWarning("These card values are fractions but will be shown as raw "
+                                          + "numbers rather than percentages, so 0.05 reads as "
+                                          + "\"+0.1\": " + string.Join(", ", raw.ToArray())
+                                          + ". Add them to Cards.Percent.");
         }
 
         /// <summary>

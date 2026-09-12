@@ -251,20 +251,20 @@ namespace Rist
         ///
         /// Through Totals like everything else, so a capstone naming one of these counts
         /// without this method knowing capstones exist. That is what lets the wind card carry
-        /// its tacking bonus as a capstone rather than needing a card of its own.
+        /// its rowing bonus as a capstone rather than needing a card of its own.
         /// </summary>
         private static void ApplyHorizon(Dictionary<string, int> ranks)
         {
             var totals = Totals(ranks);
 
-            float explore, cone, tack;
+            float explore, cone, row;
             totals.TryGetValue(Horizon.ExploreRadius, out explore);
             totals.TryGetValue(Horizon.WindCone, out cone);
-            totals.TryGetValue(Horizon.TackSpeed, out tack);
+            totals.TryGetValue(Horizon.RowSpeed, out row);
 
             Horizon.ExtraExplore = Mathf.Max(0f, explore);
             Horizon.ConeNarrowing = Mathf.Clamp01(cone);
-            Horizon.TackBonus = Mathf.Max(0f, tack);
+            Horizon.RowBonus = Mathf.Max(0f, row);
         }
 
         /// <summary>

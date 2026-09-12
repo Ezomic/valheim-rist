@@ -18,7 +18,7 @@
 #   *attackspeed:ranged     draws faster with a bow or crossbow
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
-#   *tackspeed              faster while beating into the wind
+#   *rowspeed               rows faster, forward and back
 #
 # Rank 5 is meant to be the moment, so a capstone should be an unlock rather than a larger
 # number wherever the game gives us one: a row of inventory, immunity to falling, levels in
@@ -101,14 +101,23 @@ brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMu
 
 # Two cards that widen what the world gives back rather than what you do to it, and neither
 # can follow you out of this world the way move speed did. Far sight is felt only on ground
-# you have not walked; Weatherly only at sea with a sail up.
+# you have not walked; Weatherly only at sea.
 #
 # Far sight multiplies Minimap.m_exploreRadius, which is 100 in vanilla - so rank 5 is 125.
 #
 # Weatherly is the sailing model, which is seven lines in Ship.GetWindAngleFactor: sailing
 # across the wind gives 1.0, dead up or downwind gives 0.7, and a hard cone from dot 0.75 to
-# 0.8 takes it to nothing. That cone is the only reason tacking exists. The card lifts the
-# cone and leaves the rest alone, so it changes which courses are possible rather than how
-# fast the boat is - the capstone is the speed part, and only while beating upwind.
+# 0.8 takes it to nothing. That cone is the only reason tacking exists. The card narrows it,
+# scaling both edges 6% a rank closer to dead upwind, and bends the sail's push toward the bow
+# by the same amount inside the arc it opens. The bend is not decoration: vanilla aims the force
+# along windDir + forward, which goes sideways near the wind, so narrowing alone unlocked
+# headings that were all slower to windward than vanilla's own best, and nobody could feel it.
+# At rank 5 the best windward heading moves from 52 degrees off the wind to about 36, roughly
+# 71% faster upwind. Dead upwind stays fully dead at every rank, so tacking survives.
+#
+# The capstone rows faster, not sails faster. Rowing is a separate force from the sail
+# (m_backwardForce, used only at Slow and Back), and it is what you are left doing when you
+# still cannot point high enough. It used to be a tacking bonus on the sail, which only made
+# the card's own job more so; rowing answers the same annoyance from the other end.
 farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *exploreradius            | 0.10 | F
-weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.10  | *tackspeed                | 0.20 | W
+weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *rowspeed                 | 0.20 | W

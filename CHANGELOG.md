@@ -3,6 +3,35 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Changed
+
+- Weatherly now makes you faster to windward. Each rank narrows the dead zone and points the
+  sail's push toward the bow inside the arc it opens, so a fully carved card moves your best
+  upwind heading from 52 degrees off the wind to about 36, roughly 71% faster. Dead upwind still
+  stalls, so tacking is shallower rather than gone. It used to only narrow the zone, which did
+  nothing you could feel: the game aims the sail's force sideways near the wind, so every heading
+  the card opened was slower to windward than vanilla's own best.
+- Weatherly's capstone makes you row faster rather than tack faster. Rowing is a separate force
+  from the sail, and it is what you are left doing when you still cannot point high enough. It
+  applies forward and back.
+- Far sight and Weatherly apply only to a ship you are steering, read from the helm itself, so a
+  passenger cannot sail someone else's boat on their own runestones.
+
+### Fixed
+
+- **Far sight and Weatherly did nothing in 1.3.0.** Their patches were written but never
+  registered, so no map widened, no dead zone narrowed and no boat rowed faster, and a fully
+  carved Weatherly sailed exactly like none. Nothing failed and nothing was logged. Both work now,
+  and Rist checks at startup for any patch that was written but never applied, and logs an error
+  naming it. If you spent picks on either in 1.3.0, those ranks are kept and now take effect.
+- Several runestone values showed as raw numbers. Far sight and Weatherly read "+0.1 map sight"
+  where they meant +5%, and Tireless's capstone read "-0.2 m_runStaminaDrainModifier", with no
+  name and the value rounded to the wrong number. They read as percentages now, and Rist warns
+  at load if a card's value would be shown as a raw fraction, so the next one is caught before
+  it ships.
+
 ## [1.3.0] - 2026-09-12
 
 ### Added
