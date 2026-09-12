@@ -10,21 +10,38 @@
 # no code change, no rebuild.
 #
 # Specials:
-#   *inventoryrow           adds rows to the player inventory grid
+#   *inventoryrow           adds rows to the player inventory grid - UNUSED, see below
 #   *stamina:move           run, jump, dodge, swim and sneak all cost less
 #   *stamina:fight          attacking and blocking both cost less
 #   *attackspeed:melee      swings faster with a weapon
 #   *attackspeed:tools      swings faster with a pickaxe, hammer, hoe or cultivator
 #   *attackspeed:ranged     draws faster with a bow or crossbow
+#   *exploreradius          the map uncovers further as you walk
+#   *windcone               sail closer to the wind before the sail dies
+#   *tackspeed              faster while beating into the wind
 #
 # Rank 5 is meant to be the moment, so a capstone should be an unlock rather than a larger
 # number wherever the game gives us one: a row of inventory, immunity to falling, levels in
 # every skill. Four of them do that. Nothing anywhere carries a drawback, on purpose - a
 # choice you regret is a choice that stops you playing.
 #
-# A row of inventory is deliberately only ever a capstone, never a card of its own. As its
-# own card it was the strongest pick in the catalogue and taken first every time, which is
-# not a choice; at the bottom of a track it is the reward for having gone the whole way.
+# NO CARD GRANTS AN INVENTORY ROW ANY MORE, and *inventoryrow is left in the code rather
+# than removed so an older catalogue still loads. Rist gave rows because vanilla gave none;
+# Valheim 1.0 sells them from the trader, so the mod was answering a question the game has
+# since answered itself. Two capstones used to hand one out on top of everything a player
+# could buy, and the result was an inventory nobody had to think about.
+#
+# The older argument still holds and is kept here because it is the reason not to bring the
+# row back as a card of its own: as its own card it was the strongest pick in the catalogue
+# and taken first every time, which is not a choice.
+#
+# MOVE SPEED IS CAPPED AT 10% AND COMES FROM ONE CARD ONLY. Long stride is the only source;
+# Tireless used to add 8% on top, and the two together reached 23%. Speed is the one stat a
+# player carries out of this world: it is always on, never noticed while you have it, and its
+# absence is what gets felt - a player told us Rist had made his other, unmodded playthroughs
+# feel broken. Every other card here is felt in the moment it matters. Do not add a second
+# source, and note that m_windMovementModifier multiplies speed too, so a wind card would sit
+# on top of this cap rather than inside it.
 #
 # Value is per rank and accumulates: rank 3 of a 15-per-rank card gives 45.
 # Cards stop being offered once they reach MaxRank in the config.
@@ -47,10 +64,10 @@
 # Four fields count from 1 rather than 0 and the code adds that 1 for you - the three
 # regen multipliers and m_damageModifier. Write the plain fraction here.
 
-oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 50    | *inventoryrow             | 1 | U
+oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | m_staggerModifier         | -0.15 | U
 
 surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
-tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | m_speedModifier           | 0.08 | A
+tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | m_runStaminaDrainModifier | -0.15 | A
 steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | m_timedBlockBonus         | 0.20 | P
 longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_runStaminaUseModifier   | -0.05 | L
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
@@ -71,13 +88,27 @@ quickstudy  | Quick study    | Lessons stick the first time.     | m_raiseSkillM
 # item with one animation and had to be one card or the other. A staff is ElementalMagic or
 # BloodMagic and no card covers it; casting stays at vanilla speed.
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | m_damageModifier          | 0.05 | Z
-surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | *inventoryrow             | 1 | J
+surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | m_staminaRegenMultiplier  | 0.12 | J
 quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | m_damageModifier          | 0.05 | Y
 
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
-longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.03  | m_runStaminaUseModifier   | -0.06 | R
+longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | m_runStaminaUseModifier   | -0.06 | R
 
 
 tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O
 turnedblade | Turned blade   | The parry answers back.           | m_timedBlockBonus        | 0.08  | m_blockStaminaUseModifier | -0.08 | X
 brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q
+
+# Two cards that widen what the world gives back rather than what you do to it, and neither
+# can follow you out of this world the way move speed did. Far sight is felt only on ground
+# you have not walked; Weatherly only at sea with a sail up.
+#
+# Far sight multiplies Minimap.m_exploreRadius, which is 100 in vanilla - so rank 5 is 125.
+#
+# Weatherly is the sailing model, which is seven lines in Ship.GetWindAngleFactor: sailing
+# across the wind gives 1.0, dead up or downwind gives 0.7, and a hard cone from dot 0.75 to
+# 0.8 takes it to nothing. That cone is the only reason tacking exists. The card lifts the
+# cone and leaves the rest alone, so it changes which courses are possible rather than how
+# fast the boat is - the capstone is the speed part, and only while beating upwind.
+farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *exploreradius            | 0.10 | F
+weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.10  | *tackspeed                | 0.20 | W

@@ -200,6 +200,9 @@ namespace Rist
             { "m_addMaxCarryWeight", "carry weight" },
             { "m_addArmor", "armour" },
             { "*inventoryrow", "inventory row" },
+            { "*exploreradius", "map sight" },
+            { "*windcone", "sailing into the wind" },
+            { "*tackspeed", "tacking speed" },
             { "m_runStaminaUseModifier", "run stamina" },
             { "m_attackStaminaUseModifier", "attack stamina" },
             { "m_blockStaminaUseModifier", "block stamina" },
@@ -247,6 +250,7 @@ namespace Rist
         internal static readonly HashSet<string> Specials = new HashSet<string>
         {
             "*inventoryrow", AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged,
+            Horizon.ExploreRadius, Horizon.WindCone, Horizon.TackSpeed,
             "*stamina:move", "*stamina:fight",
         };
     }

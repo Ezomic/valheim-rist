@@ -7,6 +7,21 @@ and the mod uses [semantic versioning](https://semver.org).
 
 ### Added
 
+- **Far sight** and **Weatherly**, two runestones that widen what the world gives back rather
+  than what you do to it. Far sight multiplies `Minimap.m_exploreRadius` by 5% a rank, so the
+  map uncovers further as you walk, with the capstone worth another 10%. Weatherly is the
+  sailing one: `Ship.GetWindAngleFactor` kills the sail inside a hard cone around dead upwind,
+  and that cone is the only reason tacking exists, so the card puts a floor under it and lets
+  you point nearer the wind before the sail dies. Its capstone is 20% more speed while beating
+  upwind.
+
+  Deliberately not more move speed. That card is capped at 10% from a single source because a
+  permanent speed buff is always on, never noticed while you have it, and a player told us Rist
+  had made his unmodded playthroughs feel worse. Neither of these follows you home: a bigger
+  map radius is felt only on ground you have not walked, and the wind cone only at sea with a
+  sail up. Weatherly leaves the across-the-wind term alone and is clamped so upwind can never
+  beat a beam reach, since raising that term would just be a flat speed bonus in a hat.
+
 - **A Rist line above other players' heads** - level, total XP, and days since their last
   death - written into the game's own nameplate rather than drawn beside it, so it inherits
   the plate's font, fade and distance rules. `ShowPlate` turns it off, `PlateFormat` is the

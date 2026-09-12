@@ -61,6 +61,7 @@ namespace Rist
 
             ApplyStats(player, ranks);
             ApplyInventoryRows(player, ranks);
+            ApplyHorizon(ranks);
 
             if (RistConfig.Verbose.Value)
                 RistPlugin.Log.LogInfo("Applied cards: " + (signature.Length == 0 ? "(none)" : signature));
@@ -238,6 +239,32 @@ namespace Rist
             // never both run: OwnInventoryRows is only patched in when Core is absent.
             if (RistPlugin.CorePresent) ClaimThroughCore(ExtraRows);
             else OwnInventoryRows.Claimed = ExtraRows;
+        }
+
+        /// <summary>
+        /// The map radius and the two sailing numbers.
+        ///
+        /// Set as plain fields rather than applied here, because both are read by the game on
+        /// its own schedule - Minimap.UpdateExplore on a timer, Ship.GetWindAngleFactor every
+        /// physics step - so the patches read the current value and there is nothing to write
+        /// per frame and nothing to restore when a hand changes.
+        ///
+        /// Through Totals like everything else, so a capstone naming one of these counts
+        /// without this method knowing capstones exist. That is what lets the wind card carry
+        /// its tacking bonus as a capstone rather than needing a card of its own.
+        /// </summary>
+        private static void ApplyHorizon(Dictionary<string, int> ranks)
+        {
+            var totals = Totals(ranks);
+
+            float explore, cone, tack;
+            totals.TryGetValue(Horizon.ExploreRadius, out explore);
+            totals.TryGetValue(Horizon.WindCone, out cone);
+            totals.TryGetValue(Horizon.TackSpeed, out tack);
+
+            Horizon.ExtraExplore = Mathf.Max(0f, explore);
+            Horizon.ConeNarrowing = Mathf.Clamp01(cone);
+            Horizon.TackBonus = Mathf.Max(0f, tack);
         }
 
         /// <summary>
