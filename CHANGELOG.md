@@ -26,6 +26,11 @@ ranks are kept and now take effect.
   draw 3% faster per rank, and damage, arrow speed, the reticle and the bow's bend all follow.
   On a crossbow it still speeds up firing, not reloading.
 
+### Changed
+
+- Weatherly's tile reads "-6% dead zone" rather than "+6% sailing into the wind", naming the black
+  arc on the wind ring that it actually narrows.
+
 ### Added
 
 - Rist warns at load if a runestone names a stat the game never reads, or gives a stat where lower

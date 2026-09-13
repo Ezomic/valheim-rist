@@ -73,9 +73,25 @@ namespace Rist
             return Format(BonusEffect, BonusPerRank * Mathf.Max(1, times));
         }
 
+        /// <summary>
+        /// Effects stored as a positive amount of benefit but read by a player as something
+        /// shrinking. Weatherly's value is how much of the dead zone is taken away, and
+        /// "+6% dead zone" would say the zone grows. Shown with the sign turned, so the tile
+        /// reads "-6% dead zone" the same way the stamina cards read "-5% movement stamina".
+        ///
+        /// Display only. The catalogue and every consumer keep the positive fraction, so
+        /// LowerIsBetter and the ConeNarrowing clamp are untouched.
+        /// </summary>
+        private static readonly HashSet<string> ShownAsReduction = new HashSet<string>
+        {
+            Horizon.WindCone,
+        };
+
         private static string Format(string effect, float total)
         {
             if (!Labels.TryGetValue(effect, out var label)) label = effect;
+
+            if (ShownAsReduction.Contains(effect)) total = -total;
 
             if (Percent.Contains(effect))
             {
@@ -261,7 +277,10 @@ namespace Rist
             { "m_addArmor", "armour" },
             { "*inventoryrow", "inventory row" },
             { "*exploreradius", "map sight" },
-            { "*windcone", "sailing into the wind" },
+            // What a sailor sees shrink, not what the card is for. "+6% sailing into the wind"
+            // was a number with no unit anyone could picture; the wind ring's black arc is on
+            // screen the whole time the sail is up, and it narrows by exactly this much.
+            { "*windcone", "dead zone" },
             { "*rowspeed", "rowing speed" },
             { "m_runStaminaUseModifier", "run stamina" },
             { "m_runStaminaDrainModifier", "run stamina drain" },
