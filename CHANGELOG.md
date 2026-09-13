@@ -28,6 +28,18 @@ ranks are kept and now take effect.
 
 ### Changed
 
+- **The rists panel stands the runestones in ættir.** Breath, Blade, Hide and Road: towers two
+  stones wide under a heading and a carved count, side by side. It fits the screen it is on
+  instead of being a fixed width, so it no longer runs off the bottom of a short window, and a new
+  ætt adds a tower to the right instead of a row. On smaller screens it tries smaller stones, then
+  lays the ættir down, and only then drops the value line from the tiles; it never scrolls. The stone
+  the column beside is describing now has its name in gold, and that column names its ætt.
+- `PanelColumns` is gone, since the panel works out its own layout. `PanelBottomInset` is new: set
+  it if a taskbar covers the bottom of the game window. It stays your own setting on a server. An old cfg keeps the `PanelColumns` line,
+  which does nothing.
+- The labels in the column beside the stones are 12px, up from 11.
+- `cards.txt` is regrouped under ætt headings, so client and server need the same build. No
+  runestone's id changed, so every rank is kept.
 - Weatherly's tile reads "-6% dead zone" rather than "+6% sailing into the wind", naming the black
   arc on the wind ring that it actually narrows.
 

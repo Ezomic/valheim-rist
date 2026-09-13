@@ -15,9 +15,35 @@ visibility rules. What it costs is the tension of a hand you are dealt: a free c
 strongest runestone is always available, so balance now has to live in the runestones themselves and in
 `MaxRank` rather than in whether one happened to come up.
 
-The panel earns its keep here. Choosing between nineteen runestones is only a real choice if each
-one says what it is worth now **and** what the pick would make it, which is why every tile
-carries both lines.
+The panel earns its keep here. Choosing between the runestones is only a real choice if each
+one says what it is worth now **and** what the pick would make it. The tile says the first and
+the column beside the field says the second, for whichever stone the cursor is on.
+
+### Why ættir
+
+The field was one even grid a set number of columns across, on a board 1120px wide whatever the
+screen. Every runestone added height, and at twenty-one it ran off the bottom of a 2560x1009
+window with eight more designed. Three ways out were drawn and compared: the same field with its
+column count worked out from the screen, a quieter field of stones and names only, and the stones
+grouped by theme. The grouping won.
+
+It solves the height problem sideways. An ætt is a tower two wide and up to four tall, towers stand side
+by side, and a new theme is a new tower rather than a new row - a short, wide window has width to
+spare and no height. It also makes a stone findable by what it is for, which a field in catalogue
+order never was. Eight is the cap, the way the futhark is cut into ættir of eight.
+
+What it costs is written into the catalogue: every runestone has to belong to one ætt, a ninth in
+one ætt becomes a second tower of the same name, and a theme with two stones in it still costs a
+whole tower of width. The headings live in `cards.txt`, which is part of what Core's gate compares,
+so regrouping is a paired client and server change.
+
+Nothing about size is fixed any more. The panel walks a ladder - full tiles first, towers
+standing and then each ætt lying four wide in bands, at 100px stones and then 78; then tiles
+without their value line, standing and then lying, at 100, 78 and 64 - and draws the first that
+fits. A scroll view was considered for the smallest screens and left out: the panel
+has not scrolled since the stone field replaced the tile board, and on the screens that matter
+every stone is visible at rest. If nothing fits, the smallest layout draws anyway and the log says
+so.
 
 ## Why rists, and why capacity is the bottom of one
 

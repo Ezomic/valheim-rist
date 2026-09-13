@@ -27,7 +27,7 @@ namespace Rist
         internal static ConfigEntry<int> BonusEvery;
         internal static ConfigEntry<float> ReconcileMaxLoss;
         internal static ConfigEntry<float> AttackSpeedMax;
-        internal static ConfigEntry<int> PanelColumns;
+        internal static ConfigEntry<float> PanelBottomInset;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -325,12 +325,22 @@ namespace Rist
                 "otherwise run the whole character at twenty times speed. On a bow it divides " +
                 "the draw time, so the same typo would make every shot a full draw.");
 
-            // Twenty-four cards no longer fit three across without scrolling, and both of
-            // these are the kind of number that wants nudging rather than rebuilding.
-
-            PanelColumns = cfg.Bind("Cards", "PanelColumns", 4,
-                "Tiles across the rists panel. Fewer means wider tiles and a taller panel; the " +
-                "panel scrolls vertically once it would pass 88% of the screen height.");
+            // PanelColumns used to be bound here, and it is gone rather than kept doing nothing.
+            // The panel no longer takes a column count: it stands the rists in ættir and works
+            // out from the screen how they fit, so a fixed number of columns would only ever be
+            // the wrong one on somebody's monitor. An old cfg keeps the line as an orphan, which
+            // is harmless.
+            //
+            // What replaces it is the one thing the screen size cannot say: how much of the
+            // bottom of the window is covered by something else.
+            PanelBottomInset = cfg.Bind("Cards", "PanelBottomInset", 0f,
+                "Pixels kept clear at the bottom of the screen when the rists panel works out " +
+                "how to fit. Raise it if a taskbar or overlay covers the bottom of the game " +
+                "window and hides the last row of stones; around 48 clears a Windows taskbar.\n" +
+                "The panel picks the richest layout that fits what is left - full tiles first, " +
+                "standing and then lying, at 100px stones and then 78; then tiles without their " +
+                "value line - so a larger inset trades size for being fully visible.\n" +
+                "Your own setting even on a server: it is about your window, not a rule.");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

@@ -174,7 +174,10 @@ namespace Rist
                 }
             }
 
-            tex.Apply();
+            // With mipmaps, because the panel draws this 128px disc at 100, 78 or 64 depending
+            // on the screen, and a single 128px level shimmers when drawn small. See New() for
+            // why the bias matters as much as the mips.
+            tex.Apply(true);
             return tex;
         }
 
@@ -200,9 +203,15 @@ namespace Rist
 
         private static Texture2D New()
         {
-            return new Texture2D(Size, Size, TextureFormat.RGBA32, false)
+            return new Texture2D(Size, Size, TextureFormat.RGBA32, true)
             {
                 filterMode = FilterMode.Bilinear,
+
+                // Bilinear picks the nearest mip level rather than blending two, and at 78px the
+                // nearest is the 64px level, stretched - softer than the 128 it replaced. A small
+                // negative bias makes each drawn size take the level at or above its own size:
+                // 100 and 78 sample 128, and 64 samples 64 at one to one.
+                mipMapBias = -0.3f,
                 wrapMode = TextureWrapMode.Clamp,
                 hideFlags = HideFlags.HideAndDontSave,
             };

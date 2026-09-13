@@ -38,6 +38,13 @@ namespace Rist
         /// </summary>
         internal string Sigil = "";
 
+        /// <summary>
+        /// The ætt this rist stands in on the panel: the name of the nearest "== Name" line
+        /// above it in cards.txt, or empty when there is none. Layout only - nothing that
+        /// grants, applies or stores a rank reads it.
+        /// </summary>
+        internal string Aett = "";
+
         /// <summary>Resolved SE_Stats fields. Null for specials, which Effects handles by hand.</summary>
         internal FieldInfo Field;
         internal FieldInfo BonusField;
@@ -346,14 +353,34 @@ namespace Rist
     }
 
     /// <summary>
+    /// One group of rists as the panel stands them: a heading and at most eight stones.
+    ///
+    /// Eight because the futhark itself is cut into three ættir of eight, and because eight
+    /// is two stones wide by four tall - the tower the panel draws. Indices rather than cards,
+    /// so the panel's selection stays an index into Cards.All and every path that already
+    /// works in catalogue order keeps working.
+    /// </summary>
+    internal sealed class Aett
+    {
+        internal const int Capacity = 8;
+
+        internal string Name;
+        internal readonly List<int> Indices = new List<int>();
+    }
+
+    /// <summary>
     /// The catalogue, read once from cards.txt beside the DLL.
     /// </summary>
     internal static class Cards
     {
         private static readonly List<Card> _all = new List<Card>();
         private static readonly Dictionary<string, Card> _byId = new Dictionary<string, Card>();
+        private static readonly List<Aett> _aetts = new List<Aett>();
 
         internal static IReadOnlyList<Card> All => _all;
+
+        /// <summary>The ættir in catalogue order, each holding at most Aett.Capacity cards.</summary>
+        internal static IReadOnlyList<Aett> Aetts => _aetts;
 
         /// <summary>
         /// The hard flag: the catalogue is not usable at all. cards.txt is missing, could not
@@ -380,6 +407,7 @@ namespace Rist
         {
             _all.Clear();
             _byId.Clear();
+            _aetts.Clear();
             Unavailable = false;
 
             var dir = Path.GetDirectoryName(typeof(Cards).Assembly.Location);
@@ -427,11 +455,20 @@ namespace Rist
             if (RistPlugin.CorePresent) DeclareCatalogue(contents);
 
             var lineNo = 0;
+            var aett = "";
             foreach (var raw in rawLines)
             {
                 lineNo++;
                 var line = raw.Trim();
                 if (line.Length == 0 || line[0] == '#') continue;
+
+                // "== Blade" starts an ætt. Checked before the field split, since a header has
+                // no pipes and would otherwise be reported as a card with too few fields.
+                if (line.StartsWith("==", StringComparison.Ordinal))
+                {
+                    aett = line.Substring(2).Trim();
+                    continue;
+                }
 
                 var parts = line.Split('|');
                 if (parts.Length < 5)
@@ -447,6 +484,7 @@ namespace Rist
                     Name = parts[1].Trim(),
                     Flavour = parts[2].Trim(),
                     Effect = parts[3].Trim(),
+                    Aett = aett,
                 };
 
                 if (!float.TryParse(parts[4].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture,
@@ -520,7 +558,75 @@ namespace Rist
 
             RistPlugin.Log.LogInfo("Loaded " + _all.Count + " cards from cards.txt.");
 
+            BuildAetts();
+
             WarnAboutMissingLabels();
+        }
+
+        /// <summary>
+        /// Group the loaded cards into ættir for the panel, in catalogue order.
+        ///
+        /// A ninth card under one heading starts a second ætt of the same name rather than
+        /// being dropped or squeezed in: a tower is two by four and cannot hold it, and losing a
+        /// rist from the panel over a layout rule would be far worse than an extra tower. It is
+        /// warned about, because the catalogue is meant to be written to fill ættir.
+        ///
+        /// Cards above the first heading form an ætt with no name, so a catalogue written
+        /// before headings existed still shows every stone.
+        /// </summary>
+        private static void BuildAetts()
+        {
+            Aett current = null;
+            var spilled = new List<string>();
+            var repeated = new List<string>();
+            var closed = new HashSet<string>();
+            var unnamed = 0;
+
+            for (var i = 0; i < _all.Count; i++)
+            {
+                var name = _all[i].Aett ?? "";
+                if (name.Length == 0) unnamed++;
+
+                if (current == null || current.Name != name || current.Indices.Count >= Aett.Capacity)
+                {
+                    var overflow = current != null && current.Name == name;
+
+                    if (overflow && name.Length > 0 && !spilled.Contains(name)) spilled.Add(name);
+
+                    // The same heading written twice, further apart than one overflow, makes a
+                    // second tower of that name just as quietly - the likely way to get here is
+                    // appending a new card under its theme at the bottom of the file.
+                    if (!overflow && name.Length > 0 && closed.Contains(name) && !repeated.Contains(name))
+                        repeated.Add(name);
+
+                    if (current != null) closed.Add(current.Name);
+
+                    current = new Aett { Name = name };
+                    _aetts.Add(current);
+                }
+
+                current.Indices.Add(i);
+            }
+
+            if (spilled.Count > 0)
+                RistPlugin.Log.LogWarning("These ættir hold more than " + Aett.Capacity + " rists, so the panel "
+                                          + "stands each overflow as a second tower of the same name: "
+                                          + string.Join(", ", spilled.ToArray())
+                                          + ". Split the heading in cards.txt.");
+
+            if (repeated.Count > 0)
+                RistPlugin.Log.LogWarning("These ætt headings appear more than once in cards.txt, so each "
+                                          + "stands as more than one tower: "
+                                          + string.Join(", ", repeated.ToArray())
+                                          + ". Move the cards under a single heading.");
+
+            // A tower with a count and no name is what a catalogue written before headings, or a
+            // card above the first one, looks like on the panel. Every card still shows; it is
+            // simply nowhere a player would think to look for it.
+            if (unnamed > 0)
+                RistPlugin.Log.LogWarning(unnamed + " rists in cards.txt stand under no \"== Name\" heading, "
+                                          + "so the panel shows them in towers with no name. Add a heading "
+                                          + "above them.");
         }
 
         /// <summary>

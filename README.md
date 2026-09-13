@@ -65,10 +65,21 @@ The panel is a fifth tab on the compendium bar, beside the raven and the trophy.
 keybind; the tab is the only way in.
 
 Each runestone carries its own outline, rock and runes, seeded off its id, so it looks the same
-in every session and on every machine. A rank cuts one more mark into the rim, and the mark
-holds the character level that bought it. The column beside the field follows the cursor and
-says what the stone is worth now, what the next rank would make it, and what sits at the bottom
-of its track.
+in every session and on every machine. A rank cuts one more rune into the rim. The column beside
+the field follows the cursor and says what the stone is worth now, what the next rank would make
+it, what sits at the bottom of its track, and the character level that bought each rank.
+
+The stones stand in four ættir, Breath, Blade, Hide and Road: towers two stones wide and up to
+four tall, each under its name and a count of how many in it are carved. A new theme adds a tower
+to the right rather than a row at the bottom, so the panel grows into the width a wide screen has
+spare. It used to be one field a fixed number of columns across, and at twenty-one runestones it
+ran off the bottom of a short window.
+
+The panel works out from the screen how to fit. On a wide or 1920x1080 screen the towers stand
+with full-size stones and every tile shows its value. On a smaller one it tries smaller stones,
+then lays each ætt down four wide, and only after that drops the value line from the tiles (it
+stays in the column beside). It never scrolls. If a taskbar covers the bottom of the game window,
+`PanelBottomInset` keeps that strip clear, and it stays your own setting on a server.
 
 ### Death
 
@@ -206,7 +217,7 @@ If a change appears to do nothing, check the file.
 | --- | --- | --- |
 | `MaxRank` | `5` | How deep one runestone goes, and how many slots its track shows |
 | `BonusEvery` | `5` | Ranks between capstones |
-| `PanelColumns` | `4` | Tiles across the panel. Fewer means wider tiles and a taller panel; it scrolls once it would pass 88% of the screen height |
+| `PanelBottomInset` | `0` | Pixels at the bottom of the screen the panel keeps clear, for a taskbar over the game window. About `48` clears a Windows taskbar. Stays local on a server |
 | `AttackSpeedMax` | `1` | Ceiling on the attack-speed specials, as a fraction. `1` means the animation can at most run at double speed |
 | `ReconcileMaxLoss` | `0.34` | How much of the ledger's runestone history may vanish from `cards.txt` in one go before the server refuses to reconcile at all, as a fraction of the distinct ids players hold. Server-side only |
 

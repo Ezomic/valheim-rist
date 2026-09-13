@@ -73,20 +73,25 @@
 # Four fields count from 1 rather than 0 and the code adds that 1 for you - the three
 # regen multipliers and m_damageModifier. Write the plain fraction here.
 
-oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | m_staggerModifier         | -0.15 | U
+# ÆTTIR. A line reading "== Name" starts an ætt, and every card below it stands in that ætt
+# until the next one. The panel draws each ætt as a tower two stones wide and up to four tall under
+# its name, towers side by side, so a new theme adds a tower to the right and never a row -
+# which is what a short, wide screen has room for. Eight is the cap, the way the futhark is
+# cut into ættir of eight: a ninth card under one heading stands as a second tower of the
+# same name and Rist warns about it. Split the heading instead.
+#
+# Order and headings are layout only. A card's id is still its only identity, so moving a line
+# between ættir never touches anyone's ranks. It does change this file, and the file is part
+# of what Core's gate compares, so client and server need the same copy.
 
-surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
+== Breath
+
+oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | m_staggerModifier         | -0.15 | U
 tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | m_runStaminaDrainModifier | -0.15 | A
-steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | m_timedBlockBonus         | 0.20 | P
 longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_runStaminaDrainModifier | -0.05 | L
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
-
-thickhide   | Thick-hided    | Blows land shallower.             | m_addArmor               | 2     | m_staggerModifier         | -0.08 | H
-steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.06 | m_addArmor                | 2 | E
-
-softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | -0.08 | m_noiseModifier           | -0.10 | I
-quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifier          | -0.08 | m_stealthModifier         | -0.10 | N
-quickstudy  | Quick study    | Lessons stick the first time.     | m_raiseSkillModifier     | 0.05  | m_skillLevelModifier      | 2 | M
+brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q
+surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
 
 # Valheim has no attack-speed stat: SE_Stats carries no such field and SEMan has no
 # ModifyAttackSpeed among its hooks, because swing speed comes off the animator. These
@@ -102,17 +107,26 @@ quickstudy  | Quick study    | Lessons stick the first time.     | m_raiseSkillM
 # duration, and no animation speed touches that timer, so the Attack.Start patch alone only
 # ever sped up the release. The draw is scaled where that percentage is read, which moves
 # damage, spread, arrow speed, the reticle and the bow's bend together.
+#
+# Sure hand stands under Road rather than here, with the other work done along the way:
+# tools, and what you learn.
+
+== Blade
+
+steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | m_timedBlockBonus         | 0.20 | P
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | m_damageModifier          | 0.05 | Z
-surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | m_staminaRegenMultiplier  | 0.12 | J
+keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
+turnedblade | Turned blade   | The parry answers back.           | m_timedBlockBonus        | 0.08  | m_blockStaminaUseModifier | -0.08 | X
 quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | m_damageModifier          | 0.05 | Y
 
-keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
-longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | m_runStaminaDrainModifier | -0.06 | R
+# Hide in both senses: what a blow meets, and not being seen.
 
+== Hide
 
-tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O
-turnedblade | Turned blade   | The parry answers back.           | m_timedBlockBonus        | 0.08  | m_blockStaminaUseModifier | -0.08 | X
-brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q
+thickhide   | Thick-hided    | Blows land shallower.             | m_addArmor               | 2     | m_staggerModifier         | -0.08 | H
+steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.06 | m_addArmor                | 2 | E
+softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | -0.08 | m_noiseModifier           | -0.10 | I
+quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifier          | -0.08 | m_stealthModifier         | -0.10 | N
 
 # Two cards that widen what the world gives back rather than what you do to it, and neither
 # can follow you out of this world the way move speed did. Far sight is felt only on ground
@@ -134,5 +148,12 @@ brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMu
 # (m_backwardForce, used only at Slow and Back), and it is what you are left doing when you
 # still cannot point high enough. It used to be a tacking bonus on the sail, which only made
 # the card's own job more so; rowing answers the same annoyance from the other end.
+
+== Road
+
+longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | m_runStaminaDrainModifier | -0.06 | R
 farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *exploreradius            | 0.10 | F
+tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O
 weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *rowspeed                 | 0.20 | W
+surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | m_staminaRegenMultiplier  | 0.12 | J
+quickstudy  | Quick study    | Lessons stick the first time.     | m_raiseSkillModifier     | 0.05  | m_skillLevelModifier      | 2 | M
