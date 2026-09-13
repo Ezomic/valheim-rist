@@ -212,6 +212,49 @@ namespace Rist
             return !Mathf.Approximately(value, Mathf.Round(value));
         }
 
+        /// <summary>
+        /// Fields SE_Stats declares that the game never reads. A card naming one loads, shows a
+        /// number on its tile and changes nothing, which is the worst way for a card to fail.
+        ///
+        /// m_runStaminaUseModifier is the one found so far: declared, printed in SE_Stats'
+        /// tooltip, and read nowhere else. Sprinting is charged through
+        /// SEMan.ModifyRunStaminaDrain, which reads m_runStaminaDrainModifier. Tireless's running
+        /// share and the capstones of Long wind and Long stride all pointed at it for every
+        /// release up to 1.3.1.
+        /// </summary>
+        private static readonly HashSet<string> DeadFields = new HashSet<string>
+        {
+            "m_runStaminaUseModifier",
+        };
+
+        internal static bool IsDeadField(string effect)
+        {
+            return !string.IsNullOrEmpty(effect) && DeadFields.Contains(effect);
+        }
+
+        /// <summary>
+        /// Fields where the helpful direction is negative, so a positive value is a drawback -
+        /// and the catalogue carries none, on purpose.
+        ///
+        /// The stamina costs and fall damage are the obvious ones. Stealth is the one that was
+        /// got wrong: ModifyStealth scales the factor BaseAI multiplies a creature's view range
+        /// by, and MonsterAI its alert range, so a positive m_stealthModifier has you seen from
+        /// further away. Soft step shipped at +0.08 a rank and Quiet wake's capstone at +0.10,
+        /// both making the player easier to find while the tile promised the reverse.
+        /// </summary>
+        private static readonly HashSet<string> LowerIsBetter = new HashSet<string>
+        {
+            "m_runStaminaDrainModifier", "m_attackStaminaUseModifier", "m_blockStaminaUseModifier",
+            "m_swimStaminaUseModifier", "m_jumpStaminaUseModifier", "m_sneakStaminaUseModifier",
+            "m_dodgeStaminaUseModifier", "*stamina:move", "*stamina:fight",
+            "m_fallDamageModifier", "m_stealthModifier", "m_noiseModifier", "m_staggerModifier",
+        };
+
+        internal static bool PointsAtDrawback(string effect, float value)
+        {
+            return value > 0f && !string.IsNullOrEmpty(effect) && LowerIsBetter.Contains(effect);
+        }
+
         private static readonly Dictionary<string, string> Labels = new Dictionary<string, string>
         {
             { "m_addMaxCarryWeight", "carry weight" },
@@ -231,7 +274,10 @@ namespace Rist
             { "m_healthRegenMultiplier", "health regen" },
             { "m_eitrRegenMultiplier", "eitr regen" },
             { "m_fallDamageModifier", "fall damage" },
-            { "m_stealthModifier", "stealth" },
+            // Not "stealth". The field scales how far away a creature sees you while you crouch,
+            // so the card that helps carries a negative number, and "-40% stealth" reads as the
+            // opposite of what it does.
+            { "m_stealthModifier", "sneak visibility" },
             { "m_noiseModifier", "noise" },
             { "m_staggerModifier", "stagger taken" },
             { "m_raiseSkillModifier", "skill gain" },
@@ -459,7 +505,12 @@ namespace Rist
         }
 
         /// <summary>
-        /// Say so when a card's effect has no readable name.
+        /// Say so when a card's line is wrong in a way that still loads.
+        ///
+        /// Four checks, all of them mistakes that shipped: an effect with no readable name, a
+        /// fraction missing from Percent and printed raw, a field the game never reads
+        /// (Card.DeadFields), and a positive value on a field where lower is better
+        /// (Card.LowerIsBetter). The name is older than the last two.
         ///
         /// Format falls back to the raw field when Labels has no entry, which is the right
         /// behaviour - a card with an unnamed effect still works and still says how much it
@@ -477,8 +528,21 @@ namespace Rist
 
             var raw = new List<string>();
 
+            var dead = new List<string>();
+
+            var backwards = new List<string>();
+
             foreach (var card in _all)
             {
+                if (Card.IsDeadField(card.Effect)) dead.Add(card.Id + " (" + card.Effect + ")");
+                if (Card.IsDeadField(card.BonusEffect)) dead.Add(card.Id + " capstone (" + card.BonusEffect + ")");
+
+                if (Card.PointsAtDrawback(card.Effect, card.PerRank))
+                    backwards.Add(card.Id + " (" + card.Effect + " " + card.PerRank + ")");
+
+                if (Card.PointsAtDrawback(card.BonusEffect, card.BonusPerRank))
+                    backwards.Add(card.Id + " capstone (" + card.BonusEffect + " " + card.BonusPerRank + ")");
+
                 if (!string.IsNullOrEmpty(card.Effect) && !Card.HasLabel(card.Effect))
                     missing.Add(card.Id + " (" + card.Effect + ")");
 
@@ -506,6 +570,22 @@ namespace Rist
                                           + "numbers rather than percentages, so 0.05 reads as "
                                           + "\"+0.1\": " + string.Join(", ", raw.ToArray())
                                           + ". Add them to Cards.Percent.");
+
+            // Both of these load cleanly and put a believable number on the tile, which is why
+            // Long wind, Long stride, Soft step and Quiet wake shipped this way, and it took reading
+            // the game's code to find them. Tireless's share was the same bug in Effects.Spread,
+            // where this check cannot see it.
+            if (dead.Count > 0)
+                RistPlugin.Log.LogWarning("These card effects name a field the game never reads, so "
+                                          + "they do nothing whatever the tile says: "
+                                          + string.Join(", ", dead.ToArray())
+                                          + ". See Card.DeadFields for what to use instead.");
+
+            if (backwards.Count > 0)
+                RistPlugin.Log.LogWarning("These card values point the wrong way - on these fields "
+                                          + "negative is the benefit, so a positive value is a "
+                                          + "drawback: " + string.Join(", ", backwards.ToArray())
+                                          + ". Flip the sign.");
         }
 
         /// <summary>

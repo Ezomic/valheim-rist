@@ -15,7 +15,7 @@
 #   *stamina:fight          attacking and blocking both cost less
 #   *attackspeed:melee      swings faster with a weapon
 #   *attackspeed:tools      swings faster with a pickaxe, hammer, hoe or cultivator
-#   *attackspeed:ranged     draws faster with a bow or crossbow
+#   *attackspeed:ranged     a bow reaches full draw sooner; a crossbow fires faster
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
@@ -61,6 +61,15 @@
 # modifiers are fractions where negative means cheaper, so -0.05 is a 5% discount per
 # rank. Read a value out loud before adding it.
 #
+# STEALTH IS NEGATIVE TOO. m_stealthModifier scales how far away a creature sees you while
+# you crouch, so -0.08 is 8% harder to spot. Soft step and Quiet wake's capstone shipped
+# positive, which made a sneaking player easier to find. Rist warns at load now if a field
+# where lower is better is given a positive value.
+#
+# RUNNING IS m_runStaminaDrainModifier. m_runStaminaUseModifier looks like the right name
+# beside the other *StaminaUseModifier fields and the game never reads it; Long wind and Long
+# stride's capstones named it and did nothing. Rist warns at load if a card names it.
+#
 # Four fields count from 1 rather than 0 and the code adds that 1 for you - the three
 # regen multipliers and m_damageModifier. Write the plain fraction here.
 
@@ -69,14 +78,14 @@ oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarry
 surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
 tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | m_runStaminaDrainModifier | -0.15 | A
 steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | m_timedBlockBonus         | 0.20 | P
-longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_runStaminaUseModifier   | -0.05 | L
+longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_runStaminaDrainModifier | -0.05 | L
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
 
 thickhide   | Thick-hided    | Blows land shallower.             | m_addArmor               | 2     | m_staggerModifier         | -0.08 | H
 steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.06 | m_addArmor                | 2 | E
 
-softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | 0.08  | m_noiseModifier           | -0.10 | I
-quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifier          | -0.08 | m_stealthModifier         | 0.10 | N
+softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | -0.08 | m_noiseModifier           | -0.10 | I
+quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifier          | -0.08 | m_stealthModifier         | -0.10 | N
 quickstudy  | Quick study    | Lessons stick the first time.     | m_raiseSkillModifier     | 0.05  | m_skillLevelModifier      | 2 | M
 
 # Valheim has no attack-speed stat: SE_Stats carries no such field and SEMan has no
@@ -87,12 +96,18 @@ quickstudy  | Quick study    | Lessons stick the first time.     | m_raiseSkillM
 # The axe counts as a tool, so Sure hand speeds both chopping and axe combat - it is one
 # item with one animation and had to be one card or the other. A staff is ElementalMagic or
 # BloodMagic and no card covers it; casting stays at vanilla speed.
+#
+# Quick draw on a bow is a second patch, because the animator is not what a draw waits on.
+# Humanoid.GetAttackDrawPercentage divides a timer counted in fixed updates by the bow's draw
+# duration, and no animation speed touches that timer, so the Attack.Start patch alone only
+# ever sped up the release. The draw is scaled where that percentage is read, which moves
+# damage, spread, arrow speed, the reticle and the bow's bend together.
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | m_damageModifier          | 0.05 | Z
 surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | m_staminaRegenMultiplier  | 0.12 | J
 quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | m_damageModifier          | 0.05 | Y
 
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
-longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | m_runStaminaUseModifier   | -0.06 | R
+longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | m_runStaminaDrainModifier | -0.06 | R
 
 
 tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O

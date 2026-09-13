@@ -318,11 +318,12 @@ namespace Rist
                 "Server-side only; the ledger exists nowhere else.");
 
             AttackSpeedMax = cfg.Bind("Cards", "AttackSpeedMax", 1f,
-                "Ceiling on the attack-speed cards, as a fraction. 1 means the animation can " +
-                "at most run at double speed.\n" +
-                "This multiplies an animation rather than a number in a table, and animation " +
-                "events are what land the hit, so a mis-typed catalogue line could otherwise " +
-                "run the whole character at twenty times speed.");
+                "Ceiling on the attack-speed cards, as a fraction. 1 means a swing animation " +
+                "can at most run at double speed, and a bow can at most draw in half its time.\n" +
+                "On a swing this multiplies an animation rather than a number in a table, and " +
+                "animation events are what land the hit, so a mis-typed catalogue line could " +
+                "otherwise run the whole character at twenty times speed. On a bow it divides " +
+                "the draw time, so the same typo would make every shot a full draw.");
 
             // Twenty-four cards no longer fit three across without scrolling, and both of
             // these are the kind of number that wants nudging rather than rebuilding.

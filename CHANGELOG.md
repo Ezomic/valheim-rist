@@ -3,6 +3,37 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+**Six runestones did not do what their tile said.** Tireless, Long wind, Long stride and Quick
+draw each had a part that did nothing, and Soft step and Quiet wake made you easier to see. Your
+ranks are kept and now take effect.
+
+### Fixed
+
+- **Soft step made you easier to see.** Stealth in Valheim is a multiplier on how far away a
+  creature spots you while you crouch, so lower is better, and Soft step added to it. A fully
+  carved Soft step could have you seen from up to 40% further away while crouching in the dark
+  or at a higher Sneak skill, and it never helped. It now takes 8% off that distance per rank,
+  as the tile always claimed. Quiet wake's capstone had the same mistake and is fixed the same
+  way. The tile now reads "sneak visibility", since "-40% stealth" would read as a loss.
+- **Three running discounts did nothing.** Tireless's per-rank running discount, Long wind's
+  capstone and Long stride's capstone all changed a stat the game never reads. Sprinting is
+  charged through a different one, and all three now use it. Tireless's capstone was already on
+  the right stat, so it now stacks with a working 5% a rank.
+- **Quick draw did not speed up drawing a bow.** It sped up the release, because swing speed is
+  the animation and a bow's draw is a timer the animation never touches. A bow now reaches full
+  draw 3% faster per rank, and damage, arrow speed, the reticle and the bow's bend all follow.
+  On a crossbow it still speeds up firing, not reloading.
+
+### Added
+
+- Rist warns at load if a runestone names a stat the game never reads, or gives a stat where lower
+  is better a positive value. Both mistakes load cleanly and show a believable number on the
+  tile, which is how these shipped.
+- `AttackSpeedMax` now also caps how much Quick draw shortens a bow's draw, and its description
+  in the cfg says so.
+
 ## [1.3.1] - 2026-09-12
 
 **Far sight and Weatherly did nothing in 1.3.0. They work now.** Update if you carved either one;

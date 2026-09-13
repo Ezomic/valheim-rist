@@ -86,6 +86,7 @@ namespace Rist
             Patch(typeof(DeathPenalty));
             Patch(typeof(UiInput));
             Patch(typeof(AttackSpeed));
+            Patch(typeof(AttackSpeed.BowDraw));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.

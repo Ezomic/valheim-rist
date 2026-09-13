@@ -111,13 +111,22 @@ namespace Rist
         /// Spread here rather than in ApplyStats so a card still describes itself as one
         /// thing on the panel, and so a capstone can name a special exactly as it names a
         /// field.
+        ///
+        /// Running is m_runStaminaDrainModifier, not m_runStaminaUseModifier. The second is the
+        /// obvious name beside four other *StaminaUseModifier fields, and it is dead: SE_Stats
+        /// declares it and prints it in a tooltip, and nothing in the game ever reads it.
+        /// Player.CheckRun charges sprinting through SEMan.ModifyRunStaminaDrain, which reads only
+        /// the drain field. Tireless's running share used to write the dead one, so for every
+        /// release up to 1.3.1 the tile said running was cheaper and it cost exactly what it
+        /// always had. Card.DeadFields lists it, and Cards.WarnAboutMissingLabels warns at load if a
+        /// catalogue names it.
         /// </summary>
         private static readonly Dictionary<string, string[]> Spread = new Dictionary<string, string[]>
         {
             {
                 "*stamina:move", new[]
                 {
-                    "m_runStaminaUseModifier", "m_jumpStaminaUseModifier", "m_dodgeStaminaUseModifier",
+                    "m_runStaminaDrainModifier", "m_jumpStaminaUseModifier", "m_dodgeStaminaUseModifier",
                     "m_swimStaminaUseModifier", "m_sneakStaminaUseModifier",
                 }
             },
