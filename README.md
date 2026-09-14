@@ -174,13 +174,13 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*answer` | A perfect dodge arms your next hit on an enemy within 4 seconds. A fraction of that hit's damage |
 | `*answer:stagger` | Chance that the answering blow staggers anything a parry would, never a boss. A fraction: `0.30` is 30% |
 | `*lowdraw` | Seconds of a bow draw from a crouch that still count as sneaking, and the shot that ends such a draw. The character still rises to draw |
-| `*lowdraw:whole` | The whole bow draw from a crouch, and its shot, count as sneaking. A flag: write `1` |
+| `*lowdraw:silent` | Arrows loosed from a crouch make no noise where they land, so a miss does not alert the animals around it. A creature the arrow hits is still alerted by the hit. A flag: write `1` |
 | `*sneakattack` | Raises a weapon's own sneak attack multiplier. A fraction: `0.10` is 10% more. Weapons with no sneak attack gain none |
 | `*sneakattack:stagger` | A sneak attack on an unalerted, non-boss creature staggers it, at most once per creature per 300 seconds. A flag: write `1` |
-| `*mead:duration` | Buff meads last longer. A fraction. Healing, stamina, eitr and movement meads are not affected |
-| `*mead:fullcask` | One buff mead in four is not used up when drunk. A flag: write `1` |
+| `*mead:duration` | Buff meads last longer. A fraction. Not meads that restore health, stamina or eitr, not the Lingering meads (they share a lockout with the potions), and not meads that change movement |
+| `*mead:fullcask` | Chance a buff mead is not used up when drunk, rolled per drink. A fraction: `0.25` is 25% |
 | `*power:cooldown` | Shortens the forsaken power's cooldown. Negative is shorter, and it cannot go below half |
-| `*power:duration` | Seconds added to your own forsaken power blessing. Players beside you get the normal duration |
+| `*power:duration` | Seconds added to the forsaken power for every player it reaches when you cast it. A power cast by someone without it lasts the normal time for everyone. Not applied to a power that changes movement |
 | `*exploreradius` | The map reveals a wider circle as you walk. A fraction: `0.05` is 5% further |
 | `*windcone` | Narrows the sailing dead zone and turns the sail's push toward the bow inside the arc it opens, so you can sail closer to the wind. Sailing dead upwind still stalls. A fraction of the zone, capped at `0.8`. Only applies to a ship you are steering, and the wind ring's dead zone narrows to match |
 | `*rowspeed` | Rows faster, forward and back. A fraction of top rowing speed: `0.20` is 20% faster. Only applies to a ship you are steering |

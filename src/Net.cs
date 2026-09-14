@@ -197,6 +197,10 @@ namespace Rist
             rpc.Register<string, string>(RpcProfile, OnProfile);
             rpc.Register<string>(RpcNotice, OnNotice);
 
+            // Client to client, not to the server: Oath-bound's shared minute, sent by the caster
+            // of a forsaken power to each player it reached.
+            rpc.Register<int, float>(Oathbound.Rpc, Oathbound.OnShared);
+
             ClientState.Clear();
             Effects.Reset();
 

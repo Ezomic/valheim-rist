@@ -329,11 +329,11 @@ namespace Rist
             { AnsweringBlow.Bonus, "answering blow" },
             { AnsweringBlow.Stagger, "chance the answering blow staggers" },
             { LowDraw.Seconds, "s unseen draw" },
-            { LowDraw.Whole, "the whole draw counts as sneaking" },
+            { LowDraw.Silent, "arrows from a crouch land silent" },
             { UnseenBlow.Bonus, "sneak attack" },
             { UnseenBlow.Stagger, "an ambush staggers" },
             { DeepDraught.Duration, "mead duration" },
-            { DeepDraught.FullCask, "1 mead in 4 is not used up" },
+            { DeepDraught.FullCask, "chance a mead is not used up" },
             { Oathbound.Cooldown, "power cooldown" },
             { Oathbound.Duration, "s of forsaken power" },
         };
@@ -348,6 +348,7 @@ namespace Rist
             "m_dodgeStaminaUseModifier", "m_swimSpeedModifier", "m_timedBlockBonus",
             AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged, AttackSpeed.Magic,
             RangedDamage.Key, AnsweringBlow.Bonus, AnsweringBlow.Stagger, UnseenBlow.Bonus, DeepDraught.Duration,
+            DeepDraught.FullCask,
             Oathbound.Cooldown,
             "*stamina:move", "*stamina:fight",
             // Every one of these is a fraction the card means as a percentage, and leaving one
@@ -368,7 +369,7 @@ namespace Rist
         {
             "*inventoryrow", AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged,
             AttackSpeed.Magic, AttackSpeed.UnbrokenCast, RangedDamage.Key,
-            AnsweringBlow.Bonus, AnsweringBlow.Stagger, LowDraw.Seconds, LowDraw.Whole,
+            AnsweringBlow.Bonus, AnsweringBlow.Stagger, LowDraw.Seconds, LowDraw.Silent,
             UnseenBlow.Bonus, UnseenBlow.Stagger, DeepDraught.Duration, DeepDraught.FullCask,
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
@@ -381,8 +382,7 @@ namespace Rist
         /// </summary>
         private static readonly HashSet<string> Unlocks = new HashSet<string>
         {
-            AttackSpeed.UnbrokenCast, LowDraw.Whole, UnseenBlow.Stagger,
-            DeepDraught.FullCask,
+            AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
         };
 
         /// <summary>

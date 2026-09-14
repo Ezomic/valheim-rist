@@ -22,16 +22,25 @@ namespace Rist
     /// factor it produces is written to the ZDO, so every creature's owner reads the hidden
     /// value without any network code here.
     ///
-    /// Ranks buy seconds of the draw; the capstone covers the whole draw. Either way the shot it
-    /// ends in counts too: the release animation is an attack, the game clears the crouch for
-    /// that as well, and a hidden draw that lit you up the instant the arrow left was hidden for
-    /// nothing. "Hidden" means sneaking as usual, at your Sneak skill and in your light - not
-    /// invisible.
+    /// Ranks buy a second of the draw each. The shot a qualifying draw ends in counts too: the
+    /// release animation is an attack, the game clears the crouch for that as well, and a hidden
+    /// draw that lit you up the instant the arrow left was hidden for nothing. "Hidden" means
+    /// sneaking as usual, at your Sneak skill and in your light - not invisible.
+    ///
+    /// The capstone, Silent string, is the other thing that gives a hunter away: where the arrow
+    /// lands. Projectile.OnHit ends every contact - ground, tree, creature - with
+    /// BaseAI.DoProjectileHitNoise, which alerts every enemy creature in range of the landing
+    /// point, and animals count as enemies of players. An arrow loosed from a crouch lands
+    /// silent: its hitNoise is set to 0 in Projectile.Setup, and OnHit only makes the noise when
+    /// it is above 0. That silences hits as well as misses, so the herd around a shot deer is not
+    /// spooked by the arrow either; the deer that is hit still bolts, because damage alerts it
+    /// separately and that is left alone. The noise is sent from the shooter's machine, so
+    /// zeroing it there works whoever owns the creatures, with no network code.
     /// </summary>
     internal static class LowDraw
     {
         internal const string Seconds = "*lowdraw";
-        internal const string Whole = "*lowdraw:whole";
+        internal const string Silent = "*lowdraw:silent";
 
         /// <summary>
         /// How long after the string leaves the bow a sneaking archer still counts as crouched:
@@ -126,19 +135,100 @@ namespace Rist
                 if (!RistConfig.Enabled.Value || !ReferenceEquals(__instance, Player.m_localPlayer)) return;
                 if (!Bind() || !_crouchToggled(__instance) || !HoldingBow(__instance)) return;
 
-                var whole = Effects.TotalFor(Whole) > 0f;
                 var grace = Effects.TotalFor(Seconds);
+                if (grace <= 0f) return;
 
                 if (__instance.IsDrawingBow())
                 {
-                    if (whole || (grace > 0f && _drawTime(__instance) <= grace)) __result = true;
+                    if (_drawTime(__instance) <= grace) __result = true;
                     return;
                 }
 
                 // The shot and the moment after it. The draw that led to it has to have
                 // qualified, so a long draw past the grace does not become hidden by letting go.
                 var justShot = __instance.InAttack() || Time.time - _drawSeenAt <= ReleaseGrace;
-                if (justShot && _drawSeenAt > 0f && (whole || (grace > 0f && _lastDraw <= grace))) __result = true;
+                if (justShot && _drawSeenAt > 0f && _lastDraw <= grace) __result = true;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Silent string, Low draw's capstone: see the LowDraw summary for why it is the landing
+    /// noise and nothing else.
+    ///
+    /// Scoped to Attack.FireProjectileBurst, so only projectiles fired by a player's own attack
+    /// are candidates: catapults, area spawns and other launches go through Projectile.Setup
+    /// outside it and stay as loud as they are. Staffs, crossbows and thrown spears do fire
+    /// through FireProjectileBurst, and the Bows skill check in Enter is what keeps them loud -
+    /// it is not redundant. A projectile a silent arrow spawns on its own hit inherits the arrow's
+    /// hitNoise of 0 through Projectile.SpawnOnHit, so it lands silent too.
+    ///
+    /// The crouch is read off m_crouchToggled, the intent, because IsCrouching is false during
+    /// the release: the game stands you up to shoot.
+    /// </summary>
+    internal static class SilentString
+    {
+        private static bool _silent;
+
+        private static AccessTools.FieldRef<Attack, Humanoid> _attackCharacter;
+        private static AccessTools.FieldRef<Attack, ItemDrop.ItemData> _attackWeapon;
+        private static AccessTools.FieldRef<Player, bool> _crouchToggled;
+        private static bool _bound, _bindFailed;
+
+        private static bool Bind()
+        {
+            if (_bound) return true;
+            if (_bindFailed) return false;
+
+            try
+            {
+                _attackCharacter = AccessTools.FieldRefAccess<Attack, Humanoid>("m_character");
+                _attackWeapon = AccessTools.FieldRefAccess<Attack, ItemDrop.ItemData>("m_weapon");
+                _crouchToggled = AccessTools.FieldRefAccess<Player, bool>("m_crouchToggled");
+                _bound = true;
+            }
+            catch (System.Exception e)
+            {
+                _bindFailed = true;
+                RistPlugin.Log.LogError("Silent string could not reach the game's attack or crouch fields and " +
+                                        "is off for this session: " + e.Message);
+            }
+
+            return _bound;
+        }
+
+        internal static class Scope
+        {
+            [HarmonyPatch(typeof(Attack), "FireProjectileBurst")]
+            [HarmonyPrefix]
+            private static void Enter(Attack __instance)
+            {
+                _silent = false;
+                if (!RistConfig.Enabled.Value || !Bind()) return;
+
+                var player = Player.m_localPlayer;
+                if (player == null || !ReferenceEquals(_attackCharacter(__instance), player)) return;
+
+                var weapon = _attackWeapon(__instance);
+                if (weapon == null || weapon.m_shared == null || weapon.m_shared.m_skillType != Skills.SkillType.Bows) return;
+                if (!_crouchToggled(player)) return;
+
+                _silent = Effects.TotalFor(LowDraw.Silent) > 0f;
+            }
+
+            [HarmonyPatch(typeof(Attack), "FireProjectileBurst")]
+            [HarmonyFinalizer]
+            private static void Leave() { _silent = false; }
+        }
+
+        internal static class Launch
+        {
+            [HarmonyPatch(typeof(Projectile), nameof(Projectile.Setup))]
+            [HarmonyPrefix]
+            private static void Setup(Character owner, ref float hitNoise)
+            {
+                // Setup keeps any value of 0 or more, and OnHit only makes noise above 0.
+                if (_silent && ReferenceEquals(owner, Player.m_localPlayer)) hitNoise = 0f;
             }
         }
     }

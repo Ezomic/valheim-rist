@@ -15,15 +15,20 @@ and the mod uses [semantic versioning](https://semver.org).
 - **Answering blow**, in Combat: a perfect dodge with an enemy nearby arms your next hit on an enemy
   for 4 seconds, 10% more damage a rank. At rank 5 that hit has a 30% chance to stagger anything a
   parry would, never a boss.
-- **Low draw**, in Stealth: drawing a bow from a crouch still counts as sneaking for the first half
-  second of the draw a rank, and for the whole draw at rank 5, along with the shot itself. The game
-  stands you up to draw and used to stop counting you as sneaking; the character still rises.
+- **Low draw**, in Stealth: drawing a bow from a crouch still counts as sneaking for the first second
+  of the draw a rank, along with the shot itself. The game stands you up to draw and used to stop
+  counting you as sneaking; the character still rises. At rank 5 arrows loosed from a crouch make no
+  noise where they land, so a miss does not alert the animals around it.
 - **Unseen blow**, in Stealth: sneak attacks hit 10% harder a rank, with weapons that have a sneak
   attack. At rank 5 a sneak attack staggers the creature, once per creature every five minutes.
-- **Deep draught**, in Endurance: buff meads last 10% longer a rank. At rank 5 one mead in four is
-  not used up. Healing and movement meads are not affected.
-- **Oath-bound**, in Utility: the forsaken power's cooldown is 5% shorter a rank. At rank 5 your own
-  blessing lasts a minute longer, unless the power changes how you move.
+- **Deep draught**, in Endurance: buff meads last 10% longer a rank. At rank 5 each buff mead has a
+  25% chance not to be used up when you drink it. It covers Fire Resistance Barley Wine, Frost and
+  Poison Resistance Mead, Berserkir Mead, Mead of Troll Endurance, Draught of Vananidir, Brew of
+  Animal Whispers, Tasty Mead, Anti-Sting Concoction and Love Potion. It does not cover the healing,
+  stamina and eitr potions, the Lingering meads, Tonic of Ratatosk or Lightfoot Mead.
+- **Oath-bound**, in Utility: the forsaken power's cooldown is 5% shorter a rank. At rank 5 the
+  blessing lasts a minute longer for everyone it reaches when you cast it, unless the power changes
+  how you move. Cast by someone without it, it lasts the normal time for everyone.
 - Soft step's tile reads "detection" and Tireless's reads "move stamina", and the panel's cells and
   towers sit a little closer. The longest value line was widening every cell, which on a 1920x1080
   screen pushed five towers off their full-size layout onto small lying stones.

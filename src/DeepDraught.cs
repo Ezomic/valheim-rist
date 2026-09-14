@@ -18,14 +18,21 @@ namespace Rist
     }
 
     /// <summary>
-    /// Deep draught: buff meads last longer, and at rank five one in four is not used up.
+    /// Deep draught: buff meads last longer, and at rank five each has a 25% chance not to be
+    /// used up - a roll per drink, not every fourth one.
     ///
     /// "Buff mead" is decided from the item rather than from a list of names, so a mead a game
     /// update or another mod adds is covered by the same rule. It is a consumable that is not
-    /// food, whose effect is exactly SE_Stats, and that restores nothing - no health, stamina or
-    /// eitr up front or over time, since stretching a healing potion's tick would make it heal
-    /// more. Anything that changes movement - speed, wind or jump - is left alone too: move
-    /// speed has one source in this catalogue, and a longer speed tonic would be a second.
+    /// food, whose effect is exactly SE_Stats, that restores nothing - no health, stamina or eitr
+    /// up front or over time, since stretching a healing potion's tick would make it heal more -
+    /// and that shares no lockout category. Anything that changes movement - speed, wind or jump
+    /// - is left alone too: move speed has one source in this catalogue.
+    ///
+    /// Against the vanilla assets that is ten meads: Fire Resistance Barley Wine, Frost and
+    /// Poison Resistance Mead, Berserkir Mead, Mead of Troll Endurance, Draught of Vananidir,
+    /// Brew of Animal Whispers, Tasty Mead, Anti-Sting Concoction and Love Potion. Out: the
+    /// healing, stamina and eitr potions (they restore), the three Lingering meads (shared
+    /// lockout), Tonic of Ratatosk (speed) and Lightfoot Mead (jump).
     ///
     /// Both halves hang off Player.ConsumeItem, which drinking from the inventory or the hotbar
     /// goes through. Its own CanConsumeItem already refuses a mead whose effect is running, so
@@ -42,8 +49,6 @@ namespace Rist
         internal const string Duration = "*mead:duration";
         internal const string FullCask = "*mead:fullcask";
 
-        private const float KeepChance = 0.25f;
-
         private static ItemDrop.ItemData _keep;
 
         private static bool IsBuffMead(ItemDrop.ItemData item)
@@ -51,8 +56,17 @@ namespace Rist
             if (item == null || item.m_shared == null) return false;
             if (item.m_shared.m_food > 0f) return false;
 
+            if (item.m_shared.m_itemType != ItemDrop.ItemData.ItemType.Consumable) return false;
+
             var se = item.m_shared.m_consumeStatusEffect as SE_Stats;
             if (se == null || se.GetType() != typeof(SE_Stats) || se.m_ttl <= 0f) return false;
+
+            // A category is a shared lockout: while any effect in it runs, CanConsumeItem refuses
+            // every other item in it. The Lingering Healing, Stamina and Eitr Meads share theirs
+            // with the healing, stamina and eitr potions, so lengthening one would lock the potions
+            // out for longer - a drawback, which no card carries. Read from the game's assets on
+            // 2026-09-14: every other buff mead has an empty category.
+            if (!string.IsNullOrEmpty(se.m_category)) return false;
 
             if (se.m_healthUpFront != 0f || se.m_healthOverTime != 0f || se.m_healthPerTick != 0f) return false;
             if (se.m_staminaUpFront != 0f || se.m_staminaOverTime != 0f) return false;
@@ -68,9 +82,11 @@ namespace Rist
         {
             _keep = null;
             if (!RistConfig.Enabled.Value || !ReferenceEquals(__instance, Player.m_localPlayer)) return;
-            if (!IsBuffMead(item) || Effects.TotalFor(FullCask) <= 0f) return;
+            // The capstone's catalogue value is the chance itself, 0.25 by default.
+            var chance = Mathf.Clamp01(Effects.TotalFor(FullCask));
+            if (chance <= 0f || !IsBuffMead(item)) return;
 
-            if (Random.value < KeepChance) _keep = item;
+            if (Random.value < chance) _keep = item;
         }
 
         [HarmonyPatch(typeof(Player), nameof(Player.ConsumeItem))]

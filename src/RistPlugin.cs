@@ -94,11 +94,14 @@ namespace Rist
             Patch(typeof(AnsweringBlow.Spend));
             Patch(typeof(LowDraw.Scope));
             Patch(typeof(LowDraw.Draw));
+            Patch(typeof(SilentString.Scope));
+            Patch(typeof(SilentString.Launch));
             Patch(typeof(LowDraw.Crouch));
             Patch(typeof(UnseenBlow));
             Patch(typeof(DeepDraught));
             Patch(typeof(DeepDraught.Keep));
             Patch(typeof(Oathbound));
+            Patch(typeof(Oathbound.Reset));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -346,6 +349,9 @@ namespace Rist
             // The three numbers other players read off this character. Throttled inside, and
             // silent until the server has said what the level is.
             Nameplate.Publish(player);
+
+            // A shared forsaken-power minute that arrived a moment before its effect.
+            Oathbound.Tick();
 
             // The compendium bar needs its fifth tab put back whenever the inventory window
             // is rebuilt. The extra rows and the backdrop behind them are Core's, because two
