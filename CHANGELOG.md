@@ -28,8 +28,8 @@ ranks are kept and now take effect.
 
 ### Changed
 
-- **The rists panel stands the runestones in ættir.** Breath, Blade, Hide and Road: towers two
-  stones wide under a heading and a carved count, side by side. It fits the screen it is on
+- **The rists panel stands the runestones in ættir.** Combat, Survival, Endurance, Stealth and
+  Utility: towers two stones wide under a heading and a carved count, side by side. It fits the screen it is on
   instead of being a fixed width, so it no longer runs off the bottom of a short window, and a new
   ætt adds a tower to the right instead of a row. On smaller screens it tries smaller stones, then
   lays the ættir down, and only then drops the value line from the tiles; it never scrolls. The stone

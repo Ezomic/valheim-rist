@@ -84,15 +84,6 @@
 # between ættir never touches anyone's ranks. It does change this file, and the file is part
 # of what Core's gate compares, so client and server need the same copy.
 
-== Breath
-
-oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | m_staggerModifier         | -0.15 | U
-tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | m_runStaminaDrainModifier | -0.15 | A
-longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_runStaminaDrainModifier | -0.05 | L
-swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
-brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q
-surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
-
 # Valheim has no attack-speed stat: SE_Stats carries no such field and SEMan has no
 # ModifyAttackSpeed among its hooks, because swing speed comes off the animator. These
 # three ride a patch on Attack.Start instead - see AttackSpeed.cs - and are split by what
@@ -108,10 +99,10 @@ surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageM
 # ever sped up the release. The draw is scaled where that percentage is read, which moves
 # damage, spread, arrow speed, the reticle and the bow's bend together.
 #
-# Sure hand stands under Road rather than here, with the other work done along the way:
-# tools, and what you learn.
+# Sure hand is not here: it speeds tools as well as the axe in a fight, and stands under
+# Utility with the other work done along the way.
 
-== Blade
+== Combat
 
 steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | m_timedBlockBonus         | 0.20 | P
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | m_damageModifier          | 0.05 | Z
@@ -119,12 +110,28 @@ keenedge    | Keen edge      | The blow goes deeper.             | m_damageModif
 turnedblade | Turned blade   | The parry answers back.           | m_timedBlockBonus        | 0.08  | m_blockStaminaUseModifier | -0.08 | X
 quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | m_damageModifier          | 0.05 | Y
 
-# Hide in both senses: what a blow meets, and not being seen.
+# What keeps you alive through a hit or a fall.
 
-== Hide
+== Survival
 
 thickhide   | Thick-hided    | Blows land shallower.             | m_addArmor               | 2     | m_staggerModifier         | -0.08 | H
 steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.06 | m_addArmor                | 2 | E
+swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
+surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
+
+# How long you can keep going, and how much you carry while you do.
+
+== Endurance
+
+oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | m_staggerModifier         | -0.15 | U
+tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | m_runStaminaDrainModifier | -0.15 | A
+longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_runStaminaDrainModifier | -0.05 | L
+brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q
+
+# Stealth is negative on purpose; see the sign conventions above.
+
+== Stealth
+
 softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | -0.08 | m_noiseModifier           | -0.10 | I
 quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifier          | -0.08 | m_stealthModifier         | -0.10 | N
 
@@ -149,7 +156,7 @@ quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifi
 # still cannot point high enough. It used to be a tacking bonus on the sail, which only made
 # the card's own job more so; rowing answers the same annoyance from the other end.
 
-== Road
+== Utility
 
 longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | m_runStaminaDrainModifier | -0.06 | R
 farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *exploreradius            | 0.10 | F

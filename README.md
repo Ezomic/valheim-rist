@@ -69,8 +69,8 @@ in every session and on every machine. A rank cuts one more rune into the rim. T
 the field follows the cursor and says what the stone is worth now, what the next rank would make
 it, what sits at the bottom of its track, and the character level that bought each rank.
 
-The stones stand in four ættir, Breath, Blade, Hide and Road: towers two stones wide and up to
-four tall, each under its name and a count of how many in it are carved. A new theme adds a tower
+The stones stand in five ættir, Combat, Survival, Endurance, Stealth and Utility: towers two
+stones wide and up to four tall, each under its name and a count of how many in it are carved. A new theme adds a tower
 to the right rather than a row at the bottom, so the panel grows into the width a wide screen has
 spare. It used to be one field a fixed number of columns across, and at twenty-one runestones it
 ran off the bottom of a short window.

@@ -462,7 +462,7 @@ namespace Rist
                 var line = raw.Trim();
                 if (line.Length == 0 || line[0] == '#') continue;
 
-                // "== Blade" starts an ætt. Checked before the field split, since a header has
+                // "== Combat" starts an ætt. Checked before the field split, since a header has
                 // no pipes and would otherwise be reported as a card with too few fields.
                 if (line.StartsWith("==", StringComparison.Ordinal))
                 {
