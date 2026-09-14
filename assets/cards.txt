@@ -19,13 +19,23 @@
 #   *attackspeed:magic      a staff casts faster
 #   *damage:ranged          more damage from bows and crossbows only
 #   *unbroken               a hit cannot stagger you out of a cast before it fires (value 1)
+#   *answer                 a perfect dodge makes your next hit within 4 seconds stronger
+#   *answer:stagger         that answering blow staggers what a parry would (value 1)
+#   *lowdraw                seconds of a bow draw from a crouch that still count as sneaking
+#   *lowdraw:whole          the whole draw from a crouch counts as sneaking (value 1)
+#   *sneakattack            multiplies a weapon's own sneak attack bonus
+#   *sneakattack:stagger    a sneak attack on an unalerted creature staggers it (value 1)
+#   *mead:duration          buff meads last longer (not healing, not movement)
+#   *mead:fullcask          one buff mead in four is not used up (value 1)
+#   *power:cooldown         the forsaken power's cooldown, negative is shorter
+#   *power:duration         seconds added to your own forsaken power blessing
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
 #
 # Rank 5 is meant to be the moment, so a capstone should be an unlock rather than a larger
 # number wherever the game gives us one: a row of inventory, immunity to falling, levels in
-# every skill. Four of them do that. Nothing anywhere carries a drawback, on purpose - a
+# every skill, a stagger. Several do that now. Nothing anywhere carries a drawback, on purpose - a
 # choice you regret is a choice that stops you playing.
 #
 # NO CARD GRANTS AN INVENTORY ROW ANY MORE, and *inventoryrow is left in the code rather
@@ -123,6 +133,11 @@ turnedblade | Turned blade   | The parry answers back.           | m_timedBlockB
 quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *damage:ranged            | 0.05 | Y
 quickchant  | Quick chant    | The chant is done before the staff is raised.| *attackspeed:magic | 0.03 | *unbroken          | 1    | T
 
+# Answering blow is armed by the game's own perfect-dodge check and spent on the next enemy
+# you hit, applied to that one hit rather than as a damage field, so a sweep cannot carry it
+# to every target. The capstone staggers only what a parry would, and never a boss.
+answeringblow | Answering blow | Slip the blow, then make them pay for it. | *answer | 0.10 | *answer:stagger | 1 | C
+
 # What keeps you alive through a hit or a fall.
 
 == Survival
@@ -141,10 +156,22 @@ tireless    | Tireless       | The day does not wear on you.     | *stamina:move
 longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_runStaminaDrainModifier | -0.05 | L
 brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q
 
+# A buff mead is decided from the item, not a name list: not food, an SE_Stats effect, and
+# restoring nothing. Movement meads are left alone, since move speed has one source here.
+deepdraught | Deep draught   | A long pull lasts a long way.     | *mead:duration           | 0.10  | *mead:fullcask            | 1 | V
+
 # Stealth is negative on purpose; see the sign conventions above.
 
 == Stealth
 
+# The game stands you up to draw a bow, and stealth only counts a crouch it can see, so a
+# drawn bow used to give you away whatever your Sneak. Low draw tells the stealth update you
+# are still crouched while you draw from a crouch toggle, and through the shot that ends a
+# qualifying draw; the character still rises on screen.
+# Unseen blow raises a weapon's own sneak attack bonus before the hit leaves, so it only ever
+# helps a weapon that has one.
+lowdraw     | Low draw       | The deer never hears the string.  | *lowdraw                 | 0.5   | *lowdraw:whole            | 1 | G
+unseenblow  | Unseen blow    | The first cut lands before they know.| *sneakattack          | 0.10  | *sneakattack:stagger      | 1 | B
 softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | -0.08 | m_noiseModifier           | -0.10 | I
 quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifier          | -0.08 | m_stealthModifier         | -0.10 | N
 
@@ -177,3 +204,8 @@ tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedMo
 weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *rowspeed                 | 0.20 | W
 surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | m_staminaRegenMultiplier  | 0.12 | J
 quickstudy  | Quick study    | Lessons stick the first time.     | m_raiseSkillModifier     | 0.05  | m_skillLevelModifier      | 2 | M
+
+# The forsaken power. The cooldown cut applies when you cast, and has a floor of half. The
+# extra minute is on your own blessing; players beside you get the game's duration. All 26
+# Latin sigils are spoken for at this card, so it shares H with Thick-hided, in another tower.
+oathbound   | Oath-bound     | The old ones answer sooner.       | *power:cooldown          | -0.05 | *power:duration           | 60 | H

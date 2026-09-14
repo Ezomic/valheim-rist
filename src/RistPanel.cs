@@ -95,8 +95,9 @@ namespace Rist
         /// Richest first. A full tile at a smaller stone beats a bare tile at a big one, and
         /// lying ættir keep full tiles, so both come before Compact. Standing width counts
         /// ættir, not stones: a 2560 window holds seven full ættir (56 stones) on the first
-        /// rung and a 1920x1080 screen five (40), at the 142px cell floor. Everything below the
-        /// first rung is for smaller screens.
+        /// rung and a 1920x1080 screen five (40), with cells up to 146px wide. The log line on
+        /// open names the rung each screen actually took. Everything below the first rung is for
+        /// smaller screens.
         /// </summary>
         private static readonly Rung[] Ladder =
         {
@@ -284,11 +285,17 @@ namespace Rist
             {
                 l.CellW = _cellWFull;
                 l.CellH = s + 42f;          // stone, 4 gap, name 20, value 18
-                l.ColGap = 12f;
+
+                // 10 and 18, not the mockup's 12 and 24. The cell is measured from the widest
+                // value line, which came out 146 rather than 142 in game, and at 146 five standing
+                // towers needed 1616px of a 1920 screen's 1582 - so 1080p players were quietly
+                // dropped to lying 78px stones, the one layout the towers were chosen to avoid.
+                // These gaps fit five towers at a 146 cell exactly, and at 142 with 40px to spare.
+                l.ColGap = 10f;
                 l.RowGap = 14f;
                 l.HeadingH = 32f;
                 l.RuleAt = 22f;
-                l.Gutter = 24f;
+                l.Gutter = 18f;
                 l.BandGap = 20f;
             }
 

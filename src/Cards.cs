@@ -84,7 +84,7 @@ namespace Rist
         /// Effects stored as a positive amount of benefit but read by a player as something
         /// shrinking. Weatherly's value is how much of the dead zone is taken away, and
         /// "+6% dead zone" would say the zone grows. Shown with the sign turned, so the tile
-        /// reads "-6% dead zone" the same way the stamina cards read "-5% movement stamina".
+        /// reads "-6% dead zone" the same way the stamina cards read "-5% move stamina".
         ///
         /// Display only. The catalogue and every consumer keep the positive fraction, so
         /// LowerIsBetter and the ConeNarrowing clamp are untouched.
@@ -234,7 +234,7 @@ namespace Rist
         /// </summary>
         internal static bool ReadsAsRawFraction(string effect, float value)
         {
-            if (string.IsNullOrEmpty(effect) || Percent.Contains(effect)) return false;
+            if (string.IsNullOrEmpty(effect) || Percent.Contains(effect) || Seconds.Contains(effect)) return false;
             if (Mathf.Abs(value) >= 1f) return false;
             return !Mathf.Approximately(value, Mathf.Round(value));
         }
@@ -275,6 +275,7 @@ namespace Rist
             "m_swimStaminaUseModifier", "m_jumpStaminaUseModifier", "m_sneakStaminaUseModifier",
             "m_dodgeStaminaUseModifier", "*stamina:move", "*stamina:fight",
             "m_fallDamageModifier", "m_stealthModifier", "m_noiseModifier", "m_staggerModifier",
+            Oathbound.Cooldown,
         };
 
         internal static bool PointsAtDrawback(string effect, float value)
@@ -307,7 +308,7 @@ namespace Rist
             // Not "stealth". The field scales how far away a creature sees you while you crouch,
             // so the card that helps carries a negative number, and "-40% stealth" reads as the
             // opposite of what it does.
-            { "m_stealthModifier", "sneak visibility" },
+            { "m_stealthModifier", "detection" },
             { "m_noiseModifier", "noise" },
             { "m_staggerModifier", "stagger taken" },
             { "m_raiseSkillModifier", "skill gain" },
@@ -317,7 +318,7 @@ namespace Rist
             { "m_dodgeStaminaUseModifier", "dodge stamina" },
             { "m_swimSpeedModifier", "swim speed" },
             { "m_timedBlockBonus", "parry bonus" },
-            { "*stamina:move", "movement stamina" },
+            { "*stamina:move", "move stamina" },
             { "*stamina:fight", "combat stamina" },
             { AttackSpeed.Melee, "melee speed" },
             { AttackSpeed.Tools, "tool speed" },
@@ -325,6 +326,16 @@ namespace Rist
             { AttackSpeed.Magic, "cast speed" },
             { AttackSpeed.UnbrokenCast, "a hit cannot break a cast" },
             { RangedDamage.Key, "bow and crossbow damage" },
+            { AnsweringBlow.Bonus, "answering blow" },
+            { AnsweringBlow.Stagger, "the answering blow staggers" },
+            { LowDraw.Seconds, "s unseen draw" },
+            { LowDraw.Whole, "the whole draw counts as sneaking" },
+            { UnseenBlow.Bonus, "sneak attack" },
+            { UnseenBlow.Stagger, "an ambush staggers" },
+            { DeepDraught.Duration, "mead duration" },
+            { DeepDraught.FullCask, "1 mead in 4 is not used up" },
+            { Oathbound.Cooldown, "power cooldown" },
+            { Oathbound.Duration, "s of forsaken power" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -336,7 +347,8 @@ namespace Rist
             "m_raiseSkillModifier", "m_speedModifier", "m_damageModifier",
             "m_dodgeStaminaUseModifier", "m_swimSpeedModifier", "m_timedBlockBonus",
             AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged, AttackSpeed.Magic,
-            RangedDamage.Key,
+            RangedDamage.Key, AnsweringBlow.Bonus, UnseenBlow.Bonus, DeepDraught.Duration,
+            Oathbound.Cooldown,
             "*stamina:move", "*stamina:fight",
             // Every one of these is a fraction the card means as a percentage, and leaving one
             // out does not fail - it prints the raw number instead. 1.3.0 shipped four that way:
@@ -356,6 +368,9 @@ namespace Rist
         {
             "*inventoryrow", AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged,
             AttackSpeed.Magic, AttackSpeed.UnbrokenCast, RangedDamage.Key,
+            AnsweringBlow.Bonus, AnsweringBlow.Stagger, LowDraw.Seconds, LowDraw.Whole,
+            UnseenBlow.Bonus, UnseenBlow.Stagger, DeepDraught.Duration, DeepDraught.FullCask,
+            Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             "*stamina:move", "*stamina:fight",
         };
@@ -366,7 +381,17 @@ namespace Rist
         /// </summary>
         private static readonly HashSet<string> Unlocks = new HashSet<string>
         {
-            AttackSpeed.UnbrokenCast,
+            AttackSpeed.UnbrokenCast, AnsweringBlow.Stagger, LowDraw.Whole, UnseenBlow.Stagger,
+            DeepDraught.FullCask,
+        };
+
+        /// <summary>
+        /// Effects counted in seconds. Printed as a plain number beside their "s" label, and
+        /// exempt from the raw-fraction warning, since half a second is meant as half a second.
+        /// </summary>
+        private static readonly HashSet<string> Seconds = new HashSet<string>
+        {
+            LowDraw.Seconds, Oathbound.Duration,
         };
     }
 

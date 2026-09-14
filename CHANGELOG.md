@@ -12,6 +12,21 @@ and the mod uses [semantic versioning](https://semver.org).
   projectile of it for a staff that fires several. Staffs that fire several projectiles per cast
   fire all of them at the faster speed. A looping staff that pays its eitr once per hold is not
   sped up, since that would be free projectiles rather than a faster cast.
+- **Answering blow**, in Combat: a perfect dodge with an enemy nearby arms your next hit on an enemy
+  for 4 seconds, 10% more damage a rank. At rank 5 that hit staggers anything a parry would, never a
+  boss.
+- **Low draw**, in Stealth: drawing a bow from a crouch still counts as sneaking for the first half
+  second of the draw a rank, and for the whole draw at rank 5, along with the shot itself. The game
+  stands you up to draw and used to stop counting you as sneaking; the character still rises.
+- **Unseen blow**, in Stealth: sneak attacks hit 10% harder a rank, with weapons that have a sneak
+  attack. At rank 5 a sneak attack staggers the creature, once per creature every five minutes.
+- **Deep draught**, in Endurance: buff meads last 10% longer a rank. At rank 5 one mead in four is
+  not used up. Healing and movement meads are not affected.
+- **Oath-bound**, in Utility: the forsaken power's cooldown is 5% shorter a rank. At rank 5 your own
+  blessing lasts a minute longer, unless the power changes how you move.
+- Soft step's tile reads "detection" and Tireless's reads "move stamina", and the panel's cells and
+  towers sit a little closer. The longest value line was widening every cell, which on a 1920x1080
+  screen pushed five towers off their full-size layout onto small lying stones.
 
 ### Changed
 

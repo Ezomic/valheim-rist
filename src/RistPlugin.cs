@@ -90,6 +90,15 @@ namespace Rist
             Patch(typeof(AttackSpeed.Reload));
             Patch(typeof(AttackSpeed.Unbroken));
             Patch(typeof(RangedDamage));
+            Patch(typeof(AnsweringBlow.Arm));
+            Patch(typeof(AnsweringBlow.Spend));
+            Patch(typeof(LowDraw.Scope));
+            Patch(typeof(LowDraw.Draw));
+            Patch(typeof(LowDraw.Crouch));
+            Patch(typeof(UnseenBlow));
+            Patch(typeof(DeepDraught));
+            Patch(typeof(DeepDraught.Keep));
+            Patch(typeof(Oathbound));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
