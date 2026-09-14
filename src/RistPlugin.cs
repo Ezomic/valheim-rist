@@ -25,7 +25,7 @@ namespace Rist
     {
         public const string PluginGuid = "ezomic.valheim.rist";
         public const string PluginName = "Rist";
-        public const string PluginVersion = "1.3.1";
+        public const string PluginVersion = "1.4.0";
         public const string PluginAuthor = "Robbin Thijssen";
 
         /// <summary>Core's plugin GUID. Optional - see TryRegisterWithCore.</summary>
