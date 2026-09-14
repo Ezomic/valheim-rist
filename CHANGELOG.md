@@ -3,6 +3,13 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Changed
+
+- The rists panel sits at the top of the screen instead of in the middle, so a short field no
+  longer floats with empty space above it.
+
 ## [1.4.0] - 2026-09-14
 
 **Six runestones did not do what their tile said.** Tireless, Long wind, Long stride and Quick

@@ -35,7 +35,14 @@ namespace Rist
     internal static class RistPanel
     {
         private const float SideMargin = 24f;
-        private const float TopMargin = 20f;
+
+        /// <summary>
+        /// The panel hangs from here rather than being centred on the screen. Centred, a short
+        /// field of three-tall towers sat a third of the way down a tall window with a band of
+        /// empty void above it, which read as a dialog floating in space rather than a page.
+        /// Top-anchored is also where the eye starts, and it stays put as ættir grow.
+        /// </summary>
+        private const float TopMargin = 40f;
         private const float BottomMargin = 20f;
         private const float HeaderH = 57f;
 
@@ -309,7 +316,7 @@ namespace Rist
             l.Fits = l.FieldW <= availW && l.TotalH <= availH;
 
             l.X0 = Mathf.Floor((screenW - l.BoardW) * 0.5f);
-            l.Y0 = Mathf.Floor(TopMargin + Mathf.Max(0f, availH - l.TotalH) * 0.5f);
+            l.Y0 = TopMargin;
             return l;
         }
 
