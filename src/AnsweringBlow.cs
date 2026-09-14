@@ -73,7 +73,7 @@ namespace Rist
 
                 // The RPC carries no attacker, and the game counts a friend with PvP on swinging
                 // through you as a perfect dodge too. Without this, two players could roll
-                // through each other's swings to arm a guaranteed stagger on demand. Requiring an
+                // through each other's swings to arm a bonus hit on demand. Requiring an
                 // enemy close by keeps every real dodge and ends the trick outside a fight.
                 if (!EnemyNear(__instance)) return;
 
@@ -122,11 +122,15 @@ namespace Rist
                 var bonus = Effects.TotalFor(Bonus);
                 if (bonus > 0f) hit.m_damage.Modify(1f + bonus);
 
+                // A chance, not a certainty: the capstone's value in the catalogue is the chance,
+                // 0.30 by default, Robbin's number. It was a guaranteed stagger for one commit.
+                //
                 // Staggers only what a parry would. Humanoid.BlockAttack staggers a blocked
                 // attacker on m_staggerWhenBlocked alone, so that is the whole test - plus never a
                 // boss, which a parry does not exclude and this card does.
-                if (Effects.TotalFor(Stagger) > 0f && __instance.m_staggerWhenBlocked &&
-                    !Bosses.Is(__instance))
+                var chance = Mathf.Clamp01(Effects.TotalFor(Stagger));
+                if (chance > 0f && __instance.m_staggerWhenBlocked && !Bosses.Is(__instance) &&
+                    Random.value < chance)
                     hit.m_staggerMultiplier = Mathf.Max(hit.m_staggerMultiplier, 100f);
             }
         }

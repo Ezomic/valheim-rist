@@ -20,7 +20,7 @@
 #   *damage:ranged          more damage from bows and crossbows only
 #   *unbroken               a hit cannot stagger you out of a cast before it fires (value 1)
 #   *answer                 a perfect dodge makes your next hit within 4 seconds stronger
-#   *answer:stagger         that answering blow staggers what a parry would (value 1)
+#   *answer:stagger         chance that answering blow staggers what a parry would (0.30 is 30%)
 #   *lowdraw                seconds of a bow draw from a crouch that still count as sneaking
 #   *lowdraw:whole          the whole draw from a crouch counts as sneaking (value 1)
 #   *sneakattack            multiplies a weapon's own sneak attack bonus
@@ -135,8 +135,8 @@ quickchant  | Quick chant    | The chant is done before the staff is raised.| *a
 
 # Answering blow is armed by the game's own perfect-dodge check and spent on the next enemy
 # you hit, applied to that one hit rather than as a damage field, so a sweep cannot carry it
-# to every target. The capstone staggers only what a parry would, and never a boss.
-answeringblow | Answering blow | Slip the blow, then make them pay for it. | *answer | 0.10 | *answer:stagger | 1 | C
+# to every target. The capstone is a 30% chance to stagger, only what a parry would, never a boss.
+answeringblow | Answering blow | Slip the blow, then make them pay for it. | *answer | 0.10 | *answer:stagger | 0.30 | C
 
 # What keeps you alive through a hit or a fall.
 

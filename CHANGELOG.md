@@ -13,8 +13,8 @@ and the mod uses [semantic versioning](https://semver.org).
   fire all of them at the faster speed. A looping staff that pays its eitr once per hold is not
   sped up, since that would be free projectiles rather than a faster cast.
 - **Answering blow**, in Combat: a perfect dodge with an enemy nearby arms your next hit on an enemy
-  for 4 seconds, 10% more damage a rank. At rank 5 that hit staggers anything a parry would, never a
-  boss.
+  for 4 seconds, 10% more damage a rank. At rank 5 that hit has a 30% chance to stagger anything a
+  parry would, never a boss.
 - **Low draw**, in Stealth: drawing a bow from a crouch still counts as sneaking for the first half
   second of the draw a rank, and for the whole draw at rank 5, along with the shot itself. The game
   stands you up to draw and used to stop counting you as sneaking; the character still rises.

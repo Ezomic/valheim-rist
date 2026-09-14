@@ -327,7 +327,7 @@ namespace Rist
             { AttackSpeed.UnbrokenCast, "a hit cannot break a cast" },
             { RangedDamage.Key, "bow and crossbow damage" },
             { AnsweringBlow.Bonus, "answering blow" },
-            { AnsweringBlow.Stagger, "the answering blow staggers" },
+            { AnsweringBlow.Stagger, "chance the answering blow staggers" },
             { LowDraw.Seconds, "s unseen draw" },
             { LowDraw.Whole, "the whole draw counts as sneaking" },
             { UnseenBlow.Bonus, "sneak attack" },
@@ -347,7 +347,7 @@ namespace Rist
             "m_raiseSkillModifier", "m_speedModifier", "m_damageModifier",
             "m_dodgeStaminaUseModifier", "m_swimSpeedModifier", "m_timedBlockBonus",
             AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged, AttackSpeed.Magic,
-            RangedDamage.Key, AnsweringBlow.Bonus, UnseenBlow.Bonus, DeepDraught.Duration,
+            RangedDamage.Key, AnsweringBlow.Bonus, AnsweringBlow.Stagger, UnseenBlow.Bonus, DeepDraught.Duration,
             Oathbound.Cooldown,
             "*stamina:move", "*stamina:fight",
             // Every one of these is a fraction the card means as a percentage, and leaving one
@@ -381,7 +381,7 @@ namespace Rist
         /// </summary>
         private static readonly HashSet<string> Unlocks = new HashSet<string>
         {
-            AttackSpeed.UnbrokenCast, AnsweringBlow.Stagger, LowDraw.Whole, UnseenBlow.Stagger,
+            AttackSpeed.UnbrokenCast, LowDraw.Whole, UnseenBlow.Stagger,
             DeepDraught.FullCask,
         };
 

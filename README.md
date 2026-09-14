@@ -172,7 +172,7 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*damage:ranged` | More damage from bows and crossbows only. A fraction: `0.05` is 5% |
 | `*unbroken` | A hit cannot stagger you out of a staff cast before the spell fires. A flag: write `1` |
 | `*answer` | A perfect dodge arms your next hit on an enemy within 4 seconds. A fraction of that hit's damage |
-| `*answer:stagger` | That answering blow staggers anything a parry would, never a boss. A flag: write `1` |
+| `*answer:stagger` | Chance that the answering blow staggers anything a parry would, never a boss. A fraction: `0.30` is 30% |
 | `*lowdraw` | Seconds of a bow draw from a crouch that still count as sneaking, and the shot that ends such a draw. The character still rises to draw |
 | `*lowdraw:whole` | The whole bow draw from a crouch, and its shot, count as sneaking. A flag: write `1` |
 | `*sneakattack` | Raises a weapon's own sneak attack multiplier. A fraction: `0.10` is 10% more. Weapons with no sneak attack gain none |
