@@ -15,7 +15,10 @@
 #   *stamina:fight          attacking and blocking both cost less
 #   *attackspeed:melee      swings faster with a weapon
 #   *attackspeed:tools      swings faster with a pickaxe, hammer, hoe or cultivator
-#   *attackspeed:ranged     a bow reaches full draw sooner; a crossbow fires faster
+#   *attackspeed:ranged     a bow reaches full draw sooner, a crossbow reloads sooner, and both fire faster
+#   *attackspeed:magic      a staff casts faster
+#   *damage:ranged          more damage from bows and crossbows only
+#   *unbroken               a hit cannot stagger you out of a cast before it fires (value 1)
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
@@ -91,13 +94,22 @@
 #
 # The axe counts as a tool, so Sure hand speeds both chopping and axe combat - it is one
 # item with one animation and had to be one card or the other. A staff is ElementalMagic or
-# BloodMagic and no card covers it; casting stays at vanilla speed.
+# BloodMagic, and Quick chant is its card.
 #
 # Quick draw on a bow is a second patch, because the animator is not what a draw waits on.
 # Humanoid.GetAttackDrawPercentage divides a timer counted in fixed updates by the bow's draw
 # duration, and no animation speed touches that timer, so the Attack.Start patch alone only
 # ever sped up the release. The draw is scaled where that percentage is read, which moves
 # damage, spread, arrow speed, the reticle and the bow's bend together.
+#
+# The same card reloads a crossbow sooner, because a bow's draw and a crossbow's reload are
+# the same wait to the person holding the weapon; Windlass was designed as its own card and
+# folded in here. Its capstone is damage from bows and crossbows only. It used to be
+# m_damageModifier, which Rist applies to every skill, so it was a second Keen edge.
+#
+# Quick chant's burst staffs have their burst clock sped with the animation, or a faster cast
+# ends before its last projectiles fire. A looping staff that pays eitr once per hold is left
+# at vanilla speed, since a faster loop there is free projectiles rather than a faster cast.
 #
 # Sure hand is not here: it speeds tools as well as the axe in a fight, and stands under
 # Utility with the other work done along the way.
@@ -108,7 +120,8 @@ steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fi
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | m_damageModifier          | 0.05 | Z
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
 turnedblade | Turned blade   | The parry answers back.           | m_timedBlockBonus        | 0.08  | m_blockStaminaUseModifier | -0.08 | X
-quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | m_damageModifier          | 0.05 | Y
+quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *damage:ranged            | 0.05 | Y
+quickchant  | Quick chant    | The chant is done before the staff is raised.| *attackspeed:magic | 0.03 | *unbroken          | 1    | T
 
 # What keeps you alive through a hit or a fall.
 

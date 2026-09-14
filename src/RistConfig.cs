@@ -318,12 +318,15 @@ namespace Rist
                 "Server-side only; the ledger exists nowhere else.");
 
             AttackSpeedMax = cfg.Bind("Cards", "AttackSpeedMax", 1f,
-                "Ceiling on the attack-speed cards, as a fraction. 1 means a swing animation " +
-                "can at most run at double speed, and a bow can at most draw in half its time.\n" +
+                "Ceiling on the attack-speed cards, as a fraction. 1 means a swing or cast " +
+                "animation can at most run at double speed, a bow can at most draw in half its " +
+                "time, and a crossbow can at most reload in half its time. A staff that fires " +
+                "several projectiles per cast has its burst spacing shortened by the same capped " +
+                "amount, so its last bursts still land inside the faster cast.\n" +
                 "On a swing this multiplies an animation rather than a number in a table, and " +
                 "animation events are what land the hit, so a mis-typed catalogue line could " +
-                "otherwise run the whole character at twenty times speed. On a bow it divides " +
-                "the draw time, so the same typo would make every shot a full draw.");
+                "otherwise run the whole character at twenty times speed. On a bow or crossbow it " +
+                "divides the draw or reload time, so the same typo would make every shot instant.");
 
             // PanelColumns used to be bound here, and it is gone rather than kept doing nothing.
             // The panel no longer takes a column count: it stands the rists in ættir and works

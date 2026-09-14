@@ -3,6 +3,25 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- **Quick chant**, in Combat: staffs cast 3% faster a rank, both Elemental and Blood magic. Its
+  capstone means a hit cannot stagger you out of a cast until the spell has left the staff, every
+  projectile of it for a staff that fires several. Staffs that fire several projectiles per cast
+  fire all of them at the faster speed. A looping staff that pays its eitr once per hold is not
+  sped up, since that would be free projectiles rather than a faster cast.
+
+### Changed
+
+- **Quick draw now reloads a crossbow faster too**, at the same 3% a rank it draws a bow. The
+  crossbow's reload is most of its firing cycle, and the card used to leave it alone.
+- **Quick draw's capstone is bow and crossbow damage.** It was 5% damage to every weapon, the same
+  as Keen edge. A fully carved Quick draw no longer adds 5% to melee.
+- `AttackSpeedMax` now also caps how much Quick draw shortens a crossbow's reload and how fast Quick
+  chant runs a cast, and its description in the cfg says so.
+
 ## [1.4.1] - 2026-09-14
 
 ### Changed

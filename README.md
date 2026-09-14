@@ -167,7 +167,10 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*stamina:fight` | Attacking and blocking both cost less |
 | `*attackspeed:melee` | Faster swings with a weapon |
 | `*attackspeed:tools` | Faster swings with a pickaxe, axe, hammer, hoe or cultivator |
-| `*attackspeed:ranged` | A bow reaches full draw sooner and releases faster; a crossbow fires faster. The crossbow's reload is untouched |
+| `*attackspeed:ranged` | A bow reaches full draw sooner, a crossbow reloads sooner, and both fire faster |
+| `*attackspeed:magic` | A staff casts faster. A staff firing several projectiles per cast has its burst timing sped to match; a looping staff that pays eitr once per hold stays at vanilla speed |
+| `*damage:ranged` | More damage from bows and crossbows only. A fraction: `0.05` is 5% |
+| `*unbroken` | A hit cannot stagger you out of a staff cast before the spell fires. A flag: write `1` |
 | `*exploreradius` | The map reveals a wider circle as you walk. A fraction: `0.05` is 5% further |
 | `*windcone` | Narrows the sailing dead zone and turns the sail's push toward the bow inside the arc it opens, so you can sail closer to the wind. Sailing dead upwind still stalls. A fraction of the zone, capped at `0.8`. Only applies to a ship you are steering, and the wind ring's dead zone narrows to match |
 | `*rowspeed` | Rows faster, forward and back. A fraction of top rowing speed: `0.20` is 20% faster. Only applies to a ship you are steering |
@@ -218,7 +221,7 @@ If a change appears to do nothing, check the file.
 | `MaxRank` | `5` | How deep one runestone goes, and how many slots its track shows |
 | `BonusEvery` | `5` | Ranks between capstones |
 | `PanelBottomInset` | `0` | Pixels at the bottom of the screen the panel keeps clear, for a taskbar over the game window. About `48` clears a Windows taskbar. Stays local on a server |
-| `AttackSpeedMax` | `1` | Ceiling on the attack-speed specials, as a fraction. `1` means the animation can at most run at double speed |
+| `AttackSpeedMax` | `1` | Ceiling on the attack-speed specials, as a fraction. `1` means a swing or cast can at most run at double speed, and a bow draw or crossbow reload can at most take half its time |
 | `ReconcileMaxLoss` | `0.34` | How much of the ledger's runestone history may vanish from `cards.txt` in one go before the server refuses to reconcile at all, as a fraction of the distinct ids players hold. Server-side only |
 
 `ReconcileMaxLoss` is worth understanding before you edit the catalogue. Removing a runestone

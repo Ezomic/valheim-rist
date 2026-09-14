@@ -98,6 +98,10 @@ namespace Rist
         {
             if (!Labels.TryGetValue(effect, out var label)) label = effect;
 
+            // An unlock has no amount worth printing: "+1 a hit cannot break a cast" says
+            // nothing the label does not. The value is only a flag that it is carved.
+            if (Unlocks.Contains(effect)) return label;
+
             if (ShownAsReduction.Contains(effect)) total = -total;
 
             if (Percent.Contains(effect))
@@ -317,7 +321,10 @@ namespace Rist
             { "*stamina:fight", "combat stamina" },
             { AttackSpeed.Melee, "melee speed" },
             { AttackSpeed.Tools, "tool speed" },
-            { AttackSpeed.Ranged, "draw speed" },
+            { AttackSpeed.Ranged, "draw and reload" },
+            { AttackSpeed.Magic, "cast speed" },
+            { AttackSpeed.UnbrokenCast, "a hit cannot break a cast" },
+            { RangedDamage.Key, "bow and crossbow damage" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -328,7 +335,8 @@ namespace Rist
             "m_fallDamageModifier", "m_stealthModifier", "m_noiseModifier", "m_staggerModifier",
             "m_raiseSkillModifier", "m_speedModifier", "m_damageModifier",
             "m_dodgeStaminaUseModifier", "m_swimSpeedModifier", "m_timedBlockBonus",
-            AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged,
+            AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged, AttackSpeed.Magic,
+            RangedDamage.Key,
             "*stamina:move", "*stamina:fight",
             // Every one of these is a fraction the card means as a percentage, and leaving one
             // out does not fail - it prints the raw number instead. 1.3.0 shipped four that way:
@@ -347,8 +355,18 @@ namespace Rist
         internal static readonly HashSet<string> Specials = new HashSet<string>
         {
             "*inventoryrow", AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged,
+            AttackSpeed.Magic, AttackSpeed.UnbrokenCast, RangedDamage.Key,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             "*stamina:move", "*stamina:fight",
+        };
+
+        /// <summary>
+        /// Effects that are a thing you can now do rather than an amount - shown as their label
+        /// alone. Written in the catalogue with a value of 1.
+        /// </summary>
+        private static readonly HashSet<string> Unlocks = new HashSet<string>
+        {
+            AttackSpeed.UnbrokenCast,
         };
     }
 
