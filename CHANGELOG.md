@@ -29,8 +29,8 @@ and the mod uses [semantic versioning](https://semver.org).
   Healing Meads, the Minor and Medium Stamina Meads or the Minor Eitr Mead, which restore. A longer
   Lingering mead also keeps its matching potions locked out for longer.
 - **Oath-bound**, in Utility: the forsaken power's cooldown is 5% shorter a rank. At rank 5 the
-  blessing lasts a minute longer for everyone it reaches when you cast it, unless the power changes
-  how you move. Cast by someone without it, it lasts the normal time for everyone.
+  blessing lasts a minute longer for everyone it reaches when you cast it, for every power. Cast by
+  someone without it, it lasts the normal time for everyone.
 - Soft step's tile reads "detection" and Tireless's reads "move stamina", and the panel's cells and
   towers sit a little closer. The longest value line was widening every cell, which on a 1920x1080
   screen pushed five towers off their full-size layout onto small lying stones.

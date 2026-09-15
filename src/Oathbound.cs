@@ -23,8 +23,12 @@ namespace Rist
     /// them there by RPC - so the caster cannot lengthen them directly. It sends each of those
     /// players a Rist RPC naming the power and the seconds, and their Rist sets the effect it just
     /// received to the power's own duration plus those seconds. The receiver checks the effect really is a forsaken power and
-    /// caps the seconds, so a changed client cannot hand out hour-long blessings. A power that
-    /// changes movement is never stretched, on either side - move speed has one source here.
+    /// caps the seconds, so a changed client cannot hand out hour-long blessings.
+    ///
+    /// Every power gets the minute, Moder's included, although Moder's carries +10% move speed
+    /// (read from the game's assets, 2026-09-15; it is the only one of the seven that does).
+    /// It skipped movement powers under the one-move-speed-source rule for a day, and Robbin
+    /// took that out: the speed is the power's own, only lasting longer.
     /// </summary>
     internal static class Oathbound
     {
@@ -141,13 +145,6 @@ namespace Rist
             // the running copy, and only one with a duration.
             var prefab = ObjectDB.instance != null ? ObjectDB.instance.GetStatusEffect(hash) : null;
             if (prefab == null || !prefab.name.StartsWith("GP_") || running.m_ttl <= 0f) return true;
-
-            if (Movement.Changes(running as SE_Stats))
-            {
-                if (RistConfig.Verbose.Value)
-                    RistPlugin.Log.LogInfo("Oath-bound left " + prefab.name + " at its own duration: it changes movement.");
-                return true;
-            }
 
             // Set, never added. The game refreshes a running power by zeroing its timer and
             // leaving m_ttl alone, so adding would stack a minute per carver per cast - and let a

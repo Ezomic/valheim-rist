@@ -213,6 +213,6 @@ quickstudy  | Quick study    | Lessons stick the first time.     | m_raiseSkillM
 
 # The forsaken power. The cooldown cut applies when you cast, and has a floor of half. The
 # extra minute goes to everyone the power reaches when the carver casts it, and to nobody when
-# someone without it casts. Not to a power that changes movement. All 26
+# someone without it casts. Every power, Moder's +10% move speed included. All 26
 # Latin sigils are spoken for at this card, so it shares H with Thick-hided, in another tower.
 oathbound   | Oath-bound     | The old ones answer sooner.       | *power:cooldown          | -0.05 | *power:duration           | 60 | H

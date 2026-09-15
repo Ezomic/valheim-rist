@@ -180,7 +180,7 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*mead:duration` | Buff meads last longer. A fraction. Every mead except the ones that restore health, stamina or eitr, so the Lingering meads, Tonic of Ratatosk and Lightfoot Mead are included |
 | `*mead:fullcask` | Chance a buff mead is not used up when drunk, rolled per drink. A fraction: `0.25` is 25% |
 | `*power:cooldown` | Shortens the forsaken power's cooldown. Negative is shorter, and it cannot go below half |
-| `*power:duration` | Seconds added to the forsaken power for every player it reaches when you cast it. A power cast by someone without it lasts the normal time for everyone. Not applied to a power that changes movement |
+| `*power:duration` | Seconds added to the forsaken power for every player it reaches when you cast it. A power cast by someone without it lasts the normal time for everyone. Applies to every forsaken power |
 | `*exploreradius` | The map reveals a wider circle as you walk. A fraction: `0.05` is 5% further |
 | `*windcone` | Narrows the sailing dead zone and turns the sail's push toward the bow inside the arc it opens, so you can sail closer to the wind. Sailing dead upwind still stalls. A fraction of the zone, capped at `0.8`. Only applies to a ship you are steering, and the wind ring's dead zone narrows to match |
 | `*rowspeed` | Rows faster, forward and back. A fraction of top rowing speed: `0.20` is 20% faster. Only applies to a ship you are steering |

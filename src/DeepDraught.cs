@@ -4,20 +4,6 @@ using UnityEngine;
 namespace Rist
 {
     /// <summary>
-    /// The test for "this status effect changes how you move". Oath-bound uses it to leave a
-    /// movement power at its own duration. Deep draught used to as well, and no longer does:
-    /// Robbin wanted every buff mead lengthened, speed and jump meads included.
-    /// </summary>
-    internal static class Movement
-    {
-        internal static bool Changes(SE_Stats se)
-        {
-            return se != null &&
-                   (se.m_speedModifier != 0f || se.m_windMovementModifier != 0f || se.m_jumpModifier != Vector3.zero);
-        }
-    }
-
-    /// <summary>
     /// Deep draught: buff meads last longer, and at rank five each has a 25% chance not to be
     /// used up - a roll per drink, not every fourth one.
     ///
@@ -67,7 +53,6 @@ namespace Rist
 
             var se = item.m_shared.m_consumeStatusEffect as SE_Stats;
             if (se == null || se.GetType() != typeof(SE_Stats) || se.m_ttl <= 0f) return false;
-
 
             if (se.m_healthUpFront != 0f || se.m_healthOverTime != 0f || se.m_healthPerTick != 0f) return false;
             if (se.m_staminaUpFront != 0f || se.m_staminaOverTime != 0f) return false;
