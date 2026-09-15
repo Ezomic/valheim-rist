@@ -53,8 +53,12 @@ namespace Rist
         /// The least the detail column can be drawn in: ætt, name, a flavour that wraps once,
         /// three rows, the carved-at track, and the take and close lines at its foot. A short
         /// field is stretched to this rather than the column being clipped.
+        ///
+        /// 376 rather than 340 since the rows wrap: NEXT and CAPSTONE can both take a second
+        /// line on the same stone, and each costs about 18px. Only a short field ever reaches
+        /// this - five standing towers are twice as tall.
         /// </summary>
-        private const float DetailMinH = 340f;
+        private const float DetailMinH = 376f;
 
         /// <summary>
         /// The three stone sizes and what is cut into each. Snapped rather than any integer so
@@ -583,12 +587,17 @@ namespace Rist
         /// taller than the Arial these were first cut for - at the smaller numbers every
         /// label lost its bottom half and the capstone line lost its descenders. Third time
         /// this exact mistake has been made in this file; the fix is always the same one.
+        ///
+        /// The value wraps and the row grows to fit it. It was one fixed 22px line, which held
+        /// every value while they were "+5% carry weight" and cut off the 1.5 capstones:
+        /// "★ arrows from a crouch land silent at rank 5" is wider than the 268px column.
         /// </summary>
         private static float Row(float x, float y, float w, string label, string value, GUIStyle style)
         {
             GUI.Label(new Rect(x, y, w, 18f), label, _label);
-            GUI.Label(new Rect(x, y + 19f, w, 22f), value, style);
-            return y + 45f;
+            var h = Mathf.Max(22f, style.CalcHeight(new GUIContent(value), w));
+            GUI.Label(new Rect(x, y + 19f, w, h), value, style);
+            return y + 23f + h;
         }
 
         /// <summary>
@@ -707,9 +716,13 @@ namespace Rist
 
             // 12, not 11: 11 was under the smallest size this panel is allowed to print.
             _label = Body(12, Faint);
+            // Wrapped, so a long value takes a second line rather than losing its end. See Row.
             _dnow = Body(14, Green);
+            _dnow.wordWrap = true;
             _dnext = Body(14, Gold);
+            _dnext.wordWrap = true;
             _dcap = Body(14, Silver);
+            _dcap.wordWrap = true;
 
             _slotOn = Body(12, Gold);
             _slotOn.alignment = TextAnchor.MiddleCenter;
