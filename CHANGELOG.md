@@ -3,6 +3,15 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- **The runestones sometimes showed plain letters instead of runes.** Logging out to the main menu
+  unloads the part of the game that holds the rune font, and the panel kept drawing with the font
+  that was gone until the game was restarted. Rist now uses the game's permanent copy of its fonts,
+  which is never unloaded, and rebuilds the panel if a font it uses disappears anyway.
+
 ## [1.5.0] - 2026-09-15
 
 ### Added

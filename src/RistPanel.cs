@@ -643,6 +643,16 @@ namespace Rist
 
         private static void Build()
         {
+            // A font the styles were built with has been destroyed - logging out to the menu
+            // unloads the rune font's bundle - or the rune face is a stand-in due a retry. Build
+            // again rather than draw plain letters for the rest of the session.
+            if (_built && Skin.Lost)
+            {
+                RistPlugin.Log.LogInfo("The rists panel's fonts need finding again; rebuilding its styles.");
+                Skin.Reset();
+                _built = false;
+            }
+
             if (_built) return;
             _built = true;
 
@@ -776,7 +786,19 @@ namespace Rist
             };
         }
 
+        // Keyed by colour so a rebuild after a lost font reuses them instead of leaking a fresh
+        // set of 1x1 textures each time.
+        private static readonly Dictionary<Color, Texture2D> _solids = new Dictionary<Color, Texture2D>();
+
         private static Texture2D Solid(Color colour)
+        {
+            if (_solids.TryGetValue(colour, out var cached) && cached != null) return cached;
+            var made = MakeSolid(colour);
+            _solids[colour] = made;
+            return made;
+        }
+
+        private static Texture2D MakeSolid(Color colour)
         {
             var tex = new Texture2D(1, 1);
             tex.SetPixel(0, 0, colour);
