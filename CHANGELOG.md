@@ -3,7 +3,7 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [1.5.0] - 2026-09-15
 
 ### Added
 
