@@ -24,8 +24,10 @@ and the mod uses [semantic versioning](https://semver.org).
 - **Deep draught**, in Endurance: buff meads last 10% longer a rank. At rank 5 each buff mead has a
   25% chance not to be used up when you drink it. It covers Fire Resistance Barley Wine, Frost and
   Poison Resistance Mead, Berserkir Mead, Mead of Troll Endurance, Draught of Vananidir, Brew of
-  Animal Whispers, Tasty Mead, Anti-Sting Concoction and Love Potion. It does not cover the healing,
-  stamina and eitr potions, the Lingering meads, Tonic of Ratatosk or Lightfoot Mead.
+  Animal Whispers, Tasty Mead, Anti-Sting Concoction, Love Potion, the Lingering Healing, Stamina and
+  Eitr Meads, Tonic of Ratatosk and Lightfoot Mead. It does not cover the Minor, Medium and Major
+  Healing Meads, the Minor and Medium Stamina Meads or the Minor Eitr Mead, which restore. A longer
+  Lingering mead also keeps its matching potions locked out for longer.
 - **Oath-bound**, in Utility: the forsaken power's cooldown is 5% shorter a rank. At rank 5 the
   blessing lasts a minute longer for everyone it reaches when you cast it, unless the power changes
   how you move. Cast by someone without it, it lasts the normal time for everyone.

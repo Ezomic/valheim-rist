@@ -25,7 +25,7 @@
 #   *lowdraw:silent         arrows loosed from a crouch make no noise where they land (value 1)
 #   *sneakattack            multiplies a weapon's own sneak attack bonus
 #   *sneakattack:stagger    a sneak attack on an unalerted creature staggers it (value 1)
-#   *mead:duration          buff meads last longer (not restoring, not movement, no shared lockout)
+#   *mead:duration          buff meads last longer (every mead that does not restore health, stamina or eitr)
 #   *mead:fullcask          chance a buff mead is not used up when drunk (0.25 is 25%)
 #   *power:cooldown         the forsaken power's cooldown, negative is shorter
 #   *power:duration         seconds added to the forsaken power for everyone it reaches, when you cast it
@@ -157,11 +157,12 @@ longwind    | Long wind      | Breath comes back quicker.        | m_staminaRege
 brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q
 
 # A buff mead is decided from the item, not a name list: a consumable, not food, an SE_Stats
-# effect, restoring nothing, sharing no lockout category, and not changing movement. In vanilla
-# that is Fire Resistance Barley Wine, Frost and Poison Resistance Mead, Berserkir Mead, Mead of
-# Troll Endurance, Draught of Vananidir, Brew of Animal Whispers, Tasty Mead, Anti-Sting
-# Concoction and Love Potion. The Lingering meads share a lockout with the potions, so a longer
-# one would lock potions out for longer; they are excluded.
+# effect, restoring nothing. In vanilla that is fifteen: Fire Resistance Barley Wine, Frost and
+# Poison Resistance Mead, Berserkir Mead, Mead of Troll Endurance, Draught of Vananidir, Brew of
+# Animal Whispers, Tasty Mead, Anti-Sting Concoction, Love Potion, the Lingering Healing, Stamina
+# and Eitr Meads, Tonic of Ratatosk and Lightfoot Mead. The Minor, Medium and Major healing,
+# stamina and eitr meads restore, and are left alone. Tonic of Ratatosk lasting longer is a mead's
+# own speed, not a card's, so the move speed cap above does not cover it - Robbin's call.
 deepdraught | Deep draught   | A long pull lasts a long way.     | *mead:duration           | 0.10  | *mead:fullcask            | 0.25 | V
 
 # Stealth is negative on purpose; see the sign conventions above.

@@ -4,9 +4,9 @@ using UnityEngine;
 namespace Rist
 {
     /// <summary>
-    /// The one test, shared by every card that stretches a status effect, for "this changes how
-    /// you move". Move speed has a single source in this catalogue, and a longer speed buff from
-    /// a mead or a forsaken power would be a second one wearing a hat.
+    /// The test for "this status effect changes how you move". Oath-bound uses it to leave a
+    /// movement power at its own duration. Deep draught used to as well, and no longer does:
+    /// Robbin wanted every buff mead lengthened, speed and jump meads included.
     /// </summary>
     internal static class Movement
     {
@@ -23,16 +23,23 @@ namespace Rist
     ///
     /// "Buff mead" is decided from the item rather than from a list of names, so a mead a game
     /// update or another mod adds is covered by the same rule. It is a consumable that is not
-    /// food, whose effect is exactly SE_Stats, that restores nothing - no health, stamina or eitr
-    /// up front or over time, since stretching a healing potion's tick would make it heal more -
-    /// and that shares no lockout category. Anything that changes movement - speed, wind or jump
-    /// - is left alone too: move speed has one source in this catalogue.
+    /// food, whose effect is exactly SE_Stats, and that restores nothing - no health, stamina or
+    /// eitr up front or over time, since stretching a healing potion's tick would make it heal
+    /// more.
     ///
-    /// Against the vanilla assets that is ten meads: Fire Resistance Barley Wine, Frost and
+    /// Two exclusions this used to make were taken out on Robbin's call, 2026-09-15, and are
+    /// deliberate. Meads that change movement are in: Tonic of Ratatosk's speed and Lightfoot's
+    /// jump are the game's own numbers, only lasting longer, so the one-move-speed-source rule
+    /// the catalogue holds its own cards to does not apply to a mead the player brewed. And the
+    /// Lingering meads are in, although each shares a lockout category with its potions, so a
+    /// longer Lingering Healing Mead also keeps the healing potions locked out for longer.
+    ///
+    /// Against the vanilla assets that is fifteen meads: Fire Resistance Barley Wine, Frost and
     /// Poison Resistance Mead, Berserkir Mead, Mead of Troll Endurance, Draught of Vananidir,
-    /// Brew of Animal Whispers, Tasty Mead, Anti-Sting Concoction and Love Potion. Out: the
-    /// healing, stamina and eitr potions (they restore), the three Lingering meads (shared
-    /// lockout), Tonic of Ratatosk (speed) and Lightfoot Mead (jump).
+    /// Brew of Animal Whispers, Tasty Mead, Anti-Sting Concoction, Love Potion, the Lingering
+    /// Healing, Stamina and Eitr Meads, Tonic of Ratatosk and Lightfoot Mead. Out: the Minor,
+    /// Medium and Major Healing Meads, the Minor and Medium Stamina Meads and the Minor Eitr
+    /// Mead, which restore.
     ///
     /// Both halves hang off Player.ConsumeItem, which drinking from the inventory or the hotbar
     /// goes through. Its own CanConsumeItem already refuses a mead whose effect is running, so
@@ -61,17 +68,10 @@ namespace Rist
             var se = item.m_shared.m_consumeStatusEffect as SE_Stats;
             if (se == null || se.GetType() != typeof(SE_Stats) || se.m_ttl <= 0f) return false;
 
-            // A category is a shared lockout: while any effect in it runs, CanConsumeItem refuses
-            // every other item in it. The Lingering Healing, Stamina and Eitr Meads share theirs
-            // with the healing, stamina and eitr potions, so lengthening one would lock the potions
-            // out for longer - a drawback, which no card carries. Read from the game's assets on
-            // 2026-09-14: every other buff mead has an empty category.
-            if (!string.IsNullOrEmpty(se.m_category)) return false;
 
             if (se.m_healthUpFront != 0f || se.m_healthOverTime != 0f || se.m_healthPerTick != 0f) return false;
             if (se.m_staminaUpFront != 0f || se.m_staminaOverTime != 0f) return false;
             if (se.m_eitrUpFront != 0f || se.m_eitrOverTime != 0f) return false;
-            if (Movement.Changes(se)) return false;
 
             return true;
         }

@@ -177,7 +177,7 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*lowdraw:silent` | Arrows loosed from a crouch make no noise where they land, so a miss does not alert the animals around it. A creature the arrow hits is still alerted by the hit. A flag: write `1` |
 | `*sneakattack` | Raises a weapon's own sneak attack multiplier. A fraction: `0.10` is 10% more. Weapons with no sneak attack gain none |
 | `*sneakattack:stagger` | A sneak attack on an unalerted, non-boss creature staggers it, at most once per creature per 300 seconds. A flag: write `1` |
-| `*mead:duration` | Buff meads last longer. A fraction. Not meads that restore health, stamina or eitr, not the Lingering meads (they share a lockout with the potions), and not meads that change movement |
+| `*mead:duration` | Buff meads last longer. A fraction. Every mead except the ones that restore health, stamina or eitr, so the Lingering meads, Tonic of Ratatosk and Lightfoot Mead are included |
 | `*mead:fullcask` | Chance a buff mead is not used up when drunk, rolled per drink. A fraction: `0.25` is 25% |
 | `*power:cooldown` | Shortens the forsaken power's cooldown. Negative is shorter, and it cannot go below half |
 | `*power:duration` | Seconds added to the forsaken power for every player it reaches when you cast it. A power cast by someone without it lasts the normal time for everyone. Not applied to a power that changes movement |
