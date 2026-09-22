@@ -3,6 +3,20 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [1.6.0] - 2026-09-22
+
+### Changed
+
+- **Thick-hided is a percentage now**: +3% armour a rank instead of a flat +2, and another 5% at
+  rank 5 in place of the stagger capstone, so a fully carved stone is +20% armour. The game takes
+  `dmg * dmg / (4 * armour)` once your armour is at least half the hit, so damage taken is
+  inversely proportional to armour and the old flat +10 cut about a third of a hit at 20 armour
+  and under a tenth of it at 100. It stopped mattering around the Plains, which is where
+  Rattennest raised it on the ideas board. Below half your armour the game subtracts instead of
+  dividing, and that is the case flat armour is good for: Steady footing's capstone still gives
+  +2 and is now the only source of it. A character with ranks in Thick-hided keeps them and those
+  ranks buy the percentage.
+
 ## [1.5.1] - 2026-09-20
 
 ### Fixed
