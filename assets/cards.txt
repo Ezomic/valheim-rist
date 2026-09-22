@@ -61,9 +61,16 @@
 # is inversely proportional to armour and a percentage is worth exactly the same at every
 # tier. The old +2 a rank was +10 at rank 5: a third of a hit gone at 20 armour, under a tenth
 # of it at 100, which is a card that stops mattering in the Plains. Rattennest said so on the
-# ideas board and the formula agrees with him. Below half your armour the game subtracts
-# instead of dividing, which is the one case flat armour wins - Steady footing's capstone is
-# now the only source of it, and that is enough.
+# ideas board and the formula agrees with him.
+#
+# NOTHING GRANTS FLAT ARMOUR ANY MORE. Steady footing's capstone went the same way, +5% rather
+# than +2, which keeps the two stones mirrors of each other: Steady footing's capstone has
+# always been a dose of whatever Thick-hided does per rank. The case flat armour was kept for is
+# the other branch of the curve, a hit bigger than twice your armour, where the game subtracts
+# rather than divides - and there +2 saves exactly 2 damage while +5% saves 5% of your armour,
+# so the flat number only wins below 40 armour. That is leather and troll hide, and it is a
+# small loss taken on purpose to stop a stat that scales being sold as a number that does not.
+# m_addArmor is unused now and stays supported; a card line is all it would take to bring back.
 #
 # Value is per rank and accumulates: rank 3 of a 15-per-rank card gives 45.
 # Cards stop being offered once they reach MaxRank in the config.
@@ -152,7 +159,7 @@ answeringblow | Answering blow | Slip the blow, then make them pay for it. | *an
 == Survival
 
 thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | m_armorMultiplier         | 0.05 | H
-steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.06 | m_addArmor                | 2 | E
+steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.06 | m_armorMultiplier         | 0.05 | E
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
 surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
 

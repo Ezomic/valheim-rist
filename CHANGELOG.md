@@ -12,10 +12,13 @@ and the mod uses [semantic versioning](https://semver.org).
   `dmg * dmg / (4 * armour)` once your armour is at least half the hit, so damage taken is
   inversely proportional to armour and the old flat +10 cut about a third of a hit at 20 armour
   and under a tenth of it at 100. It stopped mattering around the Plains, which is where
-  Rattennest raised it on the ideas board. Below half your armour the game subtracts instead of
-  dividing, and that is the case flat armour is good for: Steady footing's capstone still gives
-  +2 and is now the only source of it. A character with ranks in Thick-hided keeps them and those
-  ranks buy the percentage.
+  Rattennest raised it on the ideas board. A character with ranks in Thick-hided keeps them and
+  those ranks buy the percentage.
+- **Steady footing's capstone is +5% armour** instead of +2. Its capstone has always been a dose
+  of whatever Thick-hided gives per rank, so it follows the change above, and no card grants flat
+  armour now. The one place a flat number was better is the other branch of the curve, a hit
+  bigger than twice your armour, where the game subtracts rather than divides: +2 saves 2 damage
+  there and +5% saves 5% of your armour, so the old value only won below 40 armour.
 
 ## [1.5.1] - 2026-09-20
 
