@@ -1,0 +1,71 @@
+# Rist: Thick-hided is a percentage of your armour, not a number added to it.
+#
+# The whole point of the 1.6.0 change, and the one thing a flat bonus and a percentage cannot
+# both pass. It reads the ratio twice, in the lightest armour in the game and then in the
+# heaviest, without changing the ranks in between. A percentage answers x1.20 both times. A
+# flat +10 answers about x6 in rags and about x1.16 in padded, and fails both halves.
+#
+# The number asserted is the GAME's: `rist show` prints "game x1.20" from
+# Player.GetBodyArmor, which is what Character.Damage hands to the armour curve, beside
+# "rist x1.20" which is only this mod's opinion of what it did. Assert the game one. The two
+# are printed apart precisely so that a test cannot pass on the mod agreeing with itself.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` says so and refuses on a client, so
+# on a dedicated server every step here fails at once and correctly.
+#
+# THE TRAP, if the first assertion fails with x1.00 expected: something else on this profile
+# is touching armour, or this character already holds ranks in a stone that does. The two
+# `rank 0` steps clear the two armour stones and nothing else, so a third source shows up
+# here as a ratio that is not 1.00 before anything has been carved.
+#
+# It leaves both stones at rank 0, which is where it found them on a fresh character and is
+# not where it found them on yours. Carve them again by hand if you were using them.
+
+clear
+god
+
+# ---- rags: two pieces, and almost no armour at all.
+
+give ArmorRagsChest:1
+give ArmorRagsLegs:1
+tool ArmorRagsChest
+tool ArmorRagsLegs
+wait 1
+
+console rist rank thickhide 0
+console rist rank steadyfoot 0
+wait 1
+
+# Nothing carved, so the game's armour is exactly what the two rags add up to.
+console rist show
+printed game x1.00 yes
+
+# Five ranks: 3% a rank and 5% more at the fifth, which is +20%.
+console rist rank thickhide 5
+wait 1
+console rist show
+printed game x1.20 yes
+
+# ---- padded: the heaviest set in the game, and the same ranks.
+
+give ArmorPaddedCuirass:1
+give ArmorPaddedGreaves:1
+tool ArmorPaddedCuirass
+tool ArmorPaddedGreaves
+wait 1
+
+# The assertion the change is about. Same stone, same rank, thirty times the armour under it,
+# and the answer has to be the same multiplier. A flat bonus cannot be here.
+console rist show
+printed game x1.20 yes
+
+# And it is not stuck at 1.20 either: four ranks is 12%, with no capstone.
+console rist rank thickhide 4
+wait 1
+console rist show
+printed game x1.12 yes
+
+console rist rank thickhide 0
+wait 1
+console rist show
+printed game x1.00 yes

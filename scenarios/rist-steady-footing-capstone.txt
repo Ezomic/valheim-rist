@@ -1,0 +1,62 @@
+# Rist: Steady footing's capstone is +5% armour, and it arrives at the fifth rank and not before.
+#
+# The other half of the 1.6.0 change. Thick-hided's percentage is covered by
+# rist-armour-scales; this one is about the boundary, which is the part a capstone gets wrong:
+# a bonus that leaks into the early ranks passes any test that only ever looks at rank 5.
+#
+# Rank 4 has to be x1.00. Steady footing gives stagger every rank and armour only at five, so
+# four ranks of it must not move armour at all - and stagger is not what this reads, on
+# purpose, because a card that quietly wrote its capstone into every rank would still answer
+# correctly about stagger.
+#
+# The last pair is both stones at once: 15% from Thick-hided's ranks, 5% from its capstone and
+# 5% from this one is 25%. It is here because the two cards now name the same field, and
+# "they add up" is exactly what stops being true if one of them ever writes the field instead
+# of contributing to it.
+#
+# SINGLEPLAYER, same as the other one: ranks live on the server.
+#
+# It leaves both stones at rank 0.
+
+clear
+god
+
+give ArmorIronChest:1
+give ArmorIronLegs:1
+tool ArmorIronChest
+tool ArmorIronLegs
+wait 1
+
+console rist rank thickhide 0
+console rist rank steadyfoot 0
+wait 1
+console rist show
+printed game x1.00 yes
+
+# ---- the boundary.
+
+console rist rank steadyfoot 4
+wait 1
+
+# Four ranks of stagger and no armour. If this reads x1.04, the capstone is being paid per
+# rank; if it reads x1.05, it is being paid before it is earned.
+console rist show
+printed game x1.00 yes
+
+console rist rank steadyfoot 5
+wait 1
+console rist show
+printed game x1.05 yes
+
+# ---- both stones, adding rather than overwriting.
+
+console rist rank thickhide 5
+wait 1
+console rist show
+printed game x1.25 yes
+
+console rist rank thickhide 0
+console rist rank steadyfoot 0
+wait 1
+console rist show
+printed game x1.00 yes

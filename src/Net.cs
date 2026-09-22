@@ -413,6 +413,34 @@ namespace Rist
         /// client has said hello, which is deliberate - a report that cannot be attributed to
         /// a character must not be paid to a guess.
         /// </summary>
+        /// <summary>
+        /// The connection this machine's own character is on, and its ledger key.
+        ///
+        /// For the `rist rank` console command, which has to reach one record without being
+        /// handed a sender by an RPC. The host's own client says hello like any other, so the
+        /// entry is in the same table; it is found by matching the character id rather than by
+        /// taking the only entry, because a listen server with guests has several.
+        /// </summary>
+        internal static bool LocalOwner(out long peer, out string owner)
+        {
+            peer = 0L;
+            owner = null;
+
+            var player = Player.m_localPlayer;
+            if (player == null) return false;
+
+            var mine = player.GetPlayerID();
+            foreach (var pair in _characters)
+            {
+                if (pair.Value != mine) continue;
+                peer = pair.Key;
+                owner = OwnerOf(pair.Key);
+                return owner != null;
+            }
+
+            return false;
+        }
+
         private static string OwnerOf(long sender)
         {
             if (!_characters.TryGetValue(sender, out var characterId))

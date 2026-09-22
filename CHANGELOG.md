@@ -5,6 +5,15 @@ and the mod uses [semantic versioning](https://semver.org).
 
 ## [1.6.0] - 2026-09-22
 
+### Added
+
+- **A `rist` console command**, for singleplayer and for whoever is hosting. `rist show` prints
+  this character's level, xp, ranks and the armour the game is actually using; `rist rank <card>
+  <n>` forces a card to that rank. It needs `devcommands`, and the game's own cheat gate is
+  `ZNet.IsServer()`, so a client cannot point it at a dedicated server's records. Ranks were
+  otherwise only reachable by clicking the panel, which put five ranks nine skill levels away
+  from anyone balancing a stone.
+
 ### Changed
 
 - **Thick-hided is a percentage now**: +3% armour a rank instead of a flat +2, and another 5% at

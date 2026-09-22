@@ -89,6 +89,37 @@ namespace Rist
         }
 
         /// <summary>
+        /// Force a card to an exact rank. The `rist rank` console command's, and nothing else
+        /// calls it.
+        ///
+        /// Ranks are otherwise only ever added, one pick at a time, by Take. A test has to put
+        /// a character at rank 4 and then at rank 5 without earning nine levels in between, so
+        /// this trims or extends the history and moves DraftsTaken by the same amount. Moving
+        /// it matters: Owed is Level minus DraftsTaken, so handing out ranks without spending
+        /// picks would leave the character owed them all over again.
+        ///
+        /// Ranks added this way carry level 0, which the ledger format already means as "this
+        /// rank is real and the level that bought it is unknown".
+        /// </summary>
+        internal void SetRank(string id, int rank)
+        {
+            if (string.IsNullOrEmpty(id) || rank < 0) return;
+
+            List<int> levels;
+            if (!Taken.TryGetValue(id, out levels)) { levels = new List<int>(); Taken[id] = levels; }
+
+            var before = levels.Count;
+            while (levels.Count > rank) levels.RemoveAt(levels.Count - 1);
+            while (levels.Count < rank) levels.Add(0);
+
+            DraftsTaken = Math.Max(0, DraftsTaken + (levels.Count - before));
+
+            // An empty list is a card with no ranks, which is not the same as a card the
+            // ledger has an entry for. Leaving it behind would write "thickhide:" to the line.
+            if (levels.Count == 0) Taken.Remove(id);
+        }
+
+        /// <summary>
         /// Hand back the picks spent on cards that no longer exist.
         ///
         /// Removing a card from cards.txt used to strand every rank already bought in it: the

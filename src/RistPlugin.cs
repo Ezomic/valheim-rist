@@ -122,6 +122,10 @@ namespace Rist
             Patch(typeof(Horizon.Row));
             Patch(typeof(Horizon.Ring));
 
+            // The console command registers itself from Terminal's own init, so this one line
+            // is the difference between `rist` existing and every scenario failing on step one.
+            Patch(typeof(DevConsole.Hook));
+
             AuditPatches();
 
             // Not "ready" when the catalogue never loaded. Rist with no cards is not a quieter
