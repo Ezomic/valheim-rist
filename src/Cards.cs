@@ -287,6 +287,11 @@ namespace Rist
         {
             { "m_addMaxCarryWeight", "carry weight" },
             { "m_addArmor", "armour" },
+            // The game applies this after the flat one, as armor *= 1 + m_armorMultiplier, so a
+            // card writing 0.03 is a straight 3% and needs no conversion. Same label as the flat
+            // field on purpose: the tile says "+15% armour" or "+5 armour" and the sign carries
+            // which one it is.
+            { "m_armorMultiplier", "armour" },
             { "*inventoryrow", "inventory row" },
             { "*exploreradius", "map sight" },
             // What a sailor sees shrink, not what the card is for. "+6% sailing into the wind"
@@ -346,6 +351,7 @@ namespace Rist
             "m_fallDamageModifier", "m_stealthModifier", "m_noiseModifier", "m_staggerModifier",
             "m_raiseSkillModifier", "m_speedModifier", "m_damageModifier",
             "m_dodgeStaminaUseModifier", "m_swimSpeedModifier", "m_timedBlockBonus",
+            "m_armorMultiplier",
             AttackSpeed.Melee, AttackSpeed.Tools, AttackSpeed.Ranged, AttackSpeed.Magic,
             RangedDamage.Key, AnsweringBlow.Bonus, AnsweringBlow.Stagger, UnseenBlow.Bonus, DeepDraught.Duration,
             DeepDraught.FullCask,

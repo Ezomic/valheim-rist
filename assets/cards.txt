@@ -56,6 +56,15 @@
 # source, and note that m_windMovementModifier multiplies speed too, so a wind card would sit
 # on top of this cap rather than inside it.
 #
+# THICK-HIDED IS A PERCENTAGE, NOT FLAT ARMOUR, and the game's own damage curve is why.
+# A hit that is at least half your armour lands for dmg * dmg / (4 * armour), so damage taken
+# is inversely proportional to armour and a percentage is worth exactly the same at every
+# tier. The old +2 a rank was +10 at rank 5: a third of a hit gone at 20 armour, under a tenth
+# of it at 100, which is a card that stops mattering in the Plains. Rattennest said so on the
+# ideas board and the formula agrees with him. Below half your armour the game subtracts
+# instead of dividing, which is the one case flat armour wins - Steady footing's capstone is
+# now the only source of it, and that is enough.
+#
 # Value is per rank and accumulates: rank 3 of a 15-per-rank card gives 45.
 # Cards stop being offered once they reach MaxRank in the config.
 #
@@ -142,7 +151,7 @@ answeringblow | Answering blow | Slip the blow, then make them pay for it. | *an
 
 == Survival
 
-thickhide   | Thick-hided    | Blows land shallower.             | m_addArmor               | 2     | m_staggerModifier         | -0.08 | H
+thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | m_armorMultiplier         | 0.05 | H
 steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.06 | m_addArmor                | 2 | E
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
 surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
