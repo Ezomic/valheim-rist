@@ -292,7 +292,7 @@ namespace Rist
 
             float delay, jump;
             totals.TryGetValue(Sinews.StaminaDelay, out delay);
-            totals.TryGetValue(Sinews.JumpForce, out jump);
+            totals.TryGetValue(Sinews.JumpHeight, out jump);
 
             Sinews.DelayCut = Mathf.Max(0f, delay);
             Sinews.JumpBonus = Mathf.Max(0f, jump);

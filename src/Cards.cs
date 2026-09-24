@@ -344,7 +344,7 @@ namespace Rist
             // Read as the wait it removes, not as the delay it leaves. "0.6s less before
             // stamina returns" is the thing a player feels the moment they stop running.
             { Sinews.StaminaDelay, "s less before stamina returns" },
-            { Sinews.JumpForce, "jump height" },
+            { Sinews.JumpHeight, "jump height" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -368,7 +368,7 @@ namespace Rist
             // map sight" where they meant +5%. WarnAboutMissingLabels checks for both at load.
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.JumpForce,
+            Sinews.JumpHeight,
         };
 
         /// <summary>
@@ -384,7 +384,7 @@ namespace Rist
             UnseenBlow.Bonus, UnseenBlow.Stagger, DeepDraught.Duration, DeepDraught.FullCask,
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.StaminaDelay, Sinews.JumpForce,
+            Sinews.StaminaDelay, Sinews.JumpHeight,
             "*stamina:move", "*stamina:fight",
         };
 

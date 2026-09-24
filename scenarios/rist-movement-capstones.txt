@@ -38,7 +38,7 @@ mod rist show
 printed delay 0.00s off yes
 
 mod rist show
-printed jump x1.00 yes
+printed jump height x1.00 yes
 
 # ---- Tireless: the pause before stamina comes back.
 
@@ -59,17 +59,17 @@ printed delay 0.60s off yes
 mod rist show
 printed running x0.75 yes
 
-# ---- Long stride: jump height.
+# ---- Long stride: jump height, 15% at rank 5.
 
 mod rist rank longstride 4
 wait 1
 mod rist show
-printed jump x1.00 yes
+printed jump height x1.00 yes
 
 mod rist rank longstride 5
 wait 1
 mod rist show
-printed jump x1.20 yes
+printed jump height x1.15 yes
 
 # Long stride's capstone used to be -0.06 running. If it still were, this would read x0.69.
 mod rist show
@@ -90,7 +90,7 @@ mod rist show
 printed delay 0.60s off yes
 
 mod rist show
-printed jump x1.20 yes
+printed jump height x1.15 yes
 
 mod rist rank tireless 0
 mod rist rank longwind 0
@@ -98,9 +98,9 @@ mod rist rank longstride 0
 wait 1
 
 # Back to bare, which proves the two written straight onto the player are restored and not
-# merely stopped - a capstone that only ever added would leave the jump at x1.20 here.
+# merely stopped - a capstone that only ever added would leave the jump at x1.15 here.
 mod rist show
-printed jump x1.00 yes
+printed jump height x1.00 yes
 
 mod rist show
 printed delay 0.00s off yes

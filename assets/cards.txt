@@ -30,7 +30,7 @@
 #   *power:cooldown         the forsaken power's cooldown, negative is shorter
 #   *power:duration         seconds added to the forsaken power for everyone it reaches, when you cast it
 #   *staminadelay           seconds off the pause before stamina starts coming back
-#   *jumpforce              jumps higher, as a share of your jump force
+#   *jumpheight             jumps higher, as a share of how high you jump: 0.15 is 15% higher
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
@@ -230,7 +230,7 @@ quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifi
 
 == Utility
 
-longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *jumpforce                | 0.20 | R
+longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *jumpheight               | 0.15 | R
 farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *exploreradius            | 0.10 | F
 tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O
 weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *rowspeed                 | 0.20 | W

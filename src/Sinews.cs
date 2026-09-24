@@ -24,8 +24,14 @@ namespace Rist
         /// <summary>Seconds off the pause before stamina starts returning.</summary>
         internal const string StaminaDelay = "*staminadelay";
 
-        /// <summary>Fraction added to jump force, so 0.2 is a fifth higher.</summary>
-        internal const string JumpForce = "*jumpforce";
+        /// <summary>
+        /// Fraction added to how HIGH you jump, so 0.15 is 15% higher. Not jump force: the rise
+        /// goes with the square of the push, so a fifth more force was 44% more height, while the
+        /// tile and the changelog both said "a fifth higher" about a jump that went from 3.0m to
+        /// 4.4m. Robbin caught it by doing the sum on 2026-09-24. The card now names the thing a
+        /// player sees, and the code works out the push.
+        /// </summary>
+        internal const string JumpHeight = "*jumpheight";
 
         /// <summary>
         /// The pause can be shortened and never removed, and this is not tidiness.
@@ -42,6 +48,8 @@ namespace Rist
         private const float MinDelay = 0.25f;
 
         internal static float DelayCut;
+
+        /// <summary>Fraction of extra jump HEIGHT the hand asks for. See JumpHeight.</summary>
         internal static float JumpBonus;
 
         // The player these were captured from, and the values it had before Rist touched them.
@@ -72,8 +80,11 @@ namespace Rist
         /// Fall damage is measured from the highest point since you last touched ground:
         /// Character.UpdateGroundContact takes m_maxAirAltitude less where you land, and anything
         /// over 4m hurts, (h - 4) / 16 of your health up to all of it at 20m. Vanilla's own
-        /// Jump 100 already comes close to that line, so raising jump force by a fifth crossed
-        /// it on flat ground and every jump hurt. No bonus size is safe for certain, because
+        /// Jump 100 rises about 3.04m, and the first build of this capstone added a fifth to
+        /// jump force, which is 44% more height: 4.38m, over the line on flat ground, and every
+        /// jump hurt. The card is 15% of HEIGHT now, about 3.5m, which clears the line on its
+        /// own - but that margin is Unity's project gravity and the Jump skill's curve, neither
+        /// of which this mod owns, so the guard stays. No bonus size is safe for certain, because
         /// how close vanilla sits is Unity's project gravity and not readable from the assembly.
         ///
         /// So the landing is measured from the apex a vanilla jump would have reached. A jump's
@@ -282,6 +293,12 @@ namespace Rist
             // up to 1.4 at level 100 and the card should read as a share of your jump rather
             // than a flat push that matters less the better you get.
             //
+            // The square root is the height-to-push conversion. How high a jump rises goes with
+            // the square of the speed it leaves the ground at, and that speed is m_jumpForce
+            // times the Jump skill's factor, so asking for 15% more height means sqrt(1.15),
+            // about 7% more push. Measured at Jump 100: 20% more push rose 4.38m where vanilla
+            // rises about 3.04m, which is 1.44 - the square of 1.2 - to two decimals.
+            //
             // The Player prefab carries 8, not the 10 Character's field initialiser suggests -
             // measured in game, and the reason `rist show` prints this as a ratio. A scenario
             // asserting the absolute number off the decompiled default would have failed.
@@ -290,8 +307,8 @@ namespace Rist
             // its full height, and at Jump 100 that is fall damage on every jump on flat ground -
             // which is what the first build of this capstone did, found in testing on 2026-09-24.
             // No bonus is better than a bonus that hurts.
-            var bonus = Landing.Guarded ? Mathf.Max(0f, JumpBonus) : 0f;
-            player.m_jumpForce = _vanillaJump * (1f + bonus);
+            var height = Landing.Guarded ? Mathf.Max(0f, JumpBonus) : 0f;
+            player.m_jumpForce = _vanillaJump * Mathf.Sqrt(1f + height);
         }
     }
 }

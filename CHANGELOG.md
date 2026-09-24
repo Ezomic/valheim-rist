@@ -20,17 +20,18 @@ and the mod uses [semantic versioning](https://semver.org).
   - **Tireless**: stamina starts coming back 0.6s sooner after you stop spending it, out of the
     game's 1 second pause.
   - **Long wind**: +10% stamina regen on top of the +8% a rank, the same shape as Brimming.
-  - **Long stride**: you jump a fifth higher. The landing is measured from the height a normal
+  - **Long stride**: you jump 15% higher. The landing is measured from the height a normal
     jump would have reached, so your own jumps never hurt more than they did before. Jumping off
     a ledge still hurts for the drop below where you left the ground.
 - A full hand of all three now takes 25% off running rather than 51%.
 
 ### Added
 
-- Two specials for `cards.txt`: `*staminadelay` and `*jumpforce`. The delay never drops below
+- Two specials for `cards.txt`: `*staminadelay` and `*jumpheight`. `*jumpheight` is a share of
+  how high you jump, not of jump force; 15% more height takes about 7% more push. The delay never drops below
   0.25s, because at zero stamina would refill during a sprint.
 - `rist show` prints the run-stamina multiplier the game is actually charging, the stamina
-  delay and the jump force, which is what the new scenarios check.
+  delay and the jump height, which is what the new scenarios check.
 
 ## [1.6.0] - 2026-09-22
 
