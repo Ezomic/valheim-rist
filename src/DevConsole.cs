@@ -116,7 +116,8 @@ namespace Rist
         /// That is the right bound for a floor: if the most Rist can ever add plus a power stays
         /// above zero, no real hand can reach it either.
         ///
-        /// Flagged only when Rist alone stays above -1 and the power takes it there. Sure-footed
+        /// Flagged only when Rist alone and the power alone both stay above -1 and together they
+        /// do not. Sure-footed
         /// on its own reaches -1 on fall damage, and that is its capstone working as designed -
         /// immunity to falling is one of the unlocks the catalogue names - not a power leaking
         /// into it. Run stamina is reported and not flagged, because MinRunStaminaCost floors it.
@@ -211,6 +212,15 @@ namespace Rist
             if (pair[0] == "m_runStaminaDrainModifier" && floor > 0f && total <= -1f + floor)
             {
                 Say(term, line + " - floored at x" + floor.ToString("0.00", CultureInfo.InvariantCulture) + " by MinRunStaminaCost");
+                return 0;
+            }
+
+            // The power alone already at zero is vanilla, not a mix: Bonemass makes blocking free
+            // and the Queen makes sneaking free all by themselves, measured 2026-09-24, and no hand
+            // of cards changes free. Reported so the readout is complete, never flagged.
+            if (power <= -1f)
+            {
+                Say(term, line + " - the power alone is already zero, as in vanilla");
                 return 0;
             }
 
