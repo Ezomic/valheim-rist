@@ -341,6 +341,10 @@ namespace Rist
             { DeepDraught.FullCask, "chance a mead is not used up" },
             { Oathbound.Cooldown, "power cooldown" },
             { Oathbound.Duration, "s of forsaken power" },
+            // Read as the wait it removes, not as the delay it leaves. "0.6s less before
+            // stamina returns" is the thing a player feels the moment they stop running.
+            { Sinews.StaminaDelay, "s less before stamina returns" },
+            { Sinews.JumpForce, "jump height" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -364,6 +368,7 @@ namespace Rist
             // map sight" where they meant +5%. WarnAboutMissingLabels checks for both at load.
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
+            Sinews.JumpForce,
         };
 
         /// <summary>
@@ -379,6 +384,7 @@ namespace Rist
             UnseenBlow.Bonus, UnseenBlow.Stagger, DeepDraught.Duration, DeepDraught.FullCask,
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
+            Sinews.StaminaDelay, Sinews.JumpForce,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -397,7 +403,7 @@ namespace Rist
         /// </summary>
         private static readonly HashSet<string> Seconds = new HashSet<string>
         {
-            LowDraw.Seconds, Oathbound.Duration,
+            LowDraw.Seconds, Oathbound.Duration, Sinews.StaminaDelay,
         };
     }
 

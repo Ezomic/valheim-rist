@@ -37,6 +37,10 @@ namespace Rist
             _applied = null;
             _appliedSignature = null;
             _appliedTo = null;
+
+            // Or the next capture reads values this class already wrote, off a Player that
+            // no longer exists.
+            Sinews.Reset();
         }
 
         /// <summary>
@@ -62,6 +66,7 @@ namespace Rist
             ApplyStats(player, ranks);
             ApplyInventoryRows(player, ranks);
             ApplyHorizon(ranks);
+            ApplySinews(player, ranks);
 
             if (RistConfig.Verbose.Value)
                 RistPlugin.Log.LogInfo("Applied cards: " + (signature.Length == 0 ? "(none)" : signature));
@@ -274,6 +279,25 @@ namespace Rist
             Horizon.ExtraExplore = Mathf.Max(0f, explore);
             Horizon.ConeNarrowing = Mathf.Clamp01(cone);
             Horizon.RowBonus = Mathf.Max(0f, row);
+        }
+
+        /// <summary>
+        /// The two numbers written straight onto the player. Same reasoning as ApplyHorizon -
+        /// the game reads both on its own schedule - except these live on the Player instance
+        /// rather than in a static, so Sinews needs the player as well as the hand.
+        /// </summary>
+        private static void ApplySinews(Player player, Dictionary<string, int> ranks)
+        {
+            var totals = Totals(ranks);
+
+            float delay, jump;
+            totals.TryGetValue(Sinews.StaminaDelay, out delay);
+            totals.TryGetValue(Sinews.JumpForce, out jump);
+
+            Sinews.DelayCut = Mathf.Max(0f, delay);
+            Sinews.JumpBonus = Mathf.Max(0f, jump);
+
+            Sinews.Apply(player);
         }
 
         /// <summary>

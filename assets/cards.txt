@@ -29,6 +29,8 @@
 #   *mead:fullcask          chance a buff mead is not used up when drunk (0.25 is 25%)
 #   *power:cooldown         the forsaken power's cooldown, negative is shorter
 #   *power:duration         seconds added to the forsaken power for everyone it reaches, when you cast it
+#   *staminadelay           seconds off the pause before stamina starts coming back
+#   *jumpforce              jumps higher, as a share of your jump force
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
@@ -94,6 +96,14 @@
 # you crouch, so -0.08 is 8% harder to spot. Soft step and Quiet wake's capstone shipped
 # positive, which made a sneaking player easier to find. Rist warns at load now if a field
 # where lower is better is given a positive value.
+#
+# NO CAPSTONE TOUCHES RUNNING ANY MORE. Tireless, Long wind and Long stride all had one, and
+# the game adds run-stamina discounts together and clamps the sum at zero - which is safe in
+# vanilla because there is never more than one large source at a time. Between them the three
+# capstones were -0.26 on top of Tireless's -0.25 of ranks, and Eikthyr's power took the total
+# past -1: sprinting cost nothing for as long as the button was held. MinRunStaminaCost is the
+# floor under it, and these three are why it was needed. A capstone that adds more of a number
+# the card's own ranks already buy is the shape to avoid; all three now name something else.
 #
 # RUNNING IS m_runStaminaDrainModifier. m_runStaminaUseModifier looks like the right name
 # beside the other *StaminaUseModifier fields and the game never reads it; Long wind and Long
@@ -168,8 +178,8 @@ surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageM
 == Endurance
 
 oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | m_staggerModifier         | -0.15 | U
-tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | m_runStaminaDrainModifier | -0.15 | A
-longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_runStaminaDrainModifier | -0.05 | L
+tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | *staminadelay             | 0.6  | A
+longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_staminaRegenMultiplier  | 0.10 | L
 brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q
 
 # A buff mead is decided from the item, not a name list: a consumable, not food, an SE_Stats
@@ -220,7 +230,7 @@ quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifi
 
 == Utility
 
-longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | m_runStaminaDrainModifier | -0.06 | R
+longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *jumpforce                | 0.20 | R
 farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *exploreradius            | 0.10 | F
 tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O
 weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *rowspeed                 | 0.20 | W

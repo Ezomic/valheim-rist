@@ -18,6 +18,24 @@ and the mod uses [semantic versioning](https://semver.org).
   skill and your armour, so it stays proportional as a character improves rather than tightening
   around them. Reported by AllHailPidgey on the live server.
 
+### Changed
+
+- **The three running capstones are gone**, and no capstone adds to a number its own card's
+  ranks already buy. That shape is what produced the bug above: Tireless, Long wind and Long
+  stride each finished on run stamina, so a stat three cards were nudging got a fourth, fifth
+  and sixth push at rank 5.
+  - **Tireless** now shortens the pause before stamina starts coming back, by 0.6s of the
+    game's 1.0s. That pause is the thing that actually ends a sprint or a climb, and it is a
+    different mechanism rather than more of the number that broke. It cannot bring the bug back
+    either: every point of stamina spent resets the timer, so while you are running the delay
+    never elapses whatever it is set to. Only a delay of exactly zero would let stamina return
+    mid-sprint, and the code floors it at 0.25s so a catalogue typo cannot reach it.
+  - **Long wind** finishes on more stamina regen, +10% on top of the +8% a rank it already
+    gives. It and Brimming are now the same card for stamina and for eitr.
+  - **Long stride** jumps a fifth higher. Vanilla's own Jump skill already multiplies the same
+    force by up to 1.4 at level 100, so this sits inside a range the game ships; a jump that
+    leaves you more than 4m above where you land is where fall damage starts.
+
 ## [1.6.0] - 2026-09-22
 
 ### Added
