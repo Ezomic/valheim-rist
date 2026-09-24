@@ -20,7 +20,9 @@ and the mod uses [semantic versioning](https://semver.org).
   - **Tireless**: stamina starts coming back 0.6s sooner after you stop spending it, out of the
     game's 1 second pause.
   - **Long wind**: +10% stamina regen on top of the +8% a rank, the same shape as Brimming.
-  - **Long stride**: you jump a fifth higher.
+  - **Long stride**: you jump a fifth higher. The landing is measured from the height a normal
+    jump would have reached, so your own jumps never hurt more than they did before. Jumping off
+    a ledge still hurts for the drop below where you left the ground.
 - A full hand of all three now takes 25% off running rather than 51%.
 
 ### Added
