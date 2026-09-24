@@ -26,16 +26,16 @@
 # step after it would read x1.00 and fail on a floor that was working. The first draft did
 # exactly that.
 #
-# WHAT x0.20 ASSUMES, said out loud. The floor answers only once the sum passes -0.80, and
-# Tireless brings -0.25 of that, so this assertion needs Eikthyr to be deeper than -0.55. The
-# game describes its power as 60% off running and jumping, and that number has NOT been measured
-# here - it is asset data on a StatusEffect and is not readable from the assembly. So if this
-# step reads anything between x0.20 and x0.25, the floor is working exactly as intended and
-# Eikthyr is shallower than assumed: correct the literal here rather than the code. Anything at
-# or below x0.19, or x0.00, is the real failure this scenario is for.
+# WHY x0.20 IS THE FLOOR AND NOT A COINCIDENCE. The floor answers only once the sum passes
+# -0.80. Eikthyr is exactly -0.60 - measured by this scenario on 2026-09-24, where the step
+# that reads it alone printed x0.40 - and Tireless adds -0.25, so the raw sum is -0.85 and would
+# read x0.15. x0.20 therefore means the floor raised it, not that the stack happened to land
+# there. Eikthyr is asset data on a StatusEffect, so a game update could move it: if this step
+# ever reads between x0.20 and x0.25, check the Eikthyr-alone line first, because a shallower
+# power would put the sum above the floor and prove nothing either way.
 #
-# The step before it reads Eikthyr on its own, which puts the true number in the log whether
-# this passes or not, and proves the floor leaves a single source alone.
+# The step before it still reads Eikthyr on its own, so the log carries the true number on every
+# run, and it shows the floor leaving a single source alone.
 #
 # THE TRAP, if the first assertion is not x1.00: something else on this profile is discounting
 # running, or this character already holds ranks in Tireless. The rank 0 step clears it.

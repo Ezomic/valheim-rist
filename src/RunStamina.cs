@@ -14,11 +14,10 @@ namespace Rist
     /// Counted off the shipped catalogue at MaxRank 5: Tireless gives -0.25 through
     /// *stamina:move plus -0.15 at its capstone, Long wind's capstone -0.05 and Long stride's
     /// -0.06, so a hand holding all three is -0.51 before anything else. Eikthyr's power is the
-    /// other half, and its number is asset data rather than anything readable from the
-    /// assembly - the game describes it as 60% off running and jumping, which has not been
-    /// measured here. Whatever it is exactly, the two together reached the clamp: AllHailPidgey
-    /// reported sprinting as free on the live server on 2026-09-24, and -0.51 plus a discount
-    /// near -0.60 is the arithmetic that produces it.
+    /// other half: exactly -0.60, measured in game on 2026-09-24 by rist-sprinting-is-never-free,
+    /// which reads it alone as x0.40. It is asset data and not readable from the assembly, which
+    /// is why it had to be measured rather than looked up. Together that is -1.11, the clamp
+    /// read zero, and AllHailPidgey reported sprinting as free on the live server the same day.
     ///
     /// The fix is a floor rather than smaller cards. Trimming the three stones would only move
     /// the number the stack has to reach, and a fourth card touching running later would walk

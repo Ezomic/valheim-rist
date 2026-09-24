@@ -94,6 +94,10 @@ namespace Rist
             // Multiplied, not added, because the Jump skill already multiplies the same field by
             // up to 1.4 at level 100 and the card should read as a share of your jump rather
             // than a flat push that matters less the better you get.
+            //
+            // The Player prefab carries 8, not the 10 Character's field initialiser suggests -
+            // measured in game, and the reason `rist show` prints this as a ratio. A scenario
+            // asserting the absolute number off the decompiled default would have failed.
             player.m_jumpForce = _vanillaJump * (1f + Mathf.Max(0f, JumpBonus));
         }
     }
