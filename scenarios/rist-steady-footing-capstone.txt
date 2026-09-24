@@ -27,36 +27,36 @@ tool ArmorIronChest
 tool ArmorIronLegs
 wait 1
 
-console rist rank thickhide 0
-console rist rank steadyfoot 0
+mod rist rank thickhide 0
+mod rist rank steadyfoot 0
 wait 1
-console rist show
+mod rist show
 printed game x1.00 yes
 
 # ---- the boundary.
 
-console rist rank steadyfoot 4
+mod rist rank steadyfoot 4
 wait 1
 
 # Four ranks of stagger and no armour. If this reads x1.04, the capstone is being paid per
 # rank; if it reads x1.05, it is being paid before it is earned.
-console rist show
+mod rist show
 printed game x1.00 yes
 
-console rist rank steadyfoot 5
+mod rist rank steadyfoot 5
 wait 1
-console rist show
+mod rist show
 printed game x1.05 yes
 
 # ---- both stones, adding rather than overwriting.
 
-console rist rank thickhide 5
+mod rist rank thickhide 5
 wait 1
-console rist show
+mod rist show
 printed game x1.25 yes
 
-console rist rank thickhide 0
-console rist rank steadyfoot 0
+mod rist rank thickhide 0
+mod rist rank steadyfoot 0
 wait 1
-console rist show
+mod rist show
 printed game x1.00 yes

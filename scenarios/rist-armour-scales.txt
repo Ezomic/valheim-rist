@@ -32,18 +32,18 @@ tool ArmorRagsChest
 tool ArmorRagsLegs
 wait 1
 
-console rist rank thickhide 0
-console rist rank steadyfoot 0
+mod rist rank thickhide 0
+mod rist rank steadyfoot 0
 wait 1
 
 # Nothing carved, so the game's armour is exactly what the two rags add up to.
-console rist show
+mod rist show
 printed game x1.00 yes
 
 # Five ranks: 3% a rank and 5% more at the fifth, which is +20%.
-console rist rank thickhide 5
+mod rist rank thickhide 5
 wait 1
-console rist show
+mod rist show
 printed game x1.20 yes
 
 # ---- padded: the heaviest set in the game, and the same ranks.
@@ -56,16 +56,16 @@ wait 1
 
 # The assertion the change is about. Same stone, same rank, thirty times the armour under it,
 # and the answer has to be the same multiplier. A flat bonus cannot be here.
-console rist show
+mod rist show
 printed game x1.20 yes
 
 # And it is not stuck at 1.20 either: four ranks is 12%, with no capstone.
-console rist rank thickhide 4
+mod rist rank thickhide 4
 wait 1
-console rist show
+mod rist show
 printed game x1.12 yes
 
-console rist rank thickhide 0
+mod rist rank thickhide 0
 wait 1
-console rist show
+mod rist show
 printed game x1.00 yes

@@ -15,9 +15,16 @@
 # zero too, so a readout that clamped could not tell "the floor held" from "the bug is back"
 # and would pass on either.
 #
-# EIKTHYR IS THE SECOND SOURCE, and `addstatus GP_Eikthyr` is how the scenario gets it - the
-# real status effect out of ObjectDB, not an imitation of it. Without that step Rist alone is
-# only -0.25 now, which sits above the floor and proves nothing.
+# EIKTHYR IS THE SECOND SOURCE, and `status GP_Eikthyr` is how the scenario gets it - the
+# real status effect out of ObjectDB, not an imitation of it, and Devkit fails the step if it
+# does not land. Without it Rist alone is only -0.25 now, which sits above the floor and
+# proves nothing. Stand in the Meadows: Utangard blocks new buffs in a biome the group has not
+# earned, and the step says so if that is what stopped it.
+#
+# REMOVE, NEVER CLEAR. `status clear` would take Rist's own effect off the player along with
+# Eikthyr's, and Rist only puts its cards back when the hand or the player changes - so the
+# step after it would read x1.00 and fail on a floor that was working. The first draft did
+# exactly that.
 #
 # WHAT x0.20 ASSUMES, said out loud. The floor answers only once the sum passes -0.80, and
 # Tireless brings -0.25 of that, so this assertion needs Eikthyr to be deeper than -0.55. The
@@ -35,57 +42,57 @@
 #
 # SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
 #
-# It leaves Tireless at rank 0 and clears every status effect, including any you were carrying.
+# It leaves Tireless at rank 0 and takes Eikthyr's power off, and touches nothing else.
 
 clear
 god
 
-console rist rank tireless 0
-console clearstatus
+mod rist rank tireless 0
+status remove GP_Eikthyr
 wait 1
 
 # Nothing carved and nothing running. Sprinting costs exactly what it costs.
-console rist show
-printed running x1.00
+mod rist show
+printed running x1.00 yes
 
 # ---- Rist on its own, which is under the floor and must be left alone.
 
-console rist rank tireless 5
+mod rist rank tireless 5
 wait 1
 
 # Five ranks of *stamina:move at -0.05. The capstone is the stamina delay now and must not
 # appear here at all - if this reads x0.60 the capstone has leaked back onto running.
-console rist show
-printed running x0.75
+mod rist show
+printed running x0.75 yes
 
 # ---- Eikthyr on its own, which the floor must not touch either.
 
-console rist rank tireless 0
-console addstatus GP_Eikthyr
+mod rist rank tireless 0
+status GP_Eikthyr
 wait 1
 
 # Not asserted, because its value is asset data nobody here has measured. It is read so the log
 # carries the real number: whatever prints here plus 0.25 is what the next step is clamping.
-console rist show
+mod rist show
 
 # ---- the combination that broke.
 
-console rist rank tireless 5
+mod rist rank tireless 5
 wait 1
 
 # -0.25 from Tireless and about -0.60 from Eikthyr is past -0.80, so the floor is what answers.
 # Before MinRunStaminaCost this read x0.15 and the game's own clamp then made it free.
-console rist show
-printed running x0.20
+mod rist show
+printed running x0.20 yes
 
-console clearstatus
+status remove GP_Eikthyr
 wait 1
 
 # And the floor is not sticky: with Eikthyr gone the cost comes back up on its own.
-console rist show
-printed running x0.75
+mod rist show
+printed running x0.75 yes
 
-console rist rank tireless 0
+mod rist rank tireless 0
 wait 1
-console rist show
-printed running x1.00
+mod rist show
+printed running x1.00 yes

@@ -25,82 +25,82 @@
 clear
 god
 
-console rist rank tireless 0
-console rist rank longwind 0
-console rist rank longstride 0
-console clearstatus
+mod rist rank tireless 0
+mod rist rank longwind 0
+mod rist rank longstride 0
+status remove GP_Eikthyr
 wait 1
 
-console rist show
-printed running x1.00
+mod rist show
+printed running x1.00 yes
 
-console rist show
-printed delay 0.00s off
+mod rist show
+printed delay 0.00s off yes
 
-console rist show
-printed jump x1.00
+mod rist show
+printed jump x1.00 yes
 
 # ---- Tireless: the pause before stamina comes back.
 
-console rist rank tireless 4
+mod rist rank tireless 4
 wait 1
 
 # Four ranks buy the stamina discount and not the capstone. Running is already cheaper here,
 # which is the per-rank effect and is meant to be.
-console rist show
-printed delay 0.00s off
+mod rist show
+printed delay 0.00s off yes
 
-console rist rank tireless 5
+mod rist rank tireless 5
 wait 1
-console rist show
-printed delay 0.60s off
+mod rist show
+printed delay 0.60s off yes
 
 # And the fifth rank did not quietly also deepen the running discount.
-console rist show
-printed running x0.75
+mod rist show
+printed running x0.75 yes
 
 # ---- Long stride: jump height.
 
-console rist rank longstride 4
+mod rist rank longstride 4
 wait 1
-console rist show
-printed jump x1.00
+mod rist show
+printed jump x1.00 yes
 
-console rist rank longstride 5
+mod rist rank longstride 5
 wait 1
-console rist show
-printed jump x1.20
+mod rist show
+printed jump x1.20 yes
 
 # Long stride's capstone used to be -0.06 running. If it still were, this would read x0.69.
-console rist show
-printed running x0.75
+mod rist show
+printed running x0.75 yes
 
 # ---- Long wind: more of its own regen, and nothing on running.
 
-console rist rank longwind 5
+mod rist rank longwind 5
 wait 1
 
 # Its capstone used to be -0.05 running. All three stones are at rank 5 here, which is the
 # exact hand that reached the clamp, and running must still be Tireless's ranks alone.
-console rist show
-printed running x0.75
+mod rist show
+printed running x0.75 yes
 
 # The other two are unchanged by it, so the three capstones are not writing over each other.
-console rist show
-printed delay 0.60s off
+mod rist show
+printed delay 0.60s off yes
 
-console rist show
-printed jump x1.20
+mod rist show
+printed jump x1.20 yes
 
-console rist rank tireless 0
-console rist rank longwind 0
-console rist rank longstride 0
+mod rist rank tireless 0
+mod rist rank longwind 0
+mod rist rank longstride 0
 wait 1
 
 # Back to bare, which proves the two written straight onto the player are restored and not
 # merely stopped - a capstone that only ever added would leave the jump at x1.20 here.
-console rist show
-printed jump x1.00
+mod rist show
+printed jump x1.00 yes
 
-console rist show
-printed delay 0.00s off
+mod rist show
+printed delay 0.00s off yes
