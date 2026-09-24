@@ -3,38 +3,32 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [1.7.0] - 2026-09-24
 
 ### Fixed
 
-- **Sprinting could become free.** The game adds run-stamina discounts together and clamps the
-  sum at zero, which works because vanilla never has two large sources running at once. Rist is a
-  second source: Tireless, Long wind and Long stride carved to rank 5 come to -51% between them,
-  and Eikthyr's power on top of that reached the clamp, so running cost nothing for as long as
-  the button was held. There is a floor now, `MinRunStaminaCost`, and at its default of 0.2
-  sprinting always drains at least a fifth of its normal rate however much is stacked against it.
-  Neither source is touched on its own - both sit above the floor - so this catches the
-  combination and nothing else. The fraction is of your own current cost, already through the Run
-  skill and your armour, so it stays proportional as a character improves rather than tightening
-  around them. Reported by AllHailPidgey on the live server.
+- **Sprinting could be free.** The game adds run-stamina discounts together and stops at zero.
+  Tireless, Long wind and Long stride at rank 5 came to -51%, Eikthyr's power is -60%, and the
+  two together hit zero. `MinRunStaminaCost` puts a floor under it: at the default of 0.2,
+  sprinting always costs at least a fifth of its normal rate. Either source on its own stays
+  above the floor and is unchanged. Reported by AllHailPidgey.
 
 ### Changed
 
-- **The three running capstones are gone**, and no capstone adds to a number its own card's
-  ranks already buy. That shape is what produced the bug above: Tireless, Long wind and Long
-  stride each finished on run stamina, so a stat three cards were nudging got a fourth, fifth
-  and sixth push at rank 5.
-  - **Tireless** now shortens the pause before stamina starts coming back, by 0.6s of the
-    game's 1.0s. That pause is the thing that actually ends a sprint or a climb, and it is a
-    different mechanism rather than more of the number that broke. It cannot bring the bug back
-    either: every point of stamina spent resets the timer, so while you are running the delay
-    never elapses whatever it is set to. Only a delay of exactly zero would let stamina return
-    mid-sprint, and the code floors it at 0.25s so a catalogue typo cannot reach it.
-  - **Long wind** finishes on more stamina regen, +10% on top of the +8% a rank it already
-    gives. It and Brimming are now the same card for stamina and for eitr.
-  - **Long stride** jumps a fifth higher. Vanilla's own Jump skill already multiplies the same
-    force by up to 1.4 at level 100, so this sits inside a range the game ships; a jump that
-    leaves you more than 4m above where you land is where fall damage starts.
+- **No capstone touches running any more.** All three movement stones finished on run stamina,
+  which is how the stack got that deep.
+  - **Tireless**: stamina starts coming back 0.6s sooner after you stop spending it, out of the
+    game's 1 second pause.
+  - **Long wind**: +10% stamina regen on top of the +8% a rank, the same shape as Brimming.
+  - **Long stride**: you jump a fifth higher.
+- A full hand of all three now takes 25% off running rather than 51%.
+
+### Added
+
+- Two specials for `cards.txt`: `*staminadelay` and `*jumpforce`. The delay never drops below
+  0.25s, because at zero stamina would refill during a sprint.
+- `rist show` prints the run-stamina multiplier the game is actually charging, the stamina
+  delay and the jump force, which is what the new scenarios check.
 
 ## [1.6.0] - 2026-09-22
 
