@@ -1,0 +1,20 @@
+# Rist: does any forsaken power add up with the stones to zero, the way Eikthyr did with running?
+#
+# The run-stamina bug was a power and a hand of cards both pushing one stat the same way. The
+# game adds most modifiers together and stops at zero, so neither alone came near the line and
+# together they went through it: running cost nothing. `rist powers` checks every forsaken power
+# for the same thing on every stat of that shape - each stamina cost, fall damage, detection,
+# noise and stagger - against the most Rist can ever add, every stone at MaxRank at once.
+#
+# The powers' numbers are asset data, readable only in a running game, which is why this is a
+# scenario and not a line of arithmetic in a comment. The full readout lands in the log, one
+# power per line, so a failure says which power and which stat.
+#
+# Run stamina is reported and never flagged, because MinRunStaminaCost floors it. Sure-footed's
+# own fall immunity is not flagged either: Rist alone reaches zero there by design, and the check
+# is for a power tipping a stat over, not for the capstone doing its job.
+#
+# SINGLEPLAYER, or anywhere ObjectDB is loaded. It changes nothing and needs no ranks.
+
+mod rist powers
+printed nothing reaches zero yes

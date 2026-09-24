@@ -156,6 +156,16 @@ namespace Rist
         }
 
         /// <summary>
+        /// What any set of ranks adds up to, keyed by effect, with the specials spread over the
+        /// fields they cover. For `rist powers`, which needs the most every stone can add at once
+        /// rather than what the local hand holds.
+        /// </summary>
+        internal static Dictionary<string, float> TotalsFor(Dictionary<string, int> ranks)
+        {
+            return Totals(ranks);
+        }
+
+        /// <summary>
         /// What the local hand adds up to for one effect. Read by AttackSpeed, which cannot
         /// go through SE_Stats because the game has no field for what it does.
         /// </summary>

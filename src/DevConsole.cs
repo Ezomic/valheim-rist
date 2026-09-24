@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
+using System.Text;
 using HarmonyLib;
 using UnityEngine;
 
@@ -67,10 +69,208 @@ namespace Rist
 
             if (what == "show") { Show(term); return; }
             if (what == "rank") { Rank(term, args); return; }
+            if (what == "powers") { Powers(term); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
             term.AddString("rist rank <card> <n> - force a card to exactly that rank");
+            term.AddString("rist powers          - each forsaken power against every stone carved, and what reaches zero");
             term.AddString("card ids are the first field of cards.txt: thickhide, steadyfoot, longstride...");
+        }
+
+        // ---------------------------------------------------------------- powers
+
+        /// <summary>
+        /// The stats the game adds together and stops at zero, where a lower number helps. A sum
+        /// at or past -1 on any of them is free, immune or unseen: stamina costs nothing, a fall
+        /// does no damage, a creature cannot see or hear you, a hit cannot stagger you. Read off
+        /// SE_Stats' Modify methods, every one of which is `x += base * modifier` - the same
+        /// shape as run stamina, which is where Eikthyr and a hand of cards went through the
+        /// floor.
+        /// </summary>
+        private static readonly string[][] AddsToZero =
+        {
+            new[] { "m_runStaminaDrainModifier", "run stamina" },
+            new[] { "m_jumpStaminaUseModifier", "jump stamina" },
+            new[] { "m_dodgeStaminaUseModifier", "dodge stamina" },
+            new[] { "m_swimStaminaUseModifier", "swim stamina" },
+            new[] { "m_sneakStaminaUseModifier", "sneak stamina" },
+            new[] { "m_attackStaminaUseModifier", "attack stamina" },
+            new[] { "m_blockStaminaUseModifier", "block stamina" },
+            new[] { "m_homeItemStaminaUseModifier", "tool stamina" },
+            new[] { "m_fallDamageModifier", "fall damage" },
+            new[] { "m_stealthModifier", "detection" },
+            new[] { "m_noiseModifier", "noise" },
+            new[] { "m_staggerModifier", "stagger taken" },
+        };
+
+        /// <summary>
+        /// Every forsaken power, read out of ObjectDB, beside the most Rist can add to the same
+        /// stat - and a flag wherever the two together reach zero.
+        ///
+        /// Written after the run-stamina bug, to check the other powers for the same thing. The
+        /// powers' numbers are asset data on StatusEffect objects, readable only in a running
+        /// game; Eikthyr's -0.60 was assumed from the game's description until a scenario
+        /// measured it, and this reads all of them the same way.
+        ///
+        /// The Rist side is every stone at MaxRank at once, which no character may ever hold.
+        /// That is the right bound for a floor: if the most Rist can ever add plus a power stays
+        /// above zero, no real hand can reach it either.
+        ///
+        /// Flagged only when Rist alone stays above -1 and the power takes it there. Sure-footed
+        /// on its own reaches -1 on fall damage, and that is its capstone working as designed -
+        /// immunity to falling is one of the unlocks the catalogue names - not a power leaking
+        /// into it. Run stamina is reported and not flagged, because MinRunStaminaCost floors it.
+        ///
+        /// "Every power at once" is not a thought experiment. A power reaches every player in
+        /// range when it is cast, so two friends each casting a different one put both on you.
+        /// </summary>
+        private static void Powers(Terminal term)
+        {
+            if (ObjectDB.instance == null || ObjectDB.instance.m_StatusEffects == null
+                || ObjectDB.instance.m_StatusEffects.Count == 0)
+            {
+                Say(term, "rist powers: no ObjectDB yet - load a world first.");
+                return;
+            }
+
+            var ranks = new Dictionary<string, int>();
+            foreach (var card in Cards.All)
+                if (card != null && !string.IsNullOrEmpty(card.Id)) ranks[card.Id] = RistConfig.MaxRank.Value;
+            var rist = Effects.TotalsFor(ranks);
+
+            var floor = RistConfig.MinRunStaminaCost.Value;
+
+            var alone = new StringBuilder("rist powers: every stone at rank " + RistConfig.MaxRank.Value + " adds");
+            foreach (var pair in AddsToZero)
+            {
+                rist.TryGetValue(pair[0], out var r);
+                if (r != 0f) alone.Append("  " + pair[1] + " " + Signed(r));
+            }
+            Say(term, alone.ToString());
+
+            var together = new Dictionary<string, float>();
+            var found = 0;
+            var zeroes = 0;
+
+            foreach (var effect in ObjectDB.instance.m_StatusEffects)
+            {
+                if (effect == null || effect.name == null
+                    || !effect.name.StartsWith("GP_", StringComparison.Ordinal)) continue;
+
+                found++;
+
+                if (!(effect is SE_Stats stats))
+                {
+                    Say(term, "  " + effect.name + " (" + effect.GetType().Name + "): no stat modifiers, nothing to add up");
+                    continue;
+                }
+
+                Say(term, "  " + effect.name + ": " + Describe(stats));
+
+                foreach (var pair in AddsToZero)
+                {
+                    var p = Read(stats, pair[0]);
+                    if (p == 0f) continue;
+
+                    together.TryGetValue(pair[0], out var sum);
+                    together[pair[0]] = sum + p;
+
+                    rist.TryGetValue(pair[0], out var r);
+                    zeroes += Judge(term, "    ", pair, p, r, floor);
+                }
+            }
+
+            if (found == 0)
+            {
+                Say(term, "rist powers: no GP_ status effects in ObjectDB - is this the stub ObjectDB?");
+                return;
+            }
+
+            if (together.Count > 0)
+            {
+                Say(term, "  every power at once, as when several players cast on you:");
+                foreach (var pair in AddsToZero)
+                {
+                    if (!together.TryGetValue(pair[0], out var p)) continue;
+                    rist.TryGetValue(pair[0], out var r);
+                    zeroes += Judge(term, "    ", pair, p, r, floor);
+                }
+            }
+
+            Say(term, zeroes == 0
+                ? "rist powers: " + found + " powers read, nothing reaches zero"
+                : "rist powers: " + found + " powers read, " + zeroes + " REACH ZERO");
+        }
+
+        /// <summary>One stat, one power: prints the sum and returns 1 when it reaches zero.</summary>
+        private static int Judge(Terminal term, string indent, string[] pair, float power, float rist, float floor)
+        {
+            var total = power + rist;
+            var line = indent + pair[1] + ": power " + Signed(power) + ", rist " + Signed(rist) + ", together " + Signed(total);
+
+            if (pair[0] == "m_runStaminaDrainModifier" && floor > 0f && total <= -1f + floor)
+            {
+                Say(term, line + " - floored at x" + floor.ToString("0.00", CultureInfo.InvariantCulture) + " by MinRunStaminaCost");
+                return 0;
+            }
+
+            if (rist > -1f && total <= -1f)
+            {
+                Say(term, line + " - REACHES ZERO");
+                return 1;
+            }
+
+            Say(term, line);
+            return 0;
+        }
+
+        /// <summary>
+        /// Everything a stat effect changes: each float field away from its neutral value, the
+        /// jump vector, the attack skill a damage modifier is gated on, and the resistances.
+        /// </summary>
+        private static string Describe(SE_Stats stats)
+        {
+            var parts = new List<string>();
+
+            foreach (var field in typeof(SE_Stats).GetFields(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (field.FieldType != typeof(float)) continue;
+
+                var value = (float)field.GetValue(stats);
+                var neutral = Card.IsOneBased(field.Name) ? 1f : 0f;
+                if (Math.Abs(value - neutral) < 0.0001f) continue;
+
+                var text = field.Name + " " + value.ToString("0.###", CultureInfo.InvariantCulture);
+                if (field.Name == "m_damageModifier") text += " on " + stats.m_modifyAttackSkill;
+                parts.Add(text);
+            }
+
+            if (stats.m_jumpModifier != Vector3.zero)
+                parts.Add("m_jumpModifier " + stats.m_jumpModifier.ToString("0.###"));
+
+            if (stats.m_mods != null)
+                foreach (var mod in stats.m_mods)
+                    parts.Add(mod.m_type + " " + mod.m_modifier);
+
+            return parts.Count == 0 ? "(no stat changes)" : string.Join(", ", parts.ToArray());
+        }
+
+        private static float Read(SE_Stats stats, string name)
+        {
+            var field = typeof(SE_Stats).GetField(name, BindingFlags.Public | BindingFlags.Instance);
+            return field != null && field.FieldType == typeof(float) ? (float)field.GetValue(stats) : 0f;
+        }
+
+        private static string Signed(float value)
+        {
+            return value.ToString("+0.00;-0.00;0.00", CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>To the console and to the log, so a scenario run leaves the numbers on disk.</summary>
+        private static void Say(Terminal term, string line)
+        {
+            term.AddString(line);
+            RistPlugin.Log.LogInfo(line);
         }
 
         // ---------------------------------------------------------------- show
