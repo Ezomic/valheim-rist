@@ -169,7 +169,7 @@ answeringblow | Answering blow | Slip the blow, then make them pay for it. | *an
 == Survival
 
 thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | m_armorMultiplier         | 0.05 | H
-steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.06 | m_armorMultiplier         | 0.05 | E
+steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.05 | m_armorMultiplier         | 0.05 | E
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
 surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
 

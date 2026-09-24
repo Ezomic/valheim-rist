@@ -24,6 +24,8 @@ and the mod uses [semantic versioning](https://semver.org).
     jump would have reached, so your own jumps never hurt more than they did before. Jumping off
     a ledge still hurts for the drop below where you left the ground.
 - A full hand of all three now takes 25% off running rather than 51%.
+- **Steady footing** takes 5% off stagger a rank instead of 6%, 25% at rank 5. With Fader's
+  power, which is -50% on its own, a full hand of stagger stones took hits down to a twentieth.
 
 ### Added
 
