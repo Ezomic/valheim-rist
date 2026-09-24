@@ -3,6 +3,21 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- **Sprinting could become free.** The game adds run-stamina discounts together and clamps the
+  sum at zero, which works because vanilla never has two large sources running at once. Rist is a
+  second source: Tireless, Long wind and Long stride carved to rank 5 come to -51% between them,
+  and Eikthyr's power on top of that reached the clamp, so running cost nothing for as long as
+  the button was held. There is a floor now, `MinRunStaminaCost`, and at its default of 0.2
+  sprinting always drains at least a fifth of its normal rate however much is stacked against it.
+  Neither source is touched on its own - both sit above the floor - so this catches the
+  combination and nothing else. The fraction is of your own current cost, already through the Run
+  skill and your armour, so it stays proportional as a character improves rather than tightening
+  around them. Reported by AllHailPidgey on the live server.
+
 ## [1.6.0] - 2026-09-22
 
 ### Added

@@ -122,6 +122,9 @@ namespace Rist
             Patch(typeof(Horizon.Row));
             Patch(typeof(Horizon.Ring));
 
+            // Not a card - a floor under all of them together. See RunStamina.
+            Patch(typeof(RunStamina));
+
             // The console command registers itself from Terminal's own init, so this one line
             // is the difference between `rist` existing and every scenario failing on step one.
             Patch(typeof(DevConsole.Hook));

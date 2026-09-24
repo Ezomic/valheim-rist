@@ -27,6 +27,7 @@ namespace Rist
         internal static ConfigEntry<int> BonusEvery;
         internal static ConfigEntry<float> ReconcileMaxLoss;
         internal static ConfigEntry<float> AttackSpeedMax;
+        internal static ConfigEntry<float> MinRunStaminaCost;
         internal static ConfigEntry<float> PanelBottomInset;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
@@ -328,6 +329,21 @@ namespace Rist
                 "animation events are what land the hit, so a mis-typed catalogue line could " +
                 "otherwise run the whole character at twenty times speed. On a bow or crossbow it " +
                 "divides the draw or reload time, so the same typo would make every shot instant.");
+
+            MinRunStaminaCost = cfg.Bind("Cards", "MinRunStaminaCost", 0.2f,
+                "The least sprinting can ever cost, as a fraction of what it would cost you " +
+                "with no discounts at all. 0.2 means running always drains at least a fifth of " +
+                "its normal rate however much has been stacked against it. 0 turns the floor " +
+                "off and restores the game's own behaviour, which is that the discounts add up " +
+                "and stop at free.\n" +
+                "The fraction is of your own current cost, already through the Run skill and " +
+                "your armour weight, so the floor stays proportional as a character improves " +
+                "rather than tightening around them.\n" +
+                "This exists because the game only clamps the sum at zero and never expects two " +
+                "large sources at once. A full hand of Tireless, Long wind and Long stride is " +
+                "-51%, Eikthyr's power is another -60%, and the pair reached zero: sprinting was " +
+                "free for as long as the button was held. At the default nothing else changes - " +
+                "either source on its own stays under the floor and is left alone.");
 
             // PanelColumns used to be bound here, and it is gone rather than kept doing nothing.
             // The panel no longer takes a column count: it stands the rists in ættir and works
