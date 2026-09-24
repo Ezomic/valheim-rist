@@ -94,6 +94,52 @@ namespace Rist
             if (!any) term.AddString("  no ranks");
 
             term.AddString(Armour(player));
+            term.AddString(Moving(player));
+        }
+
+        /// <summary>
+        /// The three numbers the movement stones change, read back off the game.
+        ///
+        /// Same rule as Armour above: print what the game would use, not what Rist believes it
+        /// wrote. The running figure is the game's own, taken through the public
+        /// SEMan.ModifyRunStaminaDrain with a base of 1 - which is exactly the call
+        /// Player.GetEquipmentModifierPlusSE(9) makes for the cost readout, so a multiplier here
+        /// is the multiplier a sprint is charged. It is therefore the only place that can show
+        /// MinRunStaminaCost doing its job: with the floor working this bottoms out at the
+        /// configured fraction however much is stacked, and without it a deep enough stack reads
+        /// x0.00 and running is free.
+        ///
+        /// minZero: false on purpose. The game's own clamp would turn a negative sum into zero
+        /// and hide whether the floor or the clamp produced it, and a test that cannot tell
+        /// those apart passes on the bug it was written for.
+        /// </summary>
+        private static string Moving(Player player)
+        {
+            var seman = player.GetSEMan();
+
+            var running = 1f;
+            if (seman != null) seman.ModifyRunStaminaDrain(1f, ref running, Vector3.zero, minZero: false);
+
+            var jumpBase = Sinews.VanillaJump(player);
+            var jumpRatio = jumpBase > 0f ? player.m_jumpForce / jumpBase : 1f;
+
+            // A ratio and a difference rather than the two raw numbers, because both baselines
+            // are asset data on the Player prefab and neither is readable outside the running
+            // game. Asserting "jump 12.0" in a scenario would be asserting a value nobody here
+            // has measured; "jump x1.20" is true whatever the prefab carries. The absolutes are
+            // printed after them for reading, which is the same split as armour above.
+            //
+            // The delay figure is what was actually taken off, not what the cards asked for, so
+            // a run into the 0.25s floor shows up as a smaller number instead of passing.
+            var delayOff = Sinews.VanillaDelay(player) - player.m_staminaRegenDelay;
+
+            return "running x" + running.ToString("0.00", CultureInfo.InvariantCulture)
+                   + "  delay " + delayOff.ToString("0.00", CultureInfo.InvariantCulture)
+                   + "s off (" + player.m_staminaRegenDelay.ToString("0.00", CultureInfo.InvariantCulture)
+                   + "s of " + Sinews.VanillaDelay(player).ToString("0.00", CultureInfo.InvariantCulture)
+                   + "s)  jump x" + jumpRatio.ToString("0.00", CultureInfo.InvariantCulture)
+                   + " (" + player.m_jumpForce.ToString("0.0", CultureInfo.InvariantCulture)
+                   + " of " + jumpBase.ToString("0.0", CultureInfo.InvariantCulture) + ")";
         }
 
         /// <summary>

@@ -47,6 +47,23 @@ namespace Rist
         private static float _vanillaDelay;
         private static float _vanillaJump;
 
+        /// <summary>
+        /// What the character had before Rist wrote to it, for the readout to print a ratio
+        /// against. Falls back to the live values when nothing has been captured yet, so a
+        /// character holding no cards reads x1.00 rather than dividing by zero.
+        /// </summary>
+        internal static float VanillaJump(Player player)
+        {
+            if (ReferenceEquals(player, _player) && _vanillaJump > 0f) return _vanillaJump;
+            return player == null ? 0f : player.m_jumpForce;
+        }
+
+        internal static float VanillaDelay(Player player)
+        {
+            if (ReferenceEquals(player, _player) && _vanillaDelay > 0f) return _vanillaDelay;
+            return player == null ? 0f : player.m_staminaRegenDelay;
+        }
+
         internal static void Reset()
         {
             _player = null;

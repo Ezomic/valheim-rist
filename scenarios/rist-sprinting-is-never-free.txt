@@ -1,0 +1,91 @@
+# Rist: sprinting always costs something, however much is stacked against it.
+#
+# The bug this is written for: the game adds run-stamina discounts together across status
+# effects and clamps the sum at zero, which is safe in vanilla only because there is never more
+# than one large source at a time. Rist was a second source, and a full hand plus Eikthyr's
+# power took the sum past -1. Running cost nothing for as long as the button was held.
+# AllHailPidgey found it on the live server on 2026-09-24.
+#
+# The number asserted is the GAME's. `rist show` prints "running x0.20" from
+# SEMan.ModifyRunStaminaDrain with a base of 1, which is the same call the game makes for its
+# own cost readout - so the multiplier here is the multiplier a sprint is charged, not Rist's
+# opinion of what it wrote.
+#
+# It is read with minZero: false on purpose. The game's own clamp turns a negative sum into
+# zero too, so a readout that clamped could not tell "the floor held" from "the bug is back"
+# and would pass on either.
+#
+# EIKTHYR IS THE SECOND SOURCE, and `addstatus GP_Eikthyr` is how the scenario gets it - the
+# real status effect out of ObjectDB, not an imitation of it. Without that step Rist alone is
+# only -0.25 now, which sits above the floor and proves nothing.
+#
+# WHAT x0.20 ASSUMES, said out loud. The floor answers only once the sum passes -0.80, and
+# Tireless brings -0.25 of that, so this assertion needs Eikthyr to be deeper than -0.55. The
+# game describes its power as 60% off running and jumping, and that number has NOT been measured
+# here - it is asset data on a StatusEffect and is not readable from the assembly. So if this
+# step reads anything between x0.20 and x0.25, the floor is working exactly as intended and
+# Eikthyr is shallower than assumed: correct the literal here rather than the code. Anything at
+# or below x0.19, or x0.00, is the real failure this scenario is for.
+#
+# The step before it reads Eikthyr on its own, which puts the true number in the log whether
+# this passes or not, and proves the floor leaves a single source alone.
+#
+# THE TRAP, if the first assertion is not x1.00: something else on this profile is discounting
+# running, or this character already holds ranks in Tireless. The rank 0 step clears it.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Tireless at rank 0 and clears every status effect, including any you were carrying.
+
+clear
+god
+
+console rist rank tireless 0
+console clearstatus
+wait 1
+
+# Nothing carved and nothing running. Sprinting costs exactly what it costs.
+console rist show
+printed running x1.00
+
+# ---- Rist on its own, which is under the floor and must be left alone.
+
+console rist rank tireless 5
+wait 1
+
+# Five ranks of *stamina:move at -0.05. The capstone is the stamina delay now and must not
+# appear here at all - if this reads x0.60 the capstone has leaked back onto running.
+console rist show
+printed running x0.75
+
+# ---- Eikthyr on its own, which the floor must not touch either.
+
+console rist rank tireless 0
+console addstatus GP_Eikthyr
+wait 1
+
+# Not asserted, because its value is asset data nobody here has measured. It is read so the log
+# carries the real number: whatever prints here plus 0.25 is what the next step is clamping.
+console rist show
+
+# ---- the combination that broke.
+
+console rist rank tireless 5
+wait 1
+
+# -0.25 from Tireless and about -0.60 from Eikthyr is past -0.80, so the floor is what answers.
+# Before MinRunStaminaCost this read x0.15 and the game's own clamp then made it free.
+console rist show
+printed running x0.20
+
+console clearstatus
+wait 1
+
+# And the floor is not sticky: with Eikthyr gone the cost comes back up on its own.
+console rist show
+printed running x0.75
+
+console rist rank tireless 0
+wait 1
+console rist show
+printed running x1.00
