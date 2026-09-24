@@ -34,6 +34,22 @@ namespace Rist
         internal const string JumpHeight = "*jumpheight";
 
         /// <summary>
+        /// Stamina walking costs while over your carry limit, negative like the other stamina
+        /// modifiers: -0.5 is half. Vanilla drains Player.m_encumberedStaminaDrain, 10 a second,
+        /// whenever an overloaded character moves, and stops regen outright while it is over -
+        /// so this is how far you can shuffle before you have to drop something.
+        /// </summary>
+        internal const string Overloaded = "*overloaded";
+
+        /// <summary>
+        /// Never below a quarter of vanilla, whatever the catalogue asks. Being over the limit
+        /// also stops regen and takes away running, jumping and dodging, and a drain of zero
+        /// would leave crouch speed as the only price of carrying anything - the limit switched
+        /// off rather than eased. Same reasoning as MinDelay: a typo should not reach it.
+        /// </summary>
+        private const float MinOverloadDrain = 0.25f;
+
+        /// <summary>
         /// The pause can be shortened and never removed, and this is not tidiness.
         ///
         /// Regen runs only while m_staminaRegenTimer has run out, and every point of stamina
@@ -52,10 +68,14 @@ namespace Rist
         /// <summary>Fraction of extra jump HEIGHT the hand asks for. See JumpHeight.</summary>
         internal static float JumpBonus;
 
+        /// <summary>Fraction off the overloaded drain, zero or negative. See Overloaded.</summary>
+        internal static float OverloadMod;
+
         // The player these were captured from, and the values it had before Rist touched them.
         private static Player _player;
         private static float _vanillaDelay;
         private static float _vanillaJump;
+        private static float _vanillaOverload;
 
         /// <summary>
         /// What the character had before Rist wrote to it, for the readout to print a ratio
@@ -66,6 +86,12 @@ namespace Rist
         {
             if (ReferenceEquals(player, _player) && _vanillaJump > 0f) return _vanillaJump;
             return player == null ? 0f : player.m_jumpForce;
+        }
+
+        internal static float VanillaOverload(Player player)
+        {
+            if (ReferenceEquals(player, _player) && _vanillaOverload > 0f) return _vanillaOverload;
+            return player == null ? 0f : player.m_encumberedStaminaDrain;
         }
 
         internal static float VanillaDelay(Player player)
@@ -266,6 +292,7 @@ namespace Rist
             _player = null;
             DelayCut = 0f;
             JumpBonus = 0f;
+            OverloadMod = 0f;
             Landing.Clear();
         }
 
@@ -285,6 +312,7 @@ namespace Rist
                 _player = player;
                 _vanillaDelay = player.m_staminaRegenDelay;
                 _vanillaJump = player.m_jumpForce;
+                _vanillaOverload = player.m_encumberedStaminaDrain;
             }
 
             player.m_staminaRegenDelay = Mathf.Max(MinDelay, _vanillaDelay - Mathf.Max(0f, DelayCut));
@@ -309,6 +337,9 @@ namespace Rist
             // No bonus is better than a bonus that hurts.
             var height = Landing.Guarded ? Mathf.Max(0f, JumpBonus) : 0f;
             player.m_jumpForce = _vanillaJump * Mathf.Sqrt(1f + height);
+
+            player.m_encumberedStaminaDrain = _vanillaOverload
+                * Mathf.Max(MinOverloadDrain, 1f + Mathf.Min(0f, OverloadMod));
         }
     }
 }

@@ -300,12 +300,14 @@ namespace Rist
         {
             var totals = Totals(ranks);
 
-            float delay, jump;
+            float delay, jump, overload;
             totals.TryGetValue(Sinews.StaminaDelay, out delay);
             totals.TryGetValue(Sinews.JumpHeight, out jump);
+            totals.TryGetValue(Sinews.Overloaded, out overload);
 
             Sinews.DelayCut = Mathf.Max(0f, delay);
             Sinews.JumpBonus = Mathf.Max(0f, jump);
+            Sinews.OverloadMod = Mathf.Min(0f, overload);
 
             Sinews.Apply(player);
         }

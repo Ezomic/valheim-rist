@@ -348,13 +348,23 @@ namespace Rist
             // a run into the 0.25s floor shows up as a smaller number instead of passing.
             var delayOff = Sinews.VanillaDelay(player) - player.m_staminaRegenDelay;
 
+            // Stagger through the game's own sum, which is what a hit is scaled by. The overload
+            // drain is a ratio for the same reason jump is: its baseline is prefab data.
+            var stagger = 1f;
+            if (seman != null) seman.ModifyStagger(1f, ref stagger);
+
+            var overloadBase = Sinews.VanillaOverload(player);
+            var overload = overloadBase > 0f ? player.m_encumberedStaminaDrain / overloadBase : 1f;
+
             return "running x" + running.ToString("0.00", CultureInfo.InvariantCulture)
                    + "  delay " + delayOff.ToString("0.00", CultureInfo.InvariantCulture)
                    + "s off (" + player.m_staminaRegenDelay.ToString("0.00", CultureInfo.InvariantCulture)
                    + "s of " + Sinews.VanillaDelay(player).ToString("0.00", CultureInfo.InvariantCulture)
                    + "s)  jump height x" + heightRatio.ToString("0.00", CultureInfo.InvariantCulture)
                    + " (push " + player.m_jumpForce.ToString("0.00", CultureInfo.InvariantCulture)
-                   + " of " + jumpBase.ToString("0.00", CultureInfo.InvariantCulture) + ")";
+                   + " of " + jumpBase.ToString("0.00", CultureInfo.InvariantCulture) + ")"
+                   + "  stagger x" + stagger.ToString("0.00", CultureInfo.InvariantCulture)
+                   + "  overloaded x" + overload.ToString("0.00", CultureInfo.InvariantCulture);
         }
 
         /// <summary>

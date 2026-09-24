@@ -182,6 +182,7 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*power:cooldown` | Shortens the forsaken power's cooldown. Negative is shorter, and it cannot go below half |
 | `*power:duration` | Seconds added to the forsaken power for every player it reaches when you cast it. A power cast by someone without it lasts the normal time for everyone. Applies to every forsaken power |
 | `*staminadelay` | Seconds off the pause before stamina starts coming back after you spend it. The game's pause is 1 second, and it never goes below `0.25`: at zero, stamina would refill while you sprint |
+| `*overloaded` | Stamina walking costs while you are over your carry limit. Negative like the stamina fields: `-0.50` is half. Vanilla drains 10 a second; it never goes below a quarter of that |
 | `*jumpheight` | Jump higher. A fraction of how high you jump: `0.15` is 15% higher. It multiplies with the Jump skill's own bonus. The landing is measured from the height a vanilla jump would have reached, so your own jump never hurts more than vanilla's, and the bonus is withheld if that guard cannot attach |
 | `*exploreradius` | The map reveals a wider circle as you walk. A fraction: `0.05` is 5% further |
 | `*windcone` | Narrows the sailing dead zone and turns the sail's push toward the bow inside the arc it opens, so you can sail closer to the wind. Sailing dead upwind still stalls. A fraction of the zone, capped at `0.8`. Only applies to a ship you are steering, and the wind ring's dead zone narrows to match |

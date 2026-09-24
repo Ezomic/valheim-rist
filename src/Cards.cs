@@ -275,7 +275,7 @@ namespace Rist
             "m_swimStaminaUseModifier", "m_jumpStaminaUseModifier", "m_sneakStaminaUseModifier",
             "m_dodgeStaminaUseModifier", "*stamina:move", "*stamina:fight",
             "m_fallDamageModifier", "m_stealthModifier", "m_noiseModifier", "m_staggerModifier",
-            Oathbound.Cooldown,
+            Oathbound.Cooldown, Sinews.Overloaded,
         };
 
         internal static bool PointsAtDrawback(string effect, float value)
@@ -345,6 +345,7 @@ namespace Rist
             // stamina returns" is the thing a player feels the moment they stop running.
             { Sinews.StaminaDelay, "s less before stamina returns" },
             { Sinews.JumpHeight, "jump height" },
+            { Sinews.Overloaded, "stamina walking overloaded" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -368,7 +369,7 @@ namespace Rist
             // map sight" where they meant +5%. WarnAboutMissingLabels checks for both at load.
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.JumpHeight,
+            Sinews.JumpHeight, Sinews.Overloaded,
         };
 
         /// <summary>
@@ -384,7 +385,7 @@ namespace Rist
             UnseenBlow.Bonus, UnseenBlow.Stagger, DeepDraught.Duration, DeepDraught.FullCask,
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.StaminaDelay, Sinews.JumpHeight,
+            Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded,
             "*stamina:move", "*stamina:fight",
         };
 

@@ -31,6 +31,7 @@
 #   *power:duration         seconds added to the forsaken power for everyone it reaches, when you cast it
 #   *staminadelay           seconds off the pause before stamina starts coming back
 #   *jumpheight             jumps higher, as a share of how high you jump: 0.15 is 15% higher
+#   *overloaded             stamina walking costs while over your carry limit: -0.50 is half
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
@@ -177,7 +178,7 @@ surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageM
 
 == Endurance
 
-oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | m_staggerModifier         | -0.15 | U
+oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | *overloaded               | -0.50 | U
 tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | *staminadelay             | 0.6  | A
 longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_staminaRegenMultiplier  | 0.10 | L
 brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q

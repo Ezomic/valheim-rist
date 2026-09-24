@@ -1,0 +1,60 @@
+# Rist: Steady footing at -5% a rank, and Ox-backed's capstone off stagger and onto the load.
+#
+# Measured with `rist powers` on 2026-09-24: Fader's power is -0.50 stagger, and Steady footing's
+# five ranks at -0.06 plus Ox-backed's old -0.15 capstone took the total to -0.95 - a hit filled
+# the stagger bar at a twentieth of its rate. Steady footing is -0.05 a rank now, and Ox-backed
+# finishes on walking overloaded costing half the stamina instead.
+#
+# `rist show` reads both off the game: stagger through SEMan.ModifyStagger with a base of 1,
+# which is what every hit is scaled by, and the overloaded drain as a ratio of the Player's own,
+# which is prefab data. The Ox-backed steps check stagger alongside, because the point of the
+# change is that its capstone no longer touches stagger at all.
+#
+# SINGLEPLAYER. It leaves both stones at rank 0.
+
+clear
+god
+
+mod rist rank steadyfoot 0
+mod rist rank oxback 0
+wait 1
+
+mod rist show
+printed stagger x1.00 yes
+
+mod rist show
+printed overloaded x1.00 yes
+
+# ---- Steady footing: 5% a rank.
+
+mod rist rank steadyfoot 5
+wait 1
+mod rist show
+printed stagger x0.75 yes
+
+# ---- Ox-backed: nothing at rank 4, half the overloaded drain at rank 5, and stagger untouched.
+
+mod rist rank oxback 4
+wait 1
+mod rist show
+printed overloaded x1.00 yes
+
+mod rist rank oxback 5
+wait 1
+mod rist show
+printed overloaded x0.50 yes
+
+# The old capstone was -0.15 stagger. With Steady footing at 5 this would read x0.60 if it were
+# still there.
+mod rist show
+printed stagger x0.75 yes
+
+mod rist rank steadyfoot 0
+mod rist rank oxback 0
+wait 1
+mod rist show
+printed stagger x1.00 yes
+
+# Restored, not merely stopped: the drain is written onto the player and has to come back.
+mod rist show
+printed overloaded x1.00 yes

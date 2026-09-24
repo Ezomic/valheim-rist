@@ -24,12 +24,16 @@ and the mod uses [semantic versioning](https://semver.org).
     jump would have reached, so your own jumps never hurt more than they did before. Jumping off
     a ledge still hurts for the drop below where you left the ground.
 - A full hand of all three now takes 25% off running rather than 51%.
-- **Steady footing** takes 5% off stagger a rank instead of 6%, 25% at rank 5. With Fader's
-  power, which is -50% on its own, a full hand of stagger stones took hits down to a twentieth.
+- **Steady footing** takes 5% off stagger a rank instead of 6%, 25% at rank 5.
+- **Ox-backed**'s last rank no longer touches stagger. Walking while over your carry limit costs
+  half the stamina instead, 5 a second rather than 10, so you can shuffle twice as far before
+  you have to drop something. You are still slow and still cannot run or recover stamina.
+- Together with Fader's power, which is -50% stagger on its own, the old Steady footing and
+  Ox-backed made each hit fill the stagger bar at a twentieth of its rate. It is a quarter now.
 
 ### Added
 
-- Two specials for `cards.txt`: `*staminadelay` and `*jumpheight`. `*jumpheight` is a share of
+- Three specials for `cards.txt`: `*staminadelay`, `*jumpheight` and `*overloaded`. `*jumpheight` is a share of
   how high you jump, not of jump force; 15% more height takes about 7% more push. The delay never drops below
   0.25s, because at zero stamina would refill during a sprint.
 - `rist show` prints the run-stamina multiplier the game is actually charging, the stamina
