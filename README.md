@@ -181,6 +181,8 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*mead:fullcask` | Chance a buff mead is not used up when drunk, rolled per drink. A fraction: `0.25` is 25% |
 | `*power:cooldown` | Shortens the forsaken power's cooldown. Negative is shorter, and it cannot go below half |
 | `*power:duration` | Seconds added to the forsaken power for every player it reaches when you cast it. A power cast by someone without it lasts the normal time for everyone. Applies to every forsaken power |
+| `*staminadelay` | Seconds off the pause before stamina starts coming back after you spend it. The game's pause is 1 second, and it never goes below `0.25`: at zero, stamina would refill while you sprint |
+| `*jumpforce` | Jump higher. A fraction of your jump force: `0.20` is a fifth higher. It multiplies with the Jump skill's own bonus |
 | `*exploreradius` | The map reveals a wider circle as you walk. A fraction: `0.05` is 5% further |
 | `*windcone` | Narrows the sailing dead zone and turns the sail's push toward the bow inside the arc it opens, so you can sail closer to the wind. Sailing dead upwind still stalls. A fraction of the zone, capped at `0.8`. Only applies to a ship you are steering, and the wind ring's dead zone narrows to match |
 | `*rowspeed` | Rows faster, forward and back. A fraction of top rowing speed: `0.20` is 20% faster. Only applies to a ship you are steering |
@@ -232,6 +234,7 @@ If a change appears to do nothing, check the file.
 | `BonusEvery` | `5` | Ranks between capstones |
 | `PanelBottomInset` | `0` | Pixels at the bottom of the screen the panel keeps clear, for a taskbar over the game window. About `48` clears a Windows taskbar. Stays local on a server |
 | `AttackSpeedMax` | `1` | Ceiling on the attack-speed specials, as a fraction. `1` means a swing or cast can at most run at double speed, and a bow draw or crossbow reload can at most take half its time |
+| `MinRunStaminaCost` | `0.2` | The least sprinting can cost, as a fraction of its cost with no discounts. The game adds run discounts together and stops at zero, so without this a full hand of cards plus Eikthyr's power made running free. `0` turns the floor off |
 | `ReconcileMaxLoss` | `0.34` | How much of the ledger's runestone history may vanish from `cards.txt` in one go before the server refuses to reconcile at all, as a fraction of the distinct ids players hold. Server-side only |
 
 `ReconcileMaxLoss` is worth understanding before you edit the catalogue. Removing a runestone
