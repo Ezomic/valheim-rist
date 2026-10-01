@@ -1,0 +1,16 @@
+{
+    "roadmap": [
+        {
+            "key": "capstones-that-feel-unique",
+            "title": "Capstones that belong to their stone",
+            "status": "planned",
+            "body": "Several capstones are only a bigger number on the stone's own stat, or an effect with nothing to do with it, or another stone's effect. Each one is being redone as something new that fits the stone you carved, and balanced against the others so none of them is the obvious pick.\n\nYou will get a list of proposals to vote on before any of it is built."
+        },
+        {
+            "key": "four-stones-folded-in",
+            "title": "Four stones folded into existing ones",
+            "status": "planned",
+            "body": "Quick guard goes into Turned blade, Eitr-thrift into Brimming, Reeling blow into Answering blow, and Deep ward into Blood-sworn, since each overlapped a stone that already exists.\n\nThree of those change what a rank of a stone you may already carry gives. Your ranks stay."
+        }
+    ]
+}
