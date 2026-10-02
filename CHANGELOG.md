@@ -3,6 +3,16 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- **The mouse could stick to the middle of the screen on the runestone page.** While the page is open Rist
+  keeps the cursor free, and it did that by writing the unlocked and visible state every frame. On
+  Windows that changes nothing, but on SteamOS a player's pointer stayed pinned to the centre on this page
+  and no other. The state is now written only when the cursor is not already free, which on the compendium
+  is almost never. Reported on Discord; not reproduced on Windows, so it is unconfirmed until the player tries it.
+
 ## [1.7.0] - 2026-09-24
 
 ### Fixed

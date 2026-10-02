@@ -41,14 +41,21 @@ namespace Rist
         /// A postfix rather than a prefix, because the method must still do its normal work
         /// for every other case - this only overrides the outcome while the window is up.
         /// </summary>
+        /// <summary>
+        /// Only written when the cursor is not already free. The compendium frees it by itself,
+        /// so on most frames there is nothing to do, and an assignment that changes nothing on
+        /// Windows is not harmless everywhere: a SteamOS player's pointer stuck to the middle of
+        /// the screen on this page and no other, which is the one place that wrote both values
+        /// sixty times a second. Reported 2026-10-01 (LHM-64) and not reproduced on Windows.
+        /// </summary>
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.UpdateMouseCapture))]
         private static void FreeCursor()
         {
             if (!RistPanel.IsOpen) return;
 
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            if (Cursor.lockState != CursorLockMode.None) Cursor.lockState = CursorLockMode.None;
+            if (!Cursor.visible) Cursor.visible = true;
         }
 
         /// <summary>
