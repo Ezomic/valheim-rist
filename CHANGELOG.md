@@ -23,6 +23,13 @@ and the mod uses [semantic versioning](https://semver.org).
 - `rist others` prints what the page was told, one line per character, and `rist others ask` sends the request
   the page sends. Used by the new scenarios, `rist-others-solo` and the pair `paired-rist-others-viewer` and
   `paired-rist-others-peer`.
+- The other-players list and the character state are accepted only from the server (or from yourself when you
+  host), so another player on the server cannot send your client a forged list or a forged level. The list is
+  also dropped if it is longer than 64 KB. The list no longer carries each character's exact XP, which nothing
+  read, so a line is `id|online|name|level|cards`; the feature is new in this update, so no released version
+  speaks the old form. Two unnamed characters whose ids end in the same four digits are told apart by longer
+  tails. The note under another character's page now has room of its own below the stones instead of being
+  drawn over them, and the tab strip is measured again when your own level gains a digit.
 - **Blood-sworn**, a new runestone in Combat (LHM-55). Each rank gives 3 levels of blood magic and makes
   a blood magic shield absorb 10% more. Five ranks is +15 levels, and those levels also raise the shield's base
   absorb through the game's own per-skill-level figure, so the 1.5 times from the ranks applies on top of an
