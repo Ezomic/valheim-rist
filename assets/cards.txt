@@ -32,12 +32,13 @@
 #   *staminadelay           seconds off the pause before stamina starts coming back
 #   *jumpheight             jumps higher, as a share of how high you jump: 0.15 is 15% higher
 #   *overloaded             stamina walking costs while over your carry limit: -0.50 is half
+#   *landing:roll           a dodge pressed in the last 0.3 s before touchdown makes the fall count 8 m shorter (value 1)
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
 #
 # Rank 5 is meant to be the moment, so a capstone should be an unlock rather than a larger
-# number wherever the game gives us one: a row of inventory, immunity to falling, levels in
+# number wherever the game gives us one: a row of inventory, a roll that cushions a landing, levels in
 # every skill, a stagger. Several do that now. Nothing anywhere carries a drawback, on purpose - a
 # choice you regret is a choice that stops you playing.
 #
@@ -172,7 +173,12 @@ answeringblow | Answering blow | Slip the blow, then make them pay for it. | *an
 thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | m_armorMultiplier         | 0.05 | H
 steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.05 | m_armorMultiplier         | 0.05 | E
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
-surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
+# Sure-footed's ranks are -10% fall damage each, -50% at rank five, and that is all they buy. The
+# capstone used to be a second -50%, which made rank five immune to falling and left nothing to
+# do about a drop from a mountain top. It is a landing roll now: a dodge pressed in the last 0.3 s
+# before touchdown makes the fall count 8 m shorter, before the percentage is taken. Not a bigger
+# number on the same stat, on purpose.
+surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | *landing:roll             | 1 | S
 
 # How long you can keep going, and how much you carry while you do.
 

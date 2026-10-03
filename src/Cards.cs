@@ -346,6 +346,7 @@ namespace Rist
             { Sinews.StaminaDelay, "s less before stamina returns" },
             { Sinews.JumpHeight, "jump height" },
             { Sinews.Overloaded, "stamina walking overloaded" },
+            { Sinews.LandingRoll, "a dodge as you land makes the fall 8 m shorter" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -385,7 +386,7 @@ namespace Rist
             UnseenBlow.Bonus, UnseenBlow.Stagger, DeepDraught.Duration, DeepDraught.FullCask,
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded,
+            Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded, Sinews.LandingRoll,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -396,6 +397,7 @@ namespace Rist
         private static readonly HashSet<string> Unlocks = new HashSet<string>
         {
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
+            Sinews.LandingRoll,
         };
 
         /// <summary>

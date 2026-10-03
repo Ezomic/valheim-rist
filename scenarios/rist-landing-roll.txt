@@ -1,0 +1,93 @@
+# Rist: Sure-footed's capstone, a dodge pressed as you land makes the fall count 8 m shorter.
+#
+# The old capstone was a second -50% on fall damage, rank five immune to falling. It is a landing
+# roll now, and the ranks stay at -10% each. `rist fall <m> [roll]` raises the record of how high
+# the character has been to <m> above the ground it stands on, so the next physics step is a real
+# landing from that height through the game's own UpdateGroundContact, and with `roll` a dodge is
+# pressed in the same call, which is inside the 0.3 s window. Nothing is climbed.
+#
+# What `rist show` prints, on the "falls:" line, all worked out at the landing:
+#
+#   last fall Fm, counted Cm, landing roll yes|no, fall damage D
+#
+# F is the height the game would have measured, C the height it was handed after the roll, and D
+# the damage it will charge, worked out through SEMan.ModifyFallDamage, the call the game makes. God
+# mode swallows the damage itself, which is why the number is read here and not off the health bar.
+# Whole numbers, so a metre of jitter on the ground cannot move a line.
+#
+# Fall damage is (C - 4) / 16 of 100, less the stone's 10% a rank: 20 m is 100, 12 m is 50. So
+# rank 0 reads 100 for 20 m, rank 4 reads 60, rank 5 reads 50, and rank 5 with the roll counts 12 m
+# and reads 25. The old capstone's -100% would have read 0 at rank 5 with no roll at all.
+#
+# THE BOUNDARY IS THE POINT. The capstone must not leak into rank 4: a stone whose capstone quietly
+# applied at every rank would still pass at rank 5. Rank 4 with a roll must count the whole fall.
+#
+# SINGLEPLAYER, same as the others: ranks live on the server and `rist rank` refuses on a client.
+# Needs stamina for the roll, and flat ground to stand on.
+#
+# It leaves Sure-footed at rank 0.
+
+clear
+god
+
+mod rist rank surefooted 0
+wait 1
+
+# ---- rank 0: the vanilla fall. 20 m is the whole bar.
+
+mod rist fall 20
+wait 0.5
+mod rist show
+printed last fall 20m, counted 20m, landing roll no, fall damage 100 yes
+
+# ---- rank 4: -40%, and a roll pressed as you land does nothing yet.
+
+mod rist rank surefooted 4
+wait 1
+
+mod rist fall 20 roll
+wait 1
+mod rist show
+printed last fall 20m, counted 20m, landing roll no, fall damage 60 yes
+
+wait 2
+
+# ---- rank 5: -50%, and the capstone. No roll: the percentage alone, which is the old -100% gone.
+
+mod rist rank surefooted 5
+wait 1
+
+mod rist fall 20
+wait 1
+mod rist show
+printed last fall 20m, counted 20m, landing roll no, fall damage 50 yes
+
+wait 2
+
+# ---- rank 5 with the roll: 20 m counts as 12, which is half the bar, and half of that is 25.
+
+mod rist fall 20 roll
+wait 1
+mod rist show
+printed last fall 20m, counted 12m, landing roll yes, fall damage 25 yes
+
+wait 2
+
+# ---- a short fall is spent whole: 12 m less 8 is 4, which does not hurt at all.
+
+mod rist fall 12 roll
+wait 1
+mod rist show
+printed last fall 12m, counted 4m, landing roll yes, fall damage 0 yes
+
+wait 2
+
+# ---- the roll is spent by the landing: the next fall, with no new press, counts in full.
+
+mod rist fall 20
+wait 1
+mod rist show
+printed last fall 20m, counted 20m, landing roll no, fall damage 50 yes
+
+mod rist rank surefooted 0
+wait 1
