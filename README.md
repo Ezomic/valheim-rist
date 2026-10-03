@@ -16,6 +16,7 @@ text file, no asset bundle.
 - No runestone carries a drawback.
 - A panel on the compendium bar showing every runestone, what it is worth now, what the next
   rank adds, and which character level bought each rank.
+- A row of tabs on that panel to read another character's stones, read only. The host can turn it off.
 - An experience bar on the HUD, cloned from one of the game's own bars, that flashes while a
   pick is unspent.
 - A line above other players' heads: level, total XP, days since their last death.
@@ -79,6 +80,25 @@ stones wide and up to four tall, each under its name and a count of how many in 
 new theme adds a tower to the right rather than a row at the bottom, so the panel grows into the
 width a wide screen has spare. It used to be one field a fixed number of columns across, and at twenty-one runestones it
 ran off the bottom of a short window.
+
+Around each stone is a ring of five segments, one per rank, filled gold as the ranks are carved.
+The header on your own page also shows your total XP, which the nameplate shows to everyone else
+but not to you.
+
+#### Other characters
+
+When someone else is on the server, a row of tabs sits above the panel: yours, then one for every
+other character, online ones first with a green dot and then the rest greyed. Picking one shows
+that character's stones with their rank after each name, their level, and how many stones and
+marks they have. It is read only. There is nothing to carve, and the page never sends anything
+that could change another character's ledger.
+
+The list is asked for when the page opens and answered once. The server sends one line for each
+character in the same text its ledger already keeps, so there is no new storage and nothing is
+broadcast. The ledger holds no names, and the server only knows the name of a player who is
+connected, so a character who is not online is shown as "Char" and the last four digits of their
+character id. The host's `ShareRanks` setting turns it off for everyone, since the answer is the
+server's to give.
 
 The panel works out from the screen how to fit. On a wide or 1920x1080 screen the towers stand
 with full-size stones and every tile shows its value. On a smaller one it tries smaller stones,
@@ -296,6 +316,7 @@ join rather than withholding XP. [Dyrr](https://github.com/Ezomic/valheim-dyrr) 
 | Key | Default | Effect |
 | --- | --- | --- |
 | `ShowPlate` | `true` | The Rist line above other players' heads. Off also stops this character publishing its own numbers |
+| `ShareRanks` | `true` | Let players read each other's runestones on the rists page. Off, the server answers with an empty list. A host rule |
 | `PlateFormat` | see cfg | Tokens `{lvl}` `{xp}` `{days}` `{name}`, rich text, `\n` for a second line. Drop a token to drop that field |
 
 ### Bar
@@ -414,6 +435,9 @@ or raise the setting and restart.
   per-rank values and on `MaxRank`.
 - The plate is published by each client onto its own character, so a modded client can put
   whatever it likes there. The server's ledger is still the only thing that grants a pick.
+- A character who is not online has no name on the other-players page, since the ledger stores
+  none, and is shown by the last four digits of the character id. Ranks are shown as the server
+  holds them, so a character's page can be a few seconds stale until the page is opened again.
 - Ranks taken before ledger `v3` have no recorded level and show a dash permanently. Everything
   taken since is exact.
 - `SE_Stats` has no max health, stamina or eitr field, since those come from food in Valheim, so

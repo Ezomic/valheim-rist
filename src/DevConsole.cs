@@ -54,7 +54,7 @@ namespace Rist
             _registered = true;
 
             new Terminal.ConsoleCommand("rist",
-                "rist show | rist patches | rist rank <card> <n> | rist fall <m> [roll] | rist hurt <n> [enemy] [full] | rist parry | rist swing | rist momentum | rist run <s> | rist crouch <on|off> | rist noise | rist spyglass | rist stagger | rist spend <n> - this character's standing, and forcing a rank for a test",
+                "rist show | rist patches | rist others [ask] | rist rank <card> <n> | rist fall <m> [roll] | rist hurt <n> [enemy] [full] | rist parry | rist swing | rist momentum | rist run <s> | rist crouch <on|off> | rist noise | rist spyglass | rist stagger | rist spend <n> - this character's standing, and forcing a rank for a test",
                 OnCommand, isCheat: true);
 
             RistPlugin.Log.LogInfo("Console command 'rist' registered (needs devcommands, host or singleplayer).");
@@ -82,6 +82,7 @@ namespace Rist
             if (what == "noise") { Say(term, Player.m_localPlayer == null ? "rist: no player." : SilentStep.Make(Player.m_localPlayer)); return; }
             if (what == "momentum") { Say(term, Player.m_localPlayer == null ? "rist: no player." : Momentum.Simulate(Player.m_localPlayer, Seconds(args, Player.m_localPlayer == null ? 0f : RistConfig.MomentumSeconds.Value + RistConfig.MomentumRamp.Value))); return; }
             if (what == "run") { Say(term, Player.m_localPlayer == null ? "rist: no player." : Momentum.Run(Player.m_localPlayer, Seconds(args, 10f))); return; }
+            if (what == "others") { OthersList(term, args.Length > 2 && args[2].ToLowerInvariant() == "ask"); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
             term.AddString("rist patches         - each patch class and whether Harmony applied it");
@@ -98,6 +99,7 @@ namespace Rist
             term.AddString("rist noise           - make a noise of range 30, as a jump does, and read what the game recorded");
             term.AddString("rist momentum [s]    - pretend the run has lasted s seconds and read the run speed factor with and without Momentum");
             term.AddString("rist run [s]         - run straight ahead for s seconds in place of input, and keep the speeds before and after Momentum");
+            term.AddString("rist others [ask]    - the other characters the page lists; ask sends the request first");
             term.AddString("card ids are the first field of cards.txt: thickhide, steadyfoot, longstride...");
         }
 
@@ -523,6 +525,43 @@ namespace Rist
                 line += " and +" + flat.ToString("0.#", CultureInfo.InvariantCulture) + " flat";
 
             return line;
+        }
+
+        // ---------------------------------------------------------------- others
+
+        /// <summary>
+        /// What the other-players page has been told, one line a character. The numbers are the
+        /// ones the page draws from, so a scenario asserting on them is asserting on the page's
+        /// own data and not on a second reading of the ledger.
+        ///
+        /// `ask` sends the request and says so without printing the list: the answer is a routed
+        /// message and is not here yet, on anything but a host. A second call, after a wait,
+        /// reads it. Needs no devcommands on a client, and changes nothing on any machine.
+        /// </summary>
+        private static void OthersList(Terminal term, bool ask)
+        {
+            if (ask)
+            {
+                Others.Ask();
+                term.AddString("rist others: asked.");
+                return;
+            }
+
+            var online = 0;
+            foreach (var peer in Others.List)
+                if (peer.Online) online++;
+
+            term.AddString("others: " + Others.List.Count + " listed, " + online + " online, answered " +
+                           (Others.Answered ? "yes" : "no"));
+
+            foreach (var peer in Others.List)
+            {
+                Others.Counts(peer, out var carved, out var marks);
+
+                term.AddString("  " + (peer.Online ? "online" : "offline") + " " + peer.Label +
+                               (peer.Named ? "" : " (no name)") + " level " + peer.Level +
+                               " carved " + carved + " marks " + marks);
+            }
         }
 
         // ---------------------------------------------------------------- rank

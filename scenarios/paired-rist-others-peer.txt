@@ -1,0 +1,23 @@
+# Rist, TWO CLIENTS - the character being looked at, and the same check the other way round
+# (LHM-65). Nothing to press here: Devkit runs this on client B the moment
+# paired-rist-others-viewer.txt starts on client A. Read that file's header for how the pair is
+# run.
+#
+# B waits a few seconds so the server has its hello, tells A it is ready, and then does what A
+# does: asks for the list and expects to find A in it, online, and not itself.
+
+unkey rig_rist_viewer_done
+wait 5
+
+key rig_rist_peer_ready
+
+mod rist others ask
+printed rist others: asked yes
+wait 3
+
+mod rist others
+printed answered yes yes
+printed 1 online yes
+printed 2 online no
+
+waitfor rig_rist_viewer_done 120

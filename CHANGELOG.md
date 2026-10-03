@@ -3,61 +3,36 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
-## [1.7.2] - 2026-10-06
+## [1.8.0] - 2026-10-08
 
-### Fixed
-
-- **The mouse stuck to the middle of the screen on the runestone page, for real this time
-  (LHM-64).** The 1.7.1 fix aimed at the wrong thing. With the inventory hidden, the game locked
-  the cursor every frame and Rist unlocked it every frame. On Windows you never see that. On
-  Linux a lock puts the pointer back in the middle of the window, so on a Steam Deck it was
-  re-centred sixty times a second. Rist now takes over that one check while the page is open and
-  frees the cursor the way the game's own windows do, so nothing gets locked. Found by reading
-  the code. It is not reproducible on Windows and has not been confirmed on a Deck.
-
-### Fixed
-
-- Brimming's eitr thrift (LHM-53) did nothing on Valheim 1.0.17: the game now has a private no-argument
-  `Attack.GetAttackEitr` beside the public one, so the patch named an ambiguous method and Harmony refused it.
-  It now names the two-argument overload. `rist patches` lists each patch class as applied or FAILED, and
-  `rist show` prints `thrift=applied`.
+Built, not yet played: none of this has been run in game, and the scenarios have not been run on this build.
 
 ### Added
 
-- **The runestone page works with a controller.** The game has no cursor for a pad on PC, and
-  this page has no buttons for it to walk focus between. The left stick now moves a pointer of
-  the page's own, A carves the stone under it and B closes the page. The mouse or a trackpad
-  takes the page back as soon as it moves.
-- The first time the page opens in a session, the log names the input device the game thinks is
-  active and what the cursor was doing. With Verbose on it does this on every open.
-
-## [1.7.1] - 2026-10-05
+- **Other players' runestones** (LHM-65). When anyone else is on the server, a row of tabs sits above the rists
+  page: yours first, then one per character, each with its level and a dot that is green when they are online
+  and grey when they are not. Online characters come first, then every character the server has a record for,
+  highest level first, up to 40. Picking a tab shows that character's stones with the rank after each name, their
+  level, how many stones they have carved and how many marks, and the column beside the field still follows the
+  cursor. It is read only: there is nothing to carve, the next-rank line is gone and the foot of the column says so.
+  Nothing is sent until the page opens. It then asks the server once, and the server answers with one line per
+  character in the same text its ledger already uses, so there is no new storage and nothing is broadcast. A
+  character who is not online has no name to show, because the ledger keeps none and the server only knows the
+  names of the players connected, so they are shown as "Char" and the last four digits of their character id,
+  and the page says so. The host can turn the whole thing off with `ShareRanks` in the Plate section of the cfg
+  (on by default); off, the server answers with an empty list and the page looks as it did. Every player and the
+  server need this build, as the request is new.
+- `rist others` prints what the page was told, one line per character, and `rist others ask` sends the request
+  the page sends. Used by the new scenarios, `rist-others-solo` and the pair `paired-rist-others-viewer` and
+  `paired-rist-others-peer`.
 
 ### Changed
-
-- **Sure-footed no longer makes you immune to falling (LHM-59).** This takes something away from
-  anyone who carved it to rank five. The ranks stay and keep what they gave, -10% fall damage
-  each, so -50% at rank five. The capstone was a second -50%, which added up to -100% and turned
-  a fall from any height into nothing. It is now a landing roll: a dodge pressed in the last 0.3
-  seconds before you touch down makes the fall count 8 metres shorter, before the percentage is
-  taken. A fall of 20 metres, which kills in vanilla, counts as 12 and costs a quarter of your
-  health at rank five where it used to cost nothing. A fall from the top of a mountain still
-  hurts, roll or no roll.
-
-  The dodge has to be one you could make. It does not count with an empty stamina bar, over your
-  carry limit, or while you are attacking, staggered, rolling or dead, and it spends the stamina
-  a roll always does. A roll pressed earlier than that, or after you land, does nothing, and a
-  dodge cannot be saved for a later drop. Switching Rist off switches the roll off too. Nothing
-  is refunded, since the ranks keep what they gave. The capstone is a different thing at the same
-  rank. With Long stride, the roll is applied after its landing correction, so both hold.
-- New `*landing:roll` special for `cards.txt`. `rist fall <metres> [roll]` stages a landing for
-  testing and `rist show` prints the last one. The scenario `rist-landing-roll` runs it.
 
 Fifteen capstones were replaced so that each is a new behaviour in its own stone's theme, and none is a bigger number
 on the stone's own stat or another stone's effect (LHM-44). **Ranks are untouched, so everything anyone has carved stays
 exactly as it was, and no pick is refunded: anyone who carved a stone to rank five has the new capstone from this
-version, and loses the old one.** Stone ids, ledgers and the per-rank effects are unchanged. Brimming's Last spark
-was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LHM-59, so neither is touched here.
+version, and loses the old one.** Stone ids, ledgers and the per-rank effects are unchanged. Sure-footed's landing roll came in
+1.7.1 and is not touched here.
 
 - **Steady arm**: the capstone is now Last blow. The swing that kills gives half its stamina back (it was all of it in the first draft; `LastBlowShare` in the cfg). It used to be +20%
   parry bonus, which the stone has nothing to do with. The price is read where the game works it out, after every
@@ -76,8 +51,8 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   price is read as nothing from the moment the swing starts. Melee only: swords, knives, clubs, polearms, spears, fists and
   axes; pickaxes and the other tools, bows and staffs do not count. A block that stamina or stagger broke through is not a
   good parry and arms nothing. It replaces Riposte, the first draft, which threw a quarter of the blocked damage back at the
-  attacker; that code is gone. The arc behind you and the -8% block stamina that LHM-53 folded into this capstone stay
-  exactly as built, as companions, so nobody who carved the stone loses either.
+  attacker; that code is gone. The -8% block stamina the capstone always gave stays, as a companion, so nobody who carved
+  the stone loses it.
 - `rist parry` pretends a good parry just happened and `rist swing` starts a swing with what is in hand, so Return blow has a
   scenario. `rist show` prints what the last swing was priced and what it paid.
 - **Quick draw**: the capstone is now Second nock. Loose a shot and the next draw you begin within a second and a half
@@ -113,8 +88,7 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   from the ranks is unchanged.
 - **Long wind**: the capstone is now Second wind. The first time your stamina runs out, a quarter of the bar comes back at
   once, and it cannot happen again for 90 seconds. It is the gasp that buys one more roll or swing, and it is not regen
-  speed, so it no longer doubles the stone's own stat. It used to be another 10% stamina regen on top of 8% a rank. Running dry on a sprint triggers it as well. Long wind and Brimming's Last spark now
-  share a shape, an emergency button that comes back with time; the 90 seconds is the knob if that is too much.
+  speed, so it no longer doubles the stone's own stat. It used to be another 10% stamina regen on top of 8% a rank. Running dry on a sprint triggers it as well.
 - `rist spend <n>` spends stamina the way swinging does, and a large number empties the bar. For the Second wind scenario.
 - **Soft step**: the capstone is now Lose them. A creature that has lost you gives up the hunt after 12 seconds instead of 30,
   where "lost" means it has neither seen nor heard you for that long. Bosses and creatures that hunt players are left
@@ -141,9 +115,9 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   so sneaking never counts; swimming, a ship's helm, a ship's deck, riding and rolling do not count either, and the speed
   must stay above walking pace, so running into a wall ends it. A jump does not end it. A sharp turn does, which means the
   direction you travel comes 40 degrees away from the line you were on, and a gradual curve does not. It replaces Steep
-  ground, the first draft, which raised the slide angle from 38 to 46 degrees; that patch is gone. **The removal of the
-  stone's old 15% jump height (`*jumpheight` and the landing guard that measured a raised jump) stays as it was built**,
-  since nothing else used them; the landing roll that shares the code is untouched. A catalogue line naming `*jumpheight` is
+  ground, the first draft, which raised the slide angle from 38 to 46 degrees; that patch is gone. The stone's old 15% jump
+  height (`*jumpheight`) and the landing guard that measured a raised jump are gone with it, since nothing else used them;
+  this takes the jump height away from anyone who carved Long stride to rank five. The landing roll that shares the code is untouched. A catalogue line naming `*jumpheight` is
   skipped with the usual warning. **Momentum is a second speed source, on purpose.** Long stride's ranks are +2% a rank and
   stay the cap's 10%, and Momentum is 5% on top of that while the streak lasts, so a full run at rank five is 15% over a
   jog. The reason the cap exists, a bonus that is always on and never noticed, does not apply to a bonus that is earned and
@@ -186,20 +160,61 @@ pick. None of this has been tested in play.
   share is `BruiseCapShare` if it proves too much (0.6 or 0.7 still stops a one-shot from a bad trade). Long stride's
   Momentum is the first second speed source, past the 10% cap by 5 points while a run lasts; `MomentumBonus` is the
   knob, and the cap's note in cards.txt says why this one is allowed. Turned blade's Return blow is a parry build's, and
-  the stone still carries the 240 degree parry and the block stamina from LHM-53; dropping those two companions is one
-  line in `Card.Companions`. Tide-borne's Gasp is stronger than its first draft, a 12 second wait and 25% cheaper
+  the stone keeps its block stamina as a companion; dropping that is one line in `Card.Companions`. Tide-borne's Gasp is
+  stronger than its first draft, a 12 second wait and 25% cheaper
   swimming, and Rides the waves now also halves rock and ice damage to the hull.
 - **Level, around a 3.** Footing back (it ends stagger chains, and nothing else about a stagger), Second wind, Lose them,
-  Second nock (halved to a 15% head start). Second wind and Brimming's Last spark are both an emergency button that comes back with time, so
-  they share a shape; the 90 seconds is `SecondWind.Cooldown`.
+  Second nock (halved to a 15% head start). The 90 seconds of Second wind is `SecondWind.Cooldown`.
 - **Around a 2.** Last blow (halved to a 50% refund), Combo holds, Patch-up (it saves potions and not lives), Whetted (with
   Sure hand's swing speed now 5% a rank), Silent step.
 - **The weakest, on purpose and by nature.** Spyglass is a view, not power, and the radius of the stone is now 10% a rank, so it
   is the only Utility capstone that is felt every time the key is held. The Utility stones were already the weakest picks and
   still are. Raising them was not attempted: a capstone that is only ever felt in one place is the right size for a stone that
   is felt in one place.
-- **Two were not built.** Brimming's Last spark was already built as its capstone in LHM-53 and is left alone, and
-  Rooted for Steady footing was replaced by its alternative, Footing back, as set out above.
+- **One was not built.** Rooted for Steady footing was replaced by its alternative, Footing back, as set out above.
+
+## [1.7.2] - 2026-10-06
+
+### Fixed
+
+- **The mouse stuck to the middle of the screen on the runestone page, for real this time
+  (LHM-64).** The 1.7.1 fix aimed at the wrong thing. With the inventory hidden, the game locked
+  the cursor every frame and Rist unlocked it every frame. On Windows you never see that. On
+  Linux a lock puts the pointer back in the middle of the window, so on a Steam Deck it was
+  re-centred sixty times a second. Rist now takes over that one check while the page is open and
+  frees the cursor the way the game's own windows do, so nothing gets locked. Found by reading
+  the code. It is not reproducible on Windows and has not been confirmed on a Deck.
+
+### Added
+
+- **The runestone page works with a controller.** The game has no cursor for a pad on PC, and
+  this page has no buttons for it to walk focus between. The left stick now moves a pointer of
+  the page's own, A carves the stone under it and B closes the page. The mouse or a trackpad
+  takes the page back as soon as it moves.
+- The first time the page opens in a session, the log names the input device the game thinks is
+  active and what the cursor was doing. With Verbose on it does this on every open.
+
+## [1.7.1] - 2026-10-05
+
+### Changed
+
+- **Sure-footed no longer makes you immune to falling (LHM-59).** This takes something away from
+  anyone who carved it to rank five. The ranks stay and keep what they gave, -10% fall damage
+  each, so -50% at rank five. The capstone was a second -50%, which added up to -100% and turned
+  a fall from any height into nothing. It is now a landing roll: a dodge pressed in the last 0.3
+  seconds before you touch down makes the fall count 8 metres shorter, before the percentage is
+  taken. A fall of 20 metres, which kills in vanilla, counts as 12 and costs a quarter of your
+  health at rank five where it used to cost nothing. A fall from the top of a mountain still
+  hurts, roll or no roll.
+
+  The dodge has to be one you could make. It does not count with an empty stamina bar, over your
+  carry limit, or while you are attacking, staggered, rolling or dead, and it spends the stamina
+  a roll always does. A roll pressed earlier than that, or after you land, does nothing, and a
+  dodge cannot be saved for a later drop. Switching Rist off switches the roll off too. Nothing
+  is refunded, since the ranks keep what they gave. The capstone is a different thing at the same
+  rank. With Long stride, the roll is applied after its landing correction, so both hold.
+- New `*landing:roll` special for `cards.txt`. `rist fall <metres> [roll]` stages a landing for
+  testing and `rist show` prints the last one. The scenario `rist-landing-roll` runs it.
 
 ### Fixed
 

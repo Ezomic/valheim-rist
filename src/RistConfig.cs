@@ -59,6 +59,7 @@ namespace Rist
 
         internal static ConfigEntry<bool> ShowInfoTab;
         internal static ConfigEntry<bool> ShowPlate;
+        internal static ConfigEntry<bool> ShareRanks;
         internal static ConfigEntry<string> PlateFormat;
         internal static ConfigEntry<bool> ShowXpBar;
         internal static ConfigEntry<bool> VanillaBar;
@@ -182,6 +183,16 @@ namespace Rist
                 "Days alive counts from the day this character first logged in with the plate " +
                 "on, not from the day it was created - the game keeps no birthday, so every " +
                 "existing character starts at 0 and grows from there.");
+
+            ShareRanks = cfg.Bind("Plate", "ShareRanks", true,
+                "Let players open another character's rists on the rists page: which stones they " +
+                "have carved and at what rank, and their level. Online players are listed first, " +
+                "then every character this server has a record for.\n" +
+                "The server answers a request from the page and nothing is sent until one is made. " +
+                "Off, the server answers every request with an empty list and the page shows only " +
+                "your own stones.\n" +
+                "A rule the host sets for everyone, like the rest of what the server decides. " +
+                "Read-only either way: nobody can change another character's stones from there.");
 
             // A format string rather than three booleans, because the fields are not the only
             // thing anyone will want to change: dropping {xp} removes the field, and the
