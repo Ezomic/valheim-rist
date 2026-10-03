@@ -8,7 +8,9 @@ and the mod uses [semantic versioning](https://semver.org).
 ### Added
 
 - **Blood-sworn**, a new runestone in Combat (LHM-55). Each rank gives 3 levels of blood magic and makes
-  a blood magic shield absorb 10% more, so five ranks is +15 levels and a shield half again as thick.
+  a blood magic shield absorb 10% more. Five ranks is +15 levels, and those levels also raise the shield's base
+  absorb through the game's own per-skill-level figure, so the 1.5 times from the ranks applies on top of an
+  already larger base and the shield ends up thicker than 1.5 times the old one.
   The capstone is one more summon than the staff allows, and a recast of the shield refills it. This
   is Deep ward from the ideas board, folded in. The levels count wherever the game reads the skill, so
   they also raise a staff's damage and the thresholds in a summon's table, and they raise no other

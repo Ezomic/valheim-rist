@@ -103,6 +103,7 @@ namespace Rist
             Patch(typeof(Oathbound));
             Patch(typeof(Oathbound.Reset));
             Patch(typeof(BloodSworn));
+            Patch(typeof(BloodSworn.Spawning));
             Patch(typeof(EelSlick.Roll));
             Patch(typeof(EelSlick.Mortal));
             Patch(typeof(EelSlick.Perfect));

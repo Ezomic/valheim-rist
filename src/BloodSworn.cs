@@ -117,11 +117,51 @@ namespace Rist
         [HarmonyPostfix]
         private static void Counted(GameObject prefab, float maxRange, ref int __result)
         {
-            if (__result <= 0 || maxRange > 0f || prefab == null) return;
+            if (!_inSpawn || __result <= 0 || maxRange > 0f || prefab == null) return;
             if (Effects.Cached(Summon) <= 0f || !Mine(Player.m_localPlayer)) return;
             if (!prefab.TryGetComponent<Tameable>(out _)) return;
 
             __result--;
+        }
+
+        private static bool _inSpawn;
+
+        /// <summary>
+        /// Marks the stretches of SpawnAbility.Spawn that run, so the discount above is given to the
+        /// ability's own check and not to any other caller that counts a prefab with no range. Spawn
+        /// is a coroutine, so it is its compiler-made MoveNext that is patched. Its pauses are
+        /// yields, so the flag is up only inside a slice and never across a frame, and a finalizer
+        /// clears it if a slice throws.
+        /// </summary>
+        internal static class Spawning
+        {
+            private static System.Reflection.MethodBase Target()
+            {
+                var machine = AccessTools.FirstInner(typeof(SpawnAbility), t => t.Name.StartsWith("<Spawn>"));
+                return machine == null ? null : AccessTools.Method(machine, "MoveNext");
+            }
+
+            [HarmonyTargetMethod]
+            private static System.Reflection.MethodBase Find()
+            {
+                var move = Target();
+                if (move == null)
+                    RistPlugin.Log.LogError("Blood-sworn could not find SpawnAbility's spawn routine: the extra " +
+                                            "summon is off for this session.");
+                return move;
+            }
+
+            [HarmonyPrefix]
+            private static void Enter()
+            {
+                _inSpawn = true;
+            }
+
+            [HarmonyFinalizer]
+            private static void Leave()
+            {
+                _inSpawn = false;
+            }
         }
 
         internal static int ExtraSummons(Player player)
