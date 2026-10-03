@@ -1,0 +1,122 @@
+# Rist: the three stones that took in the idea beside them (LHM-53). Turned blade learned to parry
+# round behind you, Brimming learned to spend less and to lend one more cast, Answering blow learned
+# to drive its victims back and to stand through its own secondary attack.
+#
+# `rist show` prints one line for all three, and none of it is Rist's own opinion of itself where the
+# game can be asked:
+#
+#   parry reaches N degrees behind you (threshold T)   T is what the transpiled arc test in
+#                                                      Humanoid.BlockAttack compares against, from the
+#                                                      same method the game now calls. 0.00 is vanilla.
+#   melee stagger xF                                   the factor the hit patch multiplies a melee
+#                                                      hit's stagger by.
+#   secondary attack guard on|off                      whether RPC_Stagger is refused in a secondary.
+#   last cast ready|spent|not carved                   Brimming's capstone.
+#   eitr cost xR (STAFF)                               the game's own Attack.GetAttackEitr for the
+#                                                      first staff in ObjectDB, over the same sum done
+#                                                      by hand without the thrift, so R is the thrift.
+#
+# The boundary is read at rank 4 for each: the capstone is not paid before it is earned. The real
+# parry from behind, the real cast on an empty bar and a real secondary attack cannot be produced
+# by a scenario, so those are read in play. What is proved here is the figures the patches work from.
+#
+# Nothing a carver had is lost, so the old effect is still there where `rist show` can see
+# it: Turned blade's capstone still carries its block stamina and Brimming's still carries its extra
+# regen. Neither has a line in `rist show`, and both are carried by Card.Companions, so they are
+# read on the panel.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves all three stones at rank 0.
+
+clear
+god
+
+mod rist rank turnedblade 0
+mod rist rank brimming 0
+mod rist rank answeringblow 0
+wait 1
+
+mod rist show
+printed parry reaches 0 degrees behind you (threshold 0.00) yes
+
+mod rist show
+printed melee stagger x1.00 yes
+
+mod rist show
+printed secondary attack guard off yes
+
+mod rist show
+printed last cast not carved yes
+
+mod rist show
+printed eitr cost x1.00 yes
+
+# ---- Turned blade: the arc.
+
+mod rist rank turnedblade 4
+wait 1
+mod rist show
+printed parry reaches 0 degrees behind you (threshold 0.00) yes
+
+mod rist rank turnedblade 5
+wait 1
+mod rist show
+printed parry reaches 30 degrees behind you (threshold 0.50) yes
+
+# ---- Answering blow: stagger a rank, and the guard at the end.
+
+mod rist rank answeringblow 1
+wait 1
+mod rist show
+printed melee stagger x1.06 yes
+
+mod rist rank answeringblow 4
+wait 1
+mod rist show
+printed melee stagger x1.24 yes
+
+mod rist show
+printed secondary attack guard off yes
+
+mod rist rank answeringblow 5
+wait 1
+mod rist show
+printed melee stagger x1.30 yes
+
+mod rist show
+printed secondary attack guard on yes
+
+# ---- Brimming: thrift a rank, and the lent cast at the end.
+
+mod rist rank brimming 1
+wait 1
+mod rist show
+printed eitr cost x0.95 yes
+
+mod rist rank brimming 4
+wait 1
+mod rist show
+printed eitr cost x0.80 yes
+
+mod rist show
+printed last cast not carved yes
+
+mod rist rank brimming 5
+wait 1
+mod rist show
+printed eitr cost x0.75 yes
+
+mod rist show
+printed last cast ready yes
+
+mod rist rank turnedblade 0
+mod rist rank brimming 0
+mod rist rank answeringblow 0
+wait 1
+
+mod rist show
+printed parry reaches 0 degrees behind you (threshold 0.00) yes
+
+mod rist show
+printed eitr cost x1.00 yes

@@ -313,6 +313,7 @@ namespace Rist
             term.AddString(EelSlick.Probe());
             term.AddString(HallRaiser.Probe(player));
             term.AddString(Engineer.Probe(player));
+            term.AddString(Merges.Probe(player));
         }
 
         /// <summary>

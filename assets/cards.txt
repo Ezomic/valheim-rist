@@ -36,6 +36,12 @@
 #   *blood:absorb           how much more a blood magic shield absorbs (a companion of *blood:levels, never written alone)
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
+#   *parry:rear             a parry covers this many degrees behind you, past your shoulders (30); also -8% block stamina
+#   *eitr:regen             eitr regen, and with it casts cost 5% less eitr per 8% of regen
+#   *eitr:thrift            how much less eitr a cast costs (a companion of *eitr:regen)
+#   *eitr:lastcast          one cast on an empty bar, once per refill (value 1); also +10% eitr regen
+#   *stagger:dealt          your melee hits stagger harder (a companion of *answer: 0.06 per 0.10)
+#   *stagger:secondary      nothing staggers you during a secondary attack (a companion of *answer:stagger)
 #   *engineer:damage        traps and siege weapons you build do more damage (0.08 is 8% more), stamped on the piece when placed
 #   *engineer:calibrated    ballistae you build never fire on a player, stamped on the piece when placed (value 1)
 #   *reach:station         the ground a crafting station covers for building, as a share of its radius (0.20 is 20% wider)
@@ -166,14 +172,20 @@
 steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | m_timedBlockBonus         | 0.20 | P
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | m_damageModifier          | 0.05 | Z
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
-turnedblade | Turned blade   | The parry answers back.           | m_timedBlockBonus        | 0.08  | m_blockStaminaUseModifier | -0.08 | X
+turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:rear | 30 | X
 quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *damage:ranged            | 0.05 | Y
 quickchant  | Quick chant    | The chant is done before the staff is raised.| *attackspeed:magic | 0.03 | *unbroken          | 1    | T
 
+# Three stones took in the idea beside them (LHM-53), and none lost anything. Turned blade's
+# capstone is now the arc behind you and keeps its block stamina as a companion; Brimming's
+# per-rank effect is a special so the eitr thrift can ride it, and its capstone, one cast on an
+# empty bar, keeps the extra regen; Answering blow's ranks drive melee stagger and its capstone
+# stands through a secondary attack. Companions are in Card.Companions.
+#
 # Answering blow is armed by the game's own perfect-dodge check and spent on the next enemy
 # you hit, applied to that one hit rather than as a damage field, so a sweep cannot carry it
 # to every target. The capstone is a 30% chance to stagger, only what a parry would, never a boss.
-answeringblow | Answering blow | Slip the blow, then make them pay for it. | *answer | 0.10 | *answer:stagger | 0.30 | C
+answeringblow | Answering blow | Slip the blow, then make them pay for it. Every blow drives them back. | *answer | 0.10 | *answer:stagger | 0.30 | C
 
 # Blood-sworn gives two things for each carving. A card line has one effect, so the second rides
 # the first as a companion (Card.Companions): 3 blood magic levels a rank bring a blood shield 10%
@@ -210,7 +222,7 @@ eelslick    | Eel-slick      | The blow finds only the place you were. | *roll:w
 oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | *overloaded               | -0.50 | U
 tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | *staminadelay             | 0.6  | A
 longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_staminaRegenMultiplier  | 0.10 | L
-brimming    | Brimming       | It returns before you need it.    | m_eitrRegenMultiplier    | 0.08  | m_eitrRegenMultiplier     | 0.10 | Q
+brimming    | Brimming       | It returns before you need it, and lends one more. | *eitr:regen | 0.08  | *eitr:lastcast | 1 | Q
 
 # A buff mead is decided from the item, not a name list: a consumable, not food, an SE_Stats
 # effect, restoring nothing. In vanilla that is fifteen: Fire Resistance Barley Wine, Frost and

@@ -112,6 +112,11 @@ namespace Rist
             Patch(typeof(Engineer.Hits));
             Patch(typeof(Engineer.Shots));
             Patch(typeof(Engineer.Calibration));
+            Patch(typeof(Merges.Parry));
+            Patch(typeof(Merges.Thrift));
+            Patch(typeof(Merges.Last));
+            Patch(typeof(Merges.Reeling));
+            Patch(typeof(Merges.Secondary));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -376,6 +381,7 @@ namespace Rist
             Nameplate.Publish(player);
             BloodSworn.Publish(player);
             HallRaiser.Tick(player);
+            Merges.Last.Tick(player);
 
             // A shared forsaken-power minute that arrived a moment before its effect.
             Oathbound.Tick();

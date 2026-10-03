@@ -52,6 +52,9 @@ and the mod uses [semantic versioning](https://semver.org).
   cover the fires and workshops that carry an area for other reasons. The ballista's bolt and the catapult's
   load are scaled as they are fired; stakes, trap spikes and the ram's punch as they hit. Calibrated clears the
   ballista's own "target players" setting, so it skips every player and not only the one who built it.
+- Six specials for `cards.txt`: `*parry:rear`, `*eitr:regen`, `*eitr:thrift`, `*eitr:lastcast`, `*stagger:dealt` and
+  `*stagger:secondary`. `rist show` prints the parry arc, the melee stagger and secondary-attack guard, Brimming's
+  lent cast, and the eitr price of a staff against what it would be without the thrift.
 - Two specials for `cards.txt`: `*reach:station` and `*reach:hammer`. `rist show` prints the reach the game
   gives from the nearest station, whether the no-spawn circle moved, and the hammer reach.
 - Two specials for `cards.txt`: `*roll:window` and `*roll:free`. `rist roll` starts a roll as the key does
@@ -60,6 +63,26 @@ and the mod uses [semantic versioning](https://semver.org).
 - Four specials for `cards.txt`: `*blood:levels`, `*blood:absorb`, `*blood:summon` and `*blood:refill`,
   and the companion mechanism behind them, so a stone can give two things for one carving. `rist show`
   prints the blood magic level the game reads, the ratio a blood shield is set to, and the summon bonus.
+
+### Changed
+
+Four ideas from the board were folded into stones that already existed (LHM-53), and three of those stones are
+carried by players. **Nothing anyone has carved is taken away or refunded: every rank keeps what it gave and each
+stone gives more.** The ranks, the stones' ids and the ledger are untouched. What changes, rank by rank:
+
+- **Turned blade**, which took in Quick guard: its capstone now also lets a parry cover 30 degrees behind you, counted past
+  your shoulders, so the parry arc goes from 180 degrees to 240. The -8% block stamina it had stays. A rank of the
+  stone is still +8% parry bonus. That field is the extra block power of a perfect parry, not how long the window
+  lasts: the window is a fixed quarter of a second in the game, and the stone's tile reads "parry bonus".
+- **Brimming**, which took in Eitr-thrift: every rank now also takes 5% off the eitr a staff cast costs, 25% at rank five,
+  on top of the 8% regen it already gave. Its capstone is now one cast on an empty bar, once per refill, and
+  it keeps the extra 10% regen. The capstone was a bigger number and is now a new behaviour, as it should be.
+- **Answering blow**, which took in Reeling blow: every rank now also makes your melee hits stagger 6% harder, 30% at rank
+  five. Its capstone, the 30% chance to stagger what a parry would, now also keeps you from being staggered during
+  your own secondary attack.
+- **Blood-sworn** was never built, so it took its idea (Deep ward) in at birth. See above.
+
+Each of the three stones' flavour text says what it learned.
 
 ### Fixed
 

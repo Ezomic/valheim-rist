@@ -145,23 +145,25 @@ namespace Rist
             {
                 "*stamina:fight", new[] { "m_attackStaminaUseModifier", "m_blockStaminaUseModifier" }
             },
+            // Brimming's regen is a special only so that the thrift can ride it as a companion.
+            { Merges.EitrRegen, new[] { "m_eitrRegenMultiplier" } },
         };
 
         private static void Add(Dictionary<string, float> totals, string effect, float amount)
         {
             if (string.IsNullOrEmpty(effect)) return;
 
+            // A stone that gives two things for one price. The companions are added beside the
+            // effect itself, scaled, so every consumer reads each of them as a plain effect and
+            // none of them knows the other exists. Before the spread below, which returns.
+            if (Card.Companions.TryGetValue(effect, out var also))
+                foreach (var pair in also) Add(totals, pair.Key, amount * pair.Value);
+
             if (Spread.TryGetValue(effect, out var fields))
             {
                 foreach (var field in fields) Add(totals, field, amount);
                 return;
             }
-
-            // A stone that gives two things for one price. The companions are added beside the
-            // effect itself, scaled, so every consumer reads each of them as a plain effect and
-            // none of them knows the other exists.
-            if (Card.Companions.TryGetValue(effect, out var also))
-                foreach (var pair in also) Add(totals, pair.Key, amount * pair.Value);
 
             // Several cards may target the same effect, so accumulate rather than assign.
             totals.TryGetValue(effect, out var running);
