@@ -221,7 +221,7 @@ namespace Rist
             CraftingStation best = null;
             var bestDistance = 100f;
 
-            foreach (var station in Object.FindObjectsOfType<CraftingStation>())
+            foreach (var station in Object.FindObjectsByType<CraftingStation>(FindObjectsSortMode.None))
             {
                 if (station == null) continue;
 

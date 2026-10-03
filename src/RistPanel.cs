@@ -375,11 +375,12 @@ namespace Rist
             l.BoardW = l.FieldW + DetailPad + DetailWidth;
 
             // The note under another character's field takes room of its own, so the field is never
-            // drawn over by it. Reserved whenever there is a picker, on every rung, whether or not
+            // drawn over by it. Reserved whenever there is a picker, or while the first answer is
+            // still on its way and there may be one, on every rung, whether or not
             // the page shown happens to be another character's, so that switching tabs never
             // moves the board. The worst case text is measured, since the unnamed sentence is the
             // longer one.
-            l.NoteH = _tabs.Count > 0 ? NoteGap + NoteHeight(l.FieldW, false) : 0f;
+            l.NoteH = _tabs.Count > 0 || Others.Pending ? NoteGap + NoteHeight(l.FieldW, false) : 0f;
             l.ContentH = Mathf.Max(l.FieldH + l.NoteH, DetailMinH);
             l.TabsH = TabsHeight(l.BoardW);
             l.TotalH = HeaderH + l.TabsH + l.ContentH;
@@ -761,7 +762,7 @@ namespace Rist
         {
             unchecked
             {
-                return (_tabsVersion * 31 + _tabs.Count) * 31 + _tabsOwnLevel;
+                return ((_tabsVersion * 31 + _tabs.Count) * 31 + _tabsOwnLevel) * 2 + (Others.Pending ? 1 : 0);
             }
         }
 

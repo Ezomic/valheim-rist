@@ -125,6 +125,7 @@ namespace Rist
             List.Clear();
             Selected = 0L;
             Answered = false;
+            _askedAt = -1f;
             Version++;
         }
 
@@ -174,8 +175,24 @@ namespace Rist
             if (Selected != 0L && Current == null) Selected = 0L;
         }
 
+        private const float PendingSeconds = 3f;
+        private static float _askedAt = -1f;
+
+        /// <summary>
+        /// The first request of this world has gone out and nothing has come back yet. The panel
+        /// reserves the room for the note while this is true, because whether anyone is listed
+        /// is unknown until the answer, and a board that drops a rung when it arrives is a
+        /// board that jumps in front of the player. Bounded, so a server that predates the
+        /// request and never answers does not leave the board a rung smaller for good.
+        /// </summary>
+        internal static bool Pending
+        {
+            get { return !Answered && _askedAt >= 0f && Time.realtimeSinceStartup - _askedAt < PendingSeconds; }
+        }
+
         internal static void Ask()
         {
+            if (!Answered && !Pending) _askedAt = Time.realtimeSinceStartup;
             Net.AskOthers();
         }
 

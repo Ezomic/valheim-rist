@@ -202,7 +202,7 @@ namespace Rist
                 [HarmonyPatch(typeof(Player), "Dodge")]
                 private static void Pressed(Player __instance)
                 {
-                    if (!ReferenceEquals(__instance, Player.m_localPlayer)) return;
+                    if (!RistConfig.Enabled.Value || !ReferenceEquals(__instance, Player.m_localPlayer)) return;
                     if (Effects.Cached(LandingRoll) <= 0f || __instance.IsEncumbered()) return;
 
                     // The rest of what UpdateDodge asks before it starts a roll. Dodge queues for
@@ -243,7 +243,7 @@ namespace Rist
             /// </summary>
             private static void Roll(Character landing)
             {
-                if (!ReferenceEquals(landing, Player.m_localPlayer)) return;
+                if (!RistConfig.Enabled.Value || !ReferenceEquals(landing, Player.m_localPlayer)) return;
                 if (_maxAir == null || _groundContact == null || !_groundContact(landing)) return;
 
                 var pressed = _pressedAt;

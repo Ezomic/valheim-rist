@@ -133,6 +133,17 @@ a dodge cannot be saved for a later drop. A dodge the game would refuse (mid-att
 
 ### Fixed
 
+- **Switching Rist off now also switches off the landing roll, Engineer's stamped damage and its calibrated
+  ballistae, and Blood-sworn's extra summon for other players.** Each of them skipped the `Enabled` check its
+  siblings make. A character with Sure-footed carved no longer gets a landing roll with Rist off.
+- **The board no longer drops a rung when the first list of other characters arrives.** The room for the note
+  under another character's page is now held back from the moment the page asks until the answer comes, or for
+  three seconds if none does, and released if the answer lists nobody.
+- `Object.FindObjectsOfType` in the Engineer and Hall-raiser probes is replaced by `FindObjectsByType`, which
+  clears two obsolete-API warnings.
+- The README row for `*landing:roll` now states which presses are ignored, and `*blood:refill` has its own row.
+  The `rist` console command's registered help now lists `powers` and `others`.
+
 - **The mouse could stick to the middle of the screen on the runestone page.** While the page is open Rist
   keeps the cursor free, and it did that by writing the unlocked and visible state every frame. On
   Windows that changes nothing, but on SteamOS a player's pointer stayed pinned to the centre on this page

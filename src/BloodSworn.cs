@@ -166,10 +166,10 @@ namespace Rist
 
         internal static int ExtraSummons(Player player)
         {
-            if (player == null) return 0;
+            if (player == null || !RistConfig.Enabled.Value) return 0;
 
             if (ReferenceEquals(player, Player.m_localPlayer))
-                return RistConfig.Enabled.Value && Effects.Cached(Summon) > 0f ? 1 : 0;
+                return Effects.Cached(Summon) > 0f ? 1 : 0;
 
             if (!player.TryGetComponent<ZNetView>(out var nview) || !nview.IsValid()) return 0;
 

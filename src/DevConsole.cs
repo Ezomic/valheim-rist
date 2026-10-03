@@ -54,7 +54,7 @@ namespace Rist
             _registered = true;
 
             new Terminal.ConsoleCommand("rist",
-                "rist show | rist rank <card> <n> | rist roll | rist perfect | rist fall <m> [roll] - this character's standing, and forcing a rank for a test",
+                "rist show | rist rank <card> <n> | rist powers | rist others [ask] | rist roll | rist perfect | rist fall <m> [roll] - this character's standing, and forcing a rank for a test",
                 OnCommand, isCheat: true);
 
             RistPlugin.Log.LogInfo("Console command 'rist' registered (needs devcommands, host or singleplayer).");

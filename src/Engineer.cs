@@ -113,7 +113,7 @@ namespace Rist
         /// <summary>The damage share stamped on the piece this component sits under, or zero.</summary>
         private static float Stamped(Component part)
         {
-            if (part == null) return 0f;
+            if (part == null || !RistConfig.Enabled.Value) return 0f;
 
             var zdo = Zdo(PieceAbove(part));
             return zdo == null ? 0f : Mathf.Max(0f, zdo.GetFloat(HashDamage, 0f));
@@ -207,7 +207,7 @@ namespace Rist
             [HarmonyPrefix]
             private static void Spare(Turret __instance)
             {
-                if (!__instance.m_targetPlayers) return;
+                if (!RistConfig.Enabled.Value || !__instance.m_targetPlayers) return;
 
                 var zdo = Zdo(PieceAbove(__instance));
                 if (zdo != null && zdo.GetInt(HashCalibrated, 0) > 0) __instance.m_targetPlayers = false;
@@ -224,7 +224,7 @@ namespace Rist
         {
             var found = new List<string>();
 
-            foreach (var piece in Object.FindObjectsOfType<Piece>())
+            foreach (var piece in Object.FindObjectsByType<Piece>(FindObjectsSortMode.None))
             {
                 if (piece == null) continue;
                 if (Vector3.Distance(piece.transform.position, player.transform.position) > 40f) continue;
