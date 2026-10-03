@@ -369,11 +369,11 @@ namespace Rist
                 BloodSworn.Forget();
                 HallRaiser.Forget();
                 return;
+                EelSlick.Forget();
+                Engineer.Forget();
             }
 
             SayHello();
-                EelSlick.Forget();
-                Engineer.Forget();
 
             if (ClientState.Known) Effects.Apply(player, ClientState.Ranks);
 

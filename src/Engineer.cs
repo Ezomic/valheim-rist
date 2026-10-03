@@ -86,12 +86,36 @@ namespace Rist
             return nview.GetZDO();
         }
 
+        // Aoe.GetDamage runs on every area hit and Calibration on every fixed update of every owned
+        // ballista, and the parent walk is the part that costs. A part never changes its piece, so
+        // the answer is kept per instance id, a miss included. Cleared past a cap, since the ids of
+        // destroyed bolts and areas are never asked about again, and on logout.
+        private const int PieceCacheCap = 4096;
+        private static readonly Dictionary<int, Piece> PieceOf = new Dictionary<int, Piece>();
+
+        private static Piece PieceAbove(Component part)
+        {
+            var id = part.GetInstanceID();
+            if (PieceOf.TryGetValue(id, out var cached) && (cached != null || ReferenceEquals(cached, null))) return cached;
+
+            if (PieceOf.Count >= PieceCacheCap) PieceOf.Clear();
+
+            var piece = part.GetComponentInParent<Piece>();
+            PieceOf[id] = piece;
+            return piece;
+        }
+
+        internal static void Forget()
+        {
+            PieceOf.Clear();
+        }
+
         /// <summary>The damage share stamped on the piece this component sits under, or zero.</summary>
         private static float Stamped(Component part)
         {
             if (part == null) return 0f;
 
-            var zdo = Zdo(part.GetComponentInParent<Piece>());
+            var zdo = Zdo(PieceAbove(part));
             return zdo == null ? 0f : Mathf.Max(0f, zdo.GetFloat(HashDamage, 0f));
         }
 
@@ -185,7 +209,7 @@ namespace Rist
             {
                 if (!__instance.m_targetPlayers) return;
 
-                var zdo = Zdo(__instance.GetComponentInParent<Piece>());
+                var zdo = Zdo(PieceAbove(__instance));
                 if (zdo != null && zdo.GetInt(HashCalibrated, 0) > 0) __instance.m_targetPlayers = false;
             }
         }
