@@ -32,6 +32,10 @@
 #   *staminadelay           seconds off the pause before stamina starts coming back
 #   *jumpheight             jumps higher, as a share of how high you jump: 0.15 is 15% higher
 #   *overloaded             stamina walking costs while over your carry limit: -0.50 is half
+#   *blood:levels           blood magic levels, and with them a blood shield that absorbs 10% more per 3 levels
+#   *blood:absorb           how much more a blood magic shield absorbs (a companion of *blood:levels, never written alone)
+#   *blood:summon           one more summon than the staff allows (value 1)
+#   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
@@ -164,6 +168,13 @@ quickchant  | Quick chant    | The chant is done before the staff is raised.| *a
 # you hit, applied to that one hit rather than as a damage field, so a sweep cannot carry it
 # to every target. The capstone is a 30% chance to stagger, only what a parry would, never a boss.
 answeringblow | Answering blow | Slip the blow, then make them pay for it. | *answer | 0.10 | *answer:stagger | 0.30 | C
+
+# Blood-sworn gives two things for each carving. A card line has one effect, so the second rides
+# the first as a companion (Card.Companions): 3 blood magic levels a rank bring a blood shield 10%
+# more absorbent a rank, and the capstone's extra summon brings the shield that refills on a
+# recast. Only a shield that levels blood magic when it breaks is touched. The sigil is shared
+# with Swift-mending, since all 26 are spoken for.
+bloodsworn  | Blood-sworn    | The blood keeps what it was promised. | *blood:levels      | 3     | *blood:summon             | 1 | D
 
 # What keeps you alive through a hit or a fall.
 

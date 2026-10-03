@@ -187,7 +187,16 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*exploreradius` | The map reveals a wider circle as you walk. A fraction: `0.05` is 5% further |
 | `*windcone` | Narrows the sailing dead zone and turns the sail's push toward the bow inside the arc it opens, so you can sail closer to the wind. Sailing dead upwind still stalls. A fraction of the zone, capped at `0.8`. Only applies to a ship you are steering, and the wind ring's dead zone narrows to match |
 | `*rowspeed` | Rows faster, forward and back. A fraction of top rowing speed: `0.20` is 20% faster. Only applies to a ship you are steering |
+| `*blood:levels` | Blood magic levels, counted wherever the game reads the skill: a staff's damage, a blood shield's absorb, the thresholds in a summon's table. No other skill moves. A companion rides along, see below: a blood magic shield absorbs 10% more for every 3 levels |
+| `*blood:absorb` | How much more a blood magic shield absorbs, as a fraction on the figure the game works out itself. A companion of `*blood:levels` and not meant to be written on a line of its own. Only a shield that levels blood magic when it breaks is touched |
+| `*blood:summon` | One more summon than the staff allows, per player, not per staff. A flag: write `1`. A companion rides along: recasting a blood magic shield refills it. Vanilla keeps the damage the shield has already soaked when you recast, so without this a recast only extends the timer |
 | `*inventoryrow` | Adds rows to the player inventory grid. Not used by the default catalogue, since Valheim 1.0 sells rows from the trader, but still recognised for custom ones |
+
+A line has one effect and one capstone, so a stone that gives two things for one carving names
+the first and lets the second ride as a **companion**: a fixed share of the first's amount,
+written down in `Card.Companions`. Blood-sworn writes 3 blood magic levels a rank and the shield
+is a third of that in tenths, 10% a rank. The panel shows the companion under the main line in the
+detail column and leaves the tile alone, since a tile naming both would widen every cell.
 
 The header comment in `cards.txt` carries the sign conventions, which are the game's rather than
 Rist's. The stamina-use modifiers are fractions where negative means cheaper, so `-0.05` is a 5%

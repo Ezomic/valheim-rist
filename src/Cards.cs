@@ -81,6 +81,53 @@ namespace Rist
         }
 
         /// <summary>
+        /// The second thing a stone gives for the same carving, keyed by the effect that brings it.
+        /// The value is the companion's share of the effect's amount: Blood-sworn writes 3 levels
+        /// a rank and its shield is 10% a rank, so the shield's share is a third of the level.
+        ///
+        /// Effects adds the companions to the totals beside the effect itself, which means every
+        /// consumer reads each as a plain effect of its own. The panel prints them under the main
+        /// line in the detail column and leaves the tile alone, because a tile that named both
+        /// would widen every cell on the field.
+        /// </summary>
+        internal static readonly Dictionary<string, KeyValuePair<string, float>[]> Companions =
+            new Dictionary<string, KeyValuePair<string, float>[]>
+            {
+                {
+                    BloodSworn.Levels, new[]
+                    {
+                        new KeyValuePair<string, float>(BloodSworn.Absorb, 0.10f / 3f),
+                    }
+                },
+                {
+                    BloodSworn.Summon, new[]
+                    {
+                        new KeyValuePair<string, float>(BloodSworn.Refill, 1f),
+                    }
+                },
+            };
+
+        /// <summary>The companions of the effect at <paramref name="rank"/>, one per line, or nothing.</summary>
+        internal string DescribeAlso(int rank)
+        {
+            return Also(Effect, PerRank * Mathf.Max(1, rank));
+        }
+
+        internal string DescribeBonusAlso(int times)
+        {
+            return Also(BonusEffect, BonusPerRank * Mathf.Max(1, times));
+        }
+
+        private static string Also(string effect, float total)
+        {
+            if (string.IsNullOrEmpty(effect) || !Companions.TryGetValue(effect, out var also)) return "";
+
+            var lines = new List<string>();
+            foreach (var pair in also) lines.Add(Format(pair.Key, total * pair.Value));
+            return string.Join("\n", lines.ToArray());
+        }
+
+        /// <summary>
         /// Effects stored as a positive amount of benefit but read by a player as something
         /// shrinking. Weatherly's value is how much of the dead zone is taken away, and
         /// "+6% dead zone" would say the zone grows. Shown with the sign turned, so the tile
@@ -346,6 +393,10 @@ namespace Rist
             { Sinews.StaminaDelay, "s less before stamina returns" },
             { Sinews.JumpHeight, "jump height" },
             { Sinews.Overloaded, "stamina walking overloaded" },
+            { BloodSworn.Levels, "blood magic levels" },
+            { BloodSworn.Absorb, "blood shield absorbs" },
+            { BloodSworn.Summon, "one more summon than the staff allows" },
+            { BloodSworn.Refill, "recasting the shield refills it" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -370,6 +421,7 @@ namespace Rist
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             Sinews.JumpHeight, Sinews.Overloaded,
+            BloodSworn.Absorb,
         };
 
         /// <summary>
@@ -386,6 +438,7 @@ namespace Rist
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded,
+            BloodSworn.Levels, BloodSworn.Absorb, BloodSworn.Summon, BloodSworn.Refill,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -396,6 +449,7 @@ namespace Rist
         private static readonly HashSet<string> Unlocks = new HashSet<string>
         {
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
+            BloodSworn.Summon, BloodSworn.Refill,
         };
 
         /// <summary>

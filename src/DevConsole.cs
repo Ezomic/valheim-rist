@@ -305,6 +305,7 @@ namespace Rist
 
             term.AddString(Armour(player));
             term.AddString(Moving(player));
+            term.AddString(BloodSworn.Probe(player));
         }
 
         /// <summary>

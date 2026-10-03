@@ -5,6 +5,23 @@ and the mod uses [semantic versioning](https://semver.org).
 
 ## [Unreleased]
 
+### Added
+
+- **Blood-sworn**, a new runestone in Combat (LHM-55). Each rank gives 3 levels of blood magic and makes
+  a blood magic shield absorb 10% more, so five ranks is +15 levels and a shield half again as thick.
+  The capstone is one more summon than the staff allows, and a recast of the shield refills it. This
+  is Deep ward from the ideas board, folded in. The levels count wherever the game reads the skill, so
+  they also raise a staff's damage and the thresholds in a summon's table, and they raise no other
+  skill. The shield is found by the skill it levels when it breaks, so a staff of the other school
+  keeps its shield as it was. In vanilla a recast keeps the damage the shield has already soaked and
+  only restarts its timer, so the refill is new behaviour and not a restatement of the old. The extra
+  summon is the player's own, published as one flag on the character so it holds when the summon is
+  owned by another client. The tooltip on the staff does not show the bigger shield, because it is
+  worked out on the shared item and not on the one you cast.
+- Four specials for `cards.txt`: `*blood:levels`, `*blood:absorb`, `*blood:summon` and `*blood:refill`,
+  and the companion mechanism behind them, so a stone can give two things for one carving. `rist show`
+  prints the blood magic level the game reads, the ratio a blood shield is set to, and the summon bonus.
+
 ### Fixed
 
 - **The mouse could stick to the middle of the screen on the runestone page.** While the page is open Rist

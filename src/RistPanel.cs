@@ -522,9 +522,12 @@ namespace Rist
             GUI.Label(new Rect(rect.x, y, w, flavourH), card.Flavour, _dflav);
             y += flavourH + 16f;
 
-            y = Row(rect.x, y, w, "NOW", rank > 0 ? card.Describe(rank) : "Not yet carved", _dnow);
+            y = Row(rect.x, y, w, "NOW",
+                    rank > 0 ? WithAlso(card.Describe(rank), card.DescribeAlso(rank)) : "Not yet carved", _dnow);
             y = Row(rect.x, y, w, "NEXT",
-                    maxed ? "Fully carved" : card.Describe(rank + 1) + " at rank " + (rank + 1), _dnext);
+                    maxed ? "Fully carved"
+                          : WithAlso(card.Describe(rank + 1), card.DescribeAlso(rank + 1)) + " at rank " + (rank + 1),
+                    _dnext);
 
             if (card.HasBonus)
             {
@@ -532,8 +535,9 @@ namespace Rist
                 var at = Mathf.Max(1, RistConfig.BonusEvery.Value) * (times + 1);
 
                 y = Row(rect.x, y, w, "CAPSTONE",
-                        times > 0 ? "★ " + card.DescribeBonus(times)
-                                  : "★ " + card.DescribeBonus(1) + " at rank " + at, _dcap);
+                        times > 0 ? "★ " + WithAlso(card.DescribeBonus(times), card.DescribeBonusAlso(times))
+                                  : "★ " + WithAlso(card.DescribeBonus(1), card.DescribeBonusAlso(1)) + " at rank " + at,
+                        _dcap);
             }
 
             GUI.Label(new Rect(rect.x, y, w, 18f), "CARVED AT", _label);
@@ -592,6 +596,11 @@ namespace Rist
         /// every value while they were "+5% carry weight" and cut off the 1.5 capstones:
         /// "★ arrows from a crouch land silent at rank 5" is wider than the 268px column.
         /// </summary>
+        private static string WithAlso(string main, string also)
+        {
+            return also.Length == 0 ? main : main + "\n" + also;
+        }
+
         private static float Row(float x, float y, float w, string label, string value, GUIStyle style)
         {
             GUI.Label(new Rect(x, y, w, 18f), label, _label);

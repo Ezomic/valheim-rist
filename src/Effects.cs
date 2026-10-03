@@ -27,6 +27,11 @@ namespace Rist
         private static string _appliedSignature;
         private static Player _appliedTo;
 
+        // The hand as totals, rebuilt only when the hand changes. The patches that run on a hot
+        // path (a skill read, a hit) ask this instead of TotalFor, which builds a dictionary on
+        // every call.
+        private static Dictionary<string, float> _cache = new Dictionary<string, float>();
+
         /// <summary>Rows added over vanilla, for the window backdrop to grow by.</summary>
         internal static int ExtraRows { get; private set; }
 
@@ -37,6 +42,7 @@ namespace Rist
             _applied = null;
             _appliedSignature = null;
             _appliedTo = null;
+            _cache = new Dictionary<string, float>();
 
             // Or the next capture reads values this class already wrote, off a Player that
             // no longer exists.
@@ -62,6 +68,7 @@ namespace Rist
 
             _appliedTo = player;
             _appliedSignature = signature;
+            _cache = Totals(ranks);
 
             ApplyStats(player, ranks);
             ApplyInventoryRows(player, ranks);
@@ -150,6 +157,12 @@ namespace Rist
                 return;
             }
 
+            // A stone that gives two things for one price. The companions are added beside the
+            // effect itself, scaled, so every consumer reads each of them as a plain effect and
+            // none of them knows the other exists.
+            if (Card.Companions.TryGetValue(effect, out var also))
+                foreach (var pair in also) Add(totals, pair.Key, amount * pair.Value);
+
             // Several cards may target the same effect, so accumulate rather than assign.
             totals.TryGetValue(effect, out var running);
             totals[effect] = running + amount;
@@ -173,6 +186,15 @@ namespace Rist
         {
             if (!ClientState.Known || string.IsNullOrEmpty(effect)) return 0f;
             return Totals(ClientState.Ranks).TryGetValue(effect, out var total) ? total : 0f;
+        }
+
+        /// <summary>
+        /// What the local hand adds up to for one effect, from the table Apply last built. For
+        /// patches on hot paths. Zero until the first Apply, and after Reset.
+        /// </summary>
+        internal static float Cached(string effect)
+        {
+            return effect != null && _cache.TryGetValue(effect, out var total) ? total : 0f;
         }
 
         private static void ApplyStats(Player player, Dictionary<string, int> ranks)

@@ -102,6 +102,7 @@ namespace Rist
             Patch(typeof(DeepDraught.Keep));
             Patch(typeof(Oathbound));
             Patch(typeof(Oathbound.Reset));
+            Patch(typeof(BloodSworn));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -348,6 +349,7 @@ namespace Rist
                 // republishes rather than trusting what the last world's ZDO was told.
                 _saidHello = false;
                 Nameplate.Forget();
+                BloodSworn.Forget();
                 return;
             }
 
@@ -362,6 +364,7 @@ namespace Rist
             // The three numbers other players read off this character. Throttled inside, and
             // silent until the server has said what the level is.
             Nameplate.Publish(player);
+            BloodSworn.Publish(player);
 
             // A shared forsaken-power minute that arrived a moment before its effect.
             Oathbound.Tick();
