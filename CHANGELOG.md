@@ -82,6 +82,8 @@ stone gives more.** The ranks, the stones' ids and the ledger are untouched. Wha
   your own secondary attack.
 - **Blood-sworn** was never built, so it took its idea (Deep ward) in at birth. See above.
 
+  The lent cast is not given to a staff that charges per burst, since the game checks the bar again for every burst
+  and would stop the cast on an empty one, and it is only spent when the cast actually begins.
 Each of the three stones' flavour text says what it learned.
 
 ### Fixed

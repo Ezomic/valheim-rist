@@ -124,6 +124,10 @@ namespace Rist
         /// does. It is ready again when the bar is back to full, which is what "per refill" means, not
         /// when it has merely regained enough for the next cast.
         ///
+        /// A staff that charges per burst (m_perBurstResourceUsage) is not lent a cast: the game
+        /// re-checks the bar for every burst and would stop the attack on an empty one. The lend is
+        /// recorded only when Attack.Start succeeds, since HaveAmmo and others run after the gate.
+        ///
         /// "Empty" is read as "cannot afford it", not as exactly zero: a bar with a few points in it
         /// that cannot pay for a cast is empty for the purposes of the cast. Only magic weapons use
         /// it, because TryUseEitr is also called for a reload drain, and a bow's reload must not spend
@@ -133,13 +137,51 @@ namespace Rist
         {
             private static bool _ready = true;
             private static Player _for;
+            private static Attack _starting;
+            private static bool _lent;
+
+            [HarmonyPatch(typeof(Attack), nameof(Attack.Start))]
+            [HarmonyPrefix]
+            private static void Begin(Attack __instance)
+            {
+                _starting = __instance;
+                _lent = false;
+            }
+
+            // Attack.Start asks TryUseEitr before HaveAmmo and the other refusals, so the lend is
+            // only recorded here, once the attack really began. A cast that is lent and then
+            // refused later costs nothing and is lent again.
+            [HarmonyPatch(typeof(Attack), nameof(Attack.Start))]
+            [HarmonyPostfix]
+            private static void End(bool __result)
+            {
+                if (_lent && __result)
+                {
+                    _ready = false;
+                    if (Player.m_localPlayer != null)
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Brimming lends one more cast");
+                }
+            }
+
+            [HarmonyPatch(typeof(Attack), nameof(Attack.Start))]
+            [HarmonyFinalizer]
+            private static void Done()
+            {
+                _starting = null;
+                _lent = false;
+            }
 
             [HarmonyPatch(typeof(Character), nameof(Character.TryUseEitr))]
             [HarmonyPostfix]
             private static void Lend(Character __instance, float eitrUse, ref bool __result)
             {
-                if (__result || eitrUse <= 0f || !Mine(__instance)) return;
+                if (__result || eitrUse <= 0f || _starting == null || !Mine(__instance)) return;
                 if (Effects.Cached(LastCast) <= 0f) return;
+
+                // A staff that pays per burst skips the payment in Attack.Update and asks HaveEitr
+                // again for every burst, which answers no on an empty bar and stops the attack. A
+                // lent cast there would be spent for nothing, so it is not lent.
+                if (_starting.m_attackType == Attack.AttackType.Projectile && _starting.m_perBurstResourceUsage) return;
 
                 var player = __instance as Player;
                 if (player == null || player.GetMaxEitr() <= 0f) return;
@@ -147,9 +189,8 @@ namespace Rist
                 Sync(player);
                 if (!_ready || !IsMagic(player)) return;
 
-                _ready = false;
+                _lent = true;
                 __result = true;
-                player.Message(MessageHud.MessageType.TopLeft, "Brimming lends one more cast");
             }
 
             private static bool IsMagic(Player player)
