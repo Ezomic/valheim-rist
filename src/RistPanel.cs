@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 namespace Rist
@@ -46,6 +47,17 @@ namespace Rist
         private const float BottomMargin = 20f;
         private const float HeaderH = 57f;
 
+        /// <summary>
+        /// The picker above the page, one tab per character: the viewer's own first, then every
+        /// other character the server listed. Tabs wrap onto further rows rather than scrolling,
+        /// since this page never scrolls sideways, and the strip is part of the height Fit has
+        /// to find room for.
+        /// </summary>
+        private const float TabH = 28f;
+        private const float TabGap = 8f;
+        private const float TabRowGap = 6f;
+        private const float TabsAfter = 12f;
+
         private const float DetailWidth = 268f;
         private const float DetailPad = 22f;
 
@@ -75,6 +87,18 @@ namespace Rist
         private static readonly int[] MarkFont = { 17, 13, 12 };
         private static readonly float[] MarkBox = { 22f, 17f, 16f };
         private static readonly float[] MarkRadius = { 31f, 24f, 20f };
+
+        /// <summary>
+        /// The rank ring: one segment per rank in a ring just outside the stone, filled gold as
+        /// ranks are carved. Distance of the ring's centre line past the nominal stone edge,
+        /// per stone size; the thickness is the texture's, about 3px at the first size. Kept to 3px so that the ring is clear of a maxed
+        /// stone's halo (3px past its widest edge) and does not reach the heading rule above a
+        /// stone on the compact rungs, whose heading block ends 6px short of the first row.
+        /// </summary>
+        private static readonly float[] RingOffset = { 3f, 3f, 3f };
+
+        /// <summary>The ring texture is drawn with its centre line at 58 of its 64px half-size.</summary>
+        private const float RingCentre = 58f;
 
         /// <summary>
         /// One rung of the fit ladder. Lying lays each ætt down four wide and two tall so ættir
@@ -121,12 +145,12 @@ namespace Rist
 
             internal float CellW, CellH, ColGap, RowGap, HeadingH, RuleAt, Gutter, BandGap;
             internal int BlockCols, BlockRows, PerBand;
-            internal float BlockW, BlockH, FieldW, FieldH, BoardW, ContentH, TotalH;
+            internal float BlockW, BlockH, FieldW, FieldH, BoardW, ContentH, TotalH, TabsH;
             internal float X0, Y0;
         }
 
         private static Layout _layout;
-        private static int _layoutW, _layoutH, _layoutCount, _layoutAetts;
+        private static int _layoutW, _layoutH, _layoutCount, _layoutAetts, _layoutTabs;
         private static float _layoutInset = -1f;
 
         // Cell widths, measured from the real strings once the fonts exist. 142 and 112 are
@@ -139,10 +163,21 @@ namespace Rist
         private static bool _open;
         private static int _selected;
 
+        /// <summary>
+        /// Whose stones the page is showing: null is the viewer's own, anything else is another
+        /// character read from what the server answered. Set once per frame from
+        /// Others.Current, so every helper below agrees on it for the whole frame.
+        /// </summary>
+        private static Others.Peer _view;
+
+        private static bool Viewing => _view != null;
+
         private static GUIStyle _void, _title, _sub, _spend, _name, _nameDim, _nameSel, _now, _nowDim,
                                 _dname, _dflav, _label, _dnow, _dnext, _dcap, _dAett,
                                 _slotOn, _slotOff, _take, _foot, _bar, _barTrack, _rule,
-                                _aettName, _aettNameCompact, _aettCount;
+                                _aettName, _aettNameCompact, _aettCount, _subRight,
+                                _tabOn, _tabSel, _tabOff, _tabLvl, _tabLvlOff, _tabBg, _tabBgSel,
+                                _rank, _rankDim, _rankSel, _note;
 
         private static readonly GUIStyle[] _sigils = new GUIStyle[3];
         private static readonly GUIStyle[] _sigilsDim = new GUIStyle[3];
@@ -188,6 +223,12 @@ namespace Rist
         internal static void Open()
         {
             _open = true;
+
+            // Always back on the viewer's own page, and the list asked for again: who is online
+            // and what they carved changes between visits, and a request is the only moment the
+            // server sends any of it.
+            Others.Selected = 0L;
+            Others.Ask();
         }
 
         internal static void Close()
@@ -207,14 +248,19 @@ namespace Rist
 
             var layout = CurrentLayout();
 
+            _view = Others.Current;
+
             var x = layout.X0;
             var y = layout.Y0;
 
+            DrawTabs(x, ref y, layout.BoardW);
             DrawHead(x, ref y, layout.BoardW);
 
             var fieldTop = y;
             DrawField(layout, x, fieldTop);
             DrawDetail(new Rect(x + layout.FieldW + DetailPad, fieldTop, DetailWidth, layout.ContentH));
+
+            if (Viewing) DrawNote(x, fieldTop + layout.ContentH, layout.FieldW);
         }
 
         /// <summary>
@@ -224,12 +270,14 @@ namespace Rist
         private static Layout CurrentLayout()
         {
             var inset = Mathf.Max(0f, RistConfig.PanelBottomInset.Value);
+            var tabs = RefreshTabs();
 
             if (_layout != null && _layoutW == Screen.width && _layoutH == Screen.height &&
                 _layoutCount == Cards.All.Count && _layoutAetts == Cards.Aetts.Count &&
-                Mathf.Approximately(_layoutInset, inset))
+                _layoutTabs == tabs && Mathf.Approximately(_layoutInset, inset))
                 return _layout;
 
+            _layoutTabs = tabs;
             _layoutW = Screen.width;
             _layoutH = Screen.height;
             _layoutCount = Cards.All.Count;
@@ -280,7 +328,7 @@ namespace Rist
             if (rung.Compact)
             {
                 l.CellW = _cellWCompact;
-                l.CellH = s + 22f;          // stone, 2 gap, name 20
+                l.CellH = s + 25f;          // stone, 5 gap, name 20
                 l.ColGap = 8f;
                 l.RowGap = 10f;
                 l.HeadingH = 26f;
@@ -291,7 +339,7 @@ namespace Rist
             else
             {
                 l.CellW = _cellWFull;
-                l.CellH = s + 42f;          // stone, 4 gap, name 20, value 18
+                l.CellH = s + 46f;          // stone, 8 gap, name 20, value 18
 
                 // 10 and 18, not the mockup's 12 and 24. The cell is measured from the widest
                 // value line, which came out 146 rather than 142 in game, and at 146 five standing
@@ -325,7 +373,8 @@ namespace Rist
             l.FieldH = bands * l.BlockH + (bands - 1) * l.BandGap;
             l.BoardW = l.FieldW + DetailPad + DetailWidth;
             l.ContentH = Mathf.Max(l.FieldH, DetailMinH);
-            l.TotalH = HeaderH + l.ContentH;
+            l.TabsH = TabsHeight(l.BoardW);
+            l.TotalH = HeaderH + l.TabsH + l.ContentH;
 
             l.Fits = l.FieldW <= availW && l.TotalH <= availH;
 
@@ -336,15 +385,26 @@ namespace Rist
 
         private static void DrawHead(float x, ref float y, float width)
         {
+            var maxRank = Mathf.Max(1, RistConfig.MaxRank.Value);
+
+            if (Viewing)
+            {
+                DrawViewedHead(x, ref y, width, maxRank);
+                return;
+            }
+
             GUI.Label(new Rect(x, y, width * 0.5f, 32f), "YOUR RISTS", _title);
 
             var held = ClientState.Ranks.Count;
             var marks = 0;
             foreach (var kv in ClientState.Ranks) marks += kv.Value;
 
+            // The total is here because nobody else's page shows it to its owner: the nameplate
+            // carries it to everyone in range except the character wearing it.
             GUI.Label(new Rect(x + 200f, y + 9f, Mathf.Max(360f, width - 480f), 20f),
-                      "Level " + ClientState.Level + " · " + held + " of " + Cards.All.Count +
-                      " carved · " + marks + " of " + Cards.All.Count * RistConfig.MaxRank.Value +
+                      "Level " + ClientState.Level + " · " + Mathf.RoundToInt(ClientState.Xp).ToString("N0", CultureInfo.InvariantCulture) +
+                      " XP · " + held + " of " + Cards.All.Count +
+                      " carved · " + marks + " of " + Cards.All.Count * maxRank +
                       " marks", _sub);
 
             if (ClientState.HasPick)
@@ -361,6 +421,29 @@ namespace Rist
                       GUIContent.none, _bar);
 
             y += 5f + 18f;
+        }
+
+        /// <summary>
+        /// Another character's heading. No progress bar: its fill would be worked out from this
+        /// client's level curve, which is config and may not be the host's, and the level shown
+        /// beside it is the one the server sent. The same height is left blank so the field
+        /// starts where it does on the viewer's own page.
+        /// </summary>
+        private static void DrawViewedHead(float x, ref float y, float width, int maxRank)
+        {
+            var title = _view.Named ? _view.Name.ToUpperInvariant() + "'S RISTS"
+                                    : "RISTS OF CHARACTER " + Others.Digits(_view.CharacterId);
+
+            GUI.Label(new Rect(x, y, width * 0.5f, 32f), title, _title);
+
+            Others.Counts(_view, out var carved, out var marks);
+
+            GUI.Label(new Rect(x, y + 9f, width, 20f),
+                      "Level " + _view.Level + " · " + carved + " of " + Cards.All.Count +
+                      " carved · " + marks + " of " + Cards.All.Count * maxRank +
+                      " marks", _subRight);
+
+            y += 34f + 5f + 18f;
         }
 
         /// <summary>
@@ -393,7 +476,7 @@ namespace Rist
         {
             var carved = 0;
             foreach (var index in aett.Indices)
-                if (ClientState.RankOf(Cards.All[index].Id) > 0) carved++;
+                if (RankOf(Cards.All[index].Id) > 0) carved++;
 
             var nameH = l.Rung.Compact ? 20f : 22f;
 
@@ -411,10 +494,13 @@ namespace Rist
 
         private static void DrawStone(Card card, int index, Rect cell, int size, bool compact)
         {
-            var rank = ClientState.RankOf(card.Id);
+            var rank = RankOf(card.Id);
             var maxRank = Mathf.Max(1, RistConfig.MaxRank.Value);
             var maxed = rank >= maxRank;
-            var canTake = ClientState.HasPick && !maxed;
+
+            // Never on another character's page: a click there has nothing to spend and nobody's
+            // ledger to spend it in.
+            var canTake = !Viewing && ClientState.HasPick && !maxed;
 
             var s = (float)StoneSizes[size];
             var disc = new Rect(cell.x + (cell.width - s) * 0.5f, cell.y, s, s);
@@ -465,6 +551,8 @@ namespace Rist
                           marks[m], _marks[size]);
             }
 
+            DrawRing(cx, cy, size, rank, maxRank);
+
             if (canTake && hovered && Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
                 Take(card.Id);
@@ -473,9 +561,20 @@ namespace Rist
 
             // The selected stone's name goes gold, so the stone the detail column is talking
             // about stays findable once the cursor has moved across to read it.
-            var nameStyle = index == _selected ? _nameSel : rank > 0 ? _name : _nameDim;
+            var y = disc.yMax + (compact ? 5f : 8f);
 
-            var y = disc.yMax + (compact ? 2f : 4f);
+            if (Viewing)
+            {
+                // The rank sits after the name, in the place the value line would have been
+                // read, and there is no value line: what a stone does at their rank is in the
+                // detail column when the cursor is on it.
+                var rankStyle = index == _selected ? _rankSel : rank > 0 ? _rank : _rankDim;
+                GUI.Label(new Rect(cell.x, y, cell.width, 20f),
+                          card.Name + " <color=" + (rank > 0 ? "#D4A94A" : "#6F6446") + ">" + rank + "</color>", rankStyle);
+                return;
+            }
+
+            var nameStyle = index == _selected ? _nameSel : rank > 0 ? _name : _nameDim;
             GUI.Label(new Rect(cell.x, y, cell.width, 20f), card.Name, nameStyle);
 
             if (compact) return;
@@ -498,7 +597,7 @@ namespace Rist
             if (_selected < 0 || _selected >= Cards.All.Count) return;
 
             var card = Cards.All[_selected];
-            var rank = ClientState.RankOf(card.Id);
+            var rank = RankOf(card.Id);
             var maxRank = Mathf.Max(1, RistConfig.MaxRank.Value);
             var maxed = rank >= maxRank;
 
@@ -527,10 +626,13 @@ namespace Rist
 
             y = Row(rect.x, y, w, "NOW",
                     rank > 0 ? WithAlso(card.Describe(rank), card.DescribeAlso(rank)) : "Not yet carved", _dnow);
-            y = Row(rect.x, y, w, "NEXT",
-                    maxed ? "Fully carved"
-                          : WithAlso(card.Describe(rank + 1), card.DescribeAlso(rank + 1)) + " at rank " + (rank + 1),
-                    _dnext);
+            if (!Viewing)
+            {
+                y = Row(rect.x, y, w, "NEXT",
+                        maxed ? "Fully carved"
+                              : WithAlso(card.Describe(rank + 1), card.DescribeAlso(rank + 1)) + " at rank " + (rank + 1),
+                        _dnext);
+            }
 
             if (card.HasBonus)
             {
@@ -551,7 +653,7 @@ namespace Rist
             // deleted from the catalogue hands back its picks with their original levels, so
             // a track came out reading "11 12 8 9 10". Every number is true; ascending is
             // simply how a set of levels reads.
-            var levels = ClientState.LevelsOf(card.Id);
+            var levels = LevelsOf(card.Id);
             var shown = levels == null ? null : new List<int>(levels);
             if (shown != null) shown.Sort();
 
@@ -577,7 +679,8 @@ namespace Rist
             }
 
             GUI.Label(new Rect(rect.x, rect.yMax - 52f, w, 30f),
-                      maxed ? "Fully carved"
+                      Viewing ? "Read only"
+                      : maxed ? "Fully carved"
                             : ClientState.HasPick ? "Click the stone to carve it"
                                                   : "No rist to spend", _take);
 
@@ -585,6 +688,264 @@ namespace Rist
             // with the screen and the ættir, and a footer tracking it was a line that moved
             // every time; the foot of this column is always in the same place relative to it.
             GUI.Label(new Rect(rect.x, rect.yMax - 18f, w, 18f), "Escape to close", _foot);
+        }
+
+        private static int RankOf(string id)
+        {
+            return _view != null ? _view.RankOf(id) : ClientState.RankOf(id);
+        }
+
+        private static List<int> LevelsOf(string id)
+        {
+            return _view != null ? _view.LevelsOf(id) : ClientState.LevelsOf(id);
+        }
+
+        // ---- the picker ---------------------------------------------------------------
+
+        private struct Tab
+        {
+            internal long Id;
+            internal string Label;
+            internal int Level;
+            internal bool Online;
+            internal float NameW, LevelW, W;
+        }
+
+        private static readonly List<Tab> _tabs = new List<Tab>();
+        private static int _tabsVersion = -1, _tabsOwnLevel = -1;
+
+        private static Texture2D _dot;
+        private static readonly Dictionary<int, Texture2D> _rings = new Dictionary<int, Texture2D>();
+
+        private static readonly Color OfflineDot = new Color(0.29f, 0.278f, 0.247f, 1f);
+
+        /// <summary>
+        /// The tab list for this frame, measured again only when the server's answer or the
+        /// viewer's own level changed. Returns a number that differs whenever the strip's
+        /// geometry might, so the layout cache can include it. Without another character
+        /// listed the strip is empty, and a server nobody else is on, one that has switched
+        /// ShareRanks off, or one that predates the page all look exactly as the page did
+        /// before it had a picker.
+        /// </summary>
+        private static int RefreshTabs()
+        {
+            if (_tabsVersion == Others.Version && _tabsOwnLevel == ClientState.Level)
+                return _tabsVersion * 1000 + _tabs.Count;
+
+            _tabsVersion = Others.Version;
+            _tabsOwnLevel = ClientState.Level;
+            _tabs.Clear();
+
+            if (Others.List.Count == 0) return _tabsVersion * 1000;
+
+            _tabs.Add(MakeTab(0L, "You", ClientState.Level, true));
+            foreach (var peer in Others.List)
+                _tabs.Add(MakeTab(peer.CharacterId, peer.Label, peer.Level, peer.Online));
+
+            return _tabsVersion * 1000 + _tabs.Count;
+        }
+
+        private static Tab MakeTab(long id, string label, int level, bool online)
+        {
+            var tab = new Tab { Id = id, Label = label, Level = level, Online = online };
+            tab.NameW = Mathf.Ceil(_tabSel.CalcSize(new GUIContent(label)).x);
+            tab.LevelW = Mathf.Ceil(_tabLvl.CalcSize(new GUIContent("L" + level)).x);
+
+            // 12 pad, 8 dot, 6 gap, name, 8 gap, level, 12 pad.
+            tab.W = 12f + 8f + 6f + tab.NameW + 8f + tab.LevelW + 12f;
+            return tab;
+        }
+
+        private static int TabRows(float width)
+        {
+            if (_tabs.Count == 0) return 0;
+
+            var rows = 1;
+            var used = 0f;
+            foreach (var tab in _tabs)
+            {
+                if (used > 0f && used + tab.W > width) { rows++; used = 0f; }
+                used += tab.W + TabGap;
+            }
+
+            return rows;
+        }
+
+        private static float TabsHeight(float width)
+        {
+            var rows = TabRows(width);
+            return rows == 0 ? 0f : rows * TabH + (rows - 1) * TabRowGap + TabsAfter;
+        }
+
+        /// <summary>
+        /// One tab per character, the viewer's own first. Online characters have a green dot and
+        /// the rest a grey one and dimmer text; the one being looked at is outlined gold. Clicking
+        /// only changes which character is shown, and nothing is sent.
+        /// </summary>
+        private static void DrawTabs(float x, ref float y, float width)
+        {
+            if (_tabs.Count == 0) return;
+
+            var tx = x;
+            var ty = y;
+
+            foreach (var tab in _tabs)
+            {
+                if (tx > x && tx + tab.W > x + width) { tx = x; ty += TabH + TabRowGap; }
+
+                var rect = new Rect(tx, ty, tab.W, TabH);
+                var selected = tab.Id == Others.Selected;
+
+                GUI.Label(rect, GUIContent.none, selected ? _tabBgSel : _tabBg);
+                Frame(rect, selected ? Gold : Edge);
+
+                var previous = GUI.color;
+                GUI.color = tab.Online ? Green : OfflineDot;
+                GUI.DrawTexture(new Rect(tx + 12f, ty + (TabH - 8f) * 0.5f, 8f, 8f), Dot());
+                GUI.color = previous;
+
+                var nameStyle = selected ? _tabSel : tab.Online ? _tabOn : _tabOff;
+                GUI.Label(new Rect(tx + 26f, ty, tab.NameW + 4f, TabH), tab.Label, nameStyle);
+                GUI.Label(new Rect(tx + 26f + tab.NameW + 8f, ty, tab.LevelW + 4f, TabH), "L" + tab.Level,
+                          tab.Online ? _tabLvl : _tabLvlOff);
+
+                if (Event.current.type == EventType.MouseDown && Event.current.button == 0 &&
+                    rect.Contains(Event.current.mousePosition))
+                {
+                    Others.Selected = tab.Id;
+                    Event.current.Use();
+                }
+
+                tx += tab.W + TabGap;
+            }
+
+            y += TabsHeight(width);
+        }
+
+        /// <summary>
+        /// The line under the field on another character's page. The last sentence is only said
+        /// when it is true of the page being read.
+        /// </summary>
+        private static void DrawNote(float x, float bottom, float width)
+        {
+            var text = "Read only. The number after the name is the rank out of " + Mathf.Max(1, RistConfig.MaxRank.Value) +
+                       ". Online players come first, then every character the server knows, greyed.";
+
+            if (!_view.Named)
+                text += " The server keeps no names, so a character who is not online is shown by the last digits of their id.";
+
+            var h = Mathf.Max(18f, _note.CalcHeight(new GUIContent(text), width));
+            GUI.Label(new Rect(x, bottom - h, width, h), text, _note);
+        }
+
+        // ---- the rank ring ------------------------------------------------------------
+
+        /// <summary>
+        /// One segment per rank, a ring cut into maxRank arcs with a small gap between, filled
+        /// gold up to the rank carved and the dark of the track beyond it. The first segment is
+        /// centred on the top, where the first mark is cut, and they run clockwise as the marks
+        /// do, so the ring and the marks inside it count the same way.
+        ///
+        /// Drawn on every page, the viewer's own as well as anyone else's, so the two read alike.
+        /// It is one texture of a single arc, rotated for each segment through GUI.matrix and
+        /// tinted through GUI.color, which keeps the cost at maxRank quads a stone and leaves
+        /// IMGUI no shape of its own to draw.
+        /// </summary>
+        private static void DrawRing(float cx, float cy, int size, int rank, int maxRank)
+        {
+            var tex = Ring(maxRank);
+            if (tex == null) return;
+
+            var centre = StoneSizes[size] * 0.5f + RingOffset[size];
+            var half = centre * 64f / RingCentre;
+            var rect = new Rect(cx - half, cy - half, half * 2f, half * 2f);
+
+            var previous = GUI.color;
+            var matrix = GUI.matrix;
+
+            for (var i = 0; i < maxRank; i++)
+            {
+                GUI.color = i < rank ? Gold : Track;
+                GUIUtility.RotateAroundPivot(i * 360f / maxRank, new Vector2(cx, cy));
+                GUI.DrawTexture(rect, tex);
+                GUI.matrix = matrix;
+            }
+
+            GUI.color = previous;
+        }
+
+        /// <summary>
+        /// The arc: radius 56.5 to 59.5 of a 64px half-size, centred on the top, 12 degrees short
+        /// of its share of the circle. Coverage is worked out per pixel from the distance to each
+        /// edge, so the arc is anti-aliased at any size it is drawn.
+        /// </summary>
+        private static Texture2D Ring(int segments)
+        {
+            if (segments < 1) return null;
+            if (_rings.TryGetValue(segments, out var cached) && cached != null) return cached;
+
+            const int size = 128;
+            const float inner = 56.5f;
+            const float outer = 59.5f;
+            const float gap = 12f;
+
+            var halfAngle = Mathf.Max(2f, 360f / segments - gap) * 0.5f;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, true)
+            {
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp,
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+
+            for (var y = 0; y < size; y++)
+            {
+                for (var x = 0; x < size; x++)
+                {
+                    // SetPixel counts y from the bottom and the angle is measured from the top,
+                    // so the row is read the right way up here rather than flipped afterwards.
+                    var dx = x + 0.5f - size * 0.5f;
+                    var dy = y + 0.5f - size * 0.5f;
+                    var d = Mathf.Sqrt(dx * dx + dy * dy);
+
+                    var radial = Mathf.Clamp01(Mathf.Min(d - inner, outer - d) + 0.5f);
+
+                    var angle = Mathf.Abs(Mathf.DeltaAngle(0f, Mathf.Atan2(dx, dy) * Mathf.Rad2Deg));
+                    var edge = (halfAngle - angle) * Mathf.Deg2Rad * d;
+                    var along = Mathf.Clamp01(edge + 0.5f);
+
+                    tex.SetPixel(x, y, new Color(1f, 1f, 1f, radial * along));
+                }
+            }
+
+            tex.Apply(true);
+            _rings[segments] = tex;
+            return tex;
+        }
+
+        private static Texture2D Dot()
+        {
+            if (_dot != null) return _dot;
+
+            const int size = 32;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp,
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+
+            for (var y = 0; y < size; y++)
+            {
+                for (var x = 0; x < size; x++)
+                {
+                    var d = Mathf.Sqrt(Mathf.Pow(x + 0.5f - size * 0.5f, 2f) + Mathf.Pow(y + 0.5f - size * 0.5f, 2f));
+                    tex.SetPixel(x, y, new Color(1f, 1f, 1f, Mathf.Clamp01(size * 0.5f - d)));
+                }
+            }
+
+            tex.Apply();
+            _dot = tex;
+            return tex;
         }
 
         private static string WithAlso(string main, string also)
@@ -691,6 +1052,40 @@ namespace Rist
             _spend = Head(15, Gold);
             _spend.alignment = TextAnchor.UpperRight;
 
+            _subRight = Body(14, Muted);
+            _subRight.alignment = TextAnchor.UpperRight;
+
+            // The picker. Names in the heading face, levels in the body one, as the tabs in the
+            // mockup carry them.
+            _tabOn = Head(14, Cream);
+            _tabOn.alignment = TextAnchor.MiddleLeft;
+            _tabSel = Head(14, Gold);
+            _tabSel.alignment = TextAnchor.MiddleLeft;
+            _tabOff = Head(14, Faint);
+            _tabOff.alignment = TextAnchor.MiddleLeft;
+            _tabLvl = Body(12, Muted);
+            _tabLvl.alignment = TextAnchor.MiddleLeft;
+            _tabLvlOff = Body(12, new Color(0.451f, 0.43f, 0.38f, 1f));
+            _tabLvlOff.alignment = TextAnchor.MiddleLeft;
+            _tabBg = new GUIStyle { normal = { background = Solid(new Color(0.067f, 0.059f, 0.047f, 1f)) } };
+            _tabBgSel = new GUIStyle { normal = { background = Solid(new Color(0.11f, 0.094f, 0.063f, 1f)) } };
+
+            // The name and its rank in one label, so the pair is centred as one thing. Rich text
+            // is on for these three alone; the rank number is the only tagged part, and card
+            // names come from the catalogue rather than from a player.
+            _rank = Body(14, Cream);
+            _rank.alignment = TextAnchor.UpperCenter;
+            _rank.richText = true;
+            _rankDim = Body(14, Faint);
+            _rankDim.alignment = TextAnchor.UpperCenter;
+            _rankDim.richText = true;
+            _rankSel = Body(14, Gold);
+            _rankSel.alignment = TextAnchor.UpperCenter;
+            _rankSel.richText = true;
+
+            _note = Body(12, Faint);
+            _note.wordWrap = true;
+
             _name = Body(14, Cream);
             _name.alignment = TextAnchor.UpperCenter;
             _nameDim = Body(14, Faint);
@@ -767,7 +1162,9 @@ namespace Rist
 
             foreach (var card in Cards.All)
             {
-                widestName = Mathf.Max(widestName, _name.CalcSize(new GUIContent(card.Name)).x);
+                // With the " 5" another character's page puts after it, so that line is never
+                // wider than its cell.
+                widestName = Mathf.Max(widestName, _name.CalcSize(new GUIContent(card.Name + " 5")).x);
 
                 for (var r = 1; r <= maxRank; r++)
                     widestValue = Mathf.Max(widestValue, _now.CalcSize(new GUIContent(card.Describe(r))).x);
@@ -776,6 +1173,7 @@ namespace Rist
             _cellWFull = Mathf.Max(142f, Mathf.Ceil(Mathf.Max(widestName, widestValue) + 8f));
             _cellWCompact = Mathf.Max(112f, Mathf.Ceil(widestName + 8f));
             _layout = null;
+            _tabsVersion = -1;
         }
 
         private static GUIStyle Body(int size, Color colour)

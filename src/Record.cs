@@ -301,6 +301,44 @@ namespace Rist
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Just the cards, in the ledger's own "id:level;level,id:level" form. What the
+        /// other-players page is sent for each character: the same text the ledger holds, so
+        /// there is no second format to keep in step with it.
+        /// </summary>
+        internal string TakenWire()
+        {
+            var sb = new StringBuilder();
+            AppendTaken(sb);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// The reading half of <see cref="TakenWire"/>, shared by the client's own state and the
+        /// other-players list so the two cannot come to read the same text differently.
+        /// </summary>
+        internal static void ParseTaken(string text, Dictionary<string, List<int>> into)
+        {
+            if (string.IsNullOrEmpty(text)) return;
+
+            foreach (var entry in text.Split(','))
+            {
+                if (entry.Length == 0) continue;
+
+                var bits = entry.Split(':');
+                if (bits.Length != 2) continue;
+
+                var levels = new List<int>();
+                foreach (var part in bits[1].Split(';'))
+                {
+                    if (part.Length == 0) continue;
+                    if (int.TryParse(part, out var level)) levels.Add(level);
+                }
+
+                if (levels.Count > 0) into[bits[0]] = levels;
+            }
+        }
+
         private void AppendTaken(StringBuilder sb)
         {
             var first = true;

@@ -51,6 +51,13 @@ namespace Rist
             return rec;
         }
 
+        /// <summary>Every record, for the other-players page. Read only: callers must not edit.</summary>
+        internal static IEnumerable<RistRecord> All()
+        {
+            Load();
+            return _records.Values;
+        }
+
         internal static void Touch()
         {
             _dirty = true;

@@ -103,25 +103,8 @@ namespace Rist
             float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out Xp);
             int.TryParse(parts[1], out DraftsTaken);
 
-            foreach (var entry in parts[2].Split(','))
-            {
-                if (entry.Length == 0) continue;
-
-                var bits = entry.Split(':');
-                if (bits.Length != 2) continue;
-
-                var levels = new List<int>();
-                foreach (var text in bits[1].Split(';'))
-                {
-                    if (text.Length == 0) continue;
-                    if (int.TryParse(text, out var level)) levels.Add(level);
-                }
-
-                if (levels.Count == 0) continue;
-
-                Taken[bits[0]] = levels;
-                Ranks[bits[0]] = levels.Count;
-            }
+            RistRecord.ParseTaken(parts[2], Taken);
+            foreach (var kv in Taken) Ranks[kv.Key] = kv.Value.Count;
 
             if (parts.Length >= 5)
             {
@@ -150,6 +133,20 @@ namespace Rist
         private const string RpcAskProfile = "Rist_AskProfile";
         private const string RpcProfile = "Rist_Profile";
         private const string RpcNotice = "Rist_Notice";
+        private const string RpcAskOthers = "Rist_AskOthers";
+        private const string RpcOthers = "Rist_Others";
+
+        /// <summary>
+        /// Most characters one answer carries. A line is a character's whole card list, and a
+        /// world that has been played for a year has far more records than anyone wants on a
+        /// page; online players always make the cut, then the highest levels.
+        /// </summary>
+        private const int MaxOthers = 40;
+
+        /// <summary>Seconds a client must wait between requests for the list.</summary>
+        private const float OthersCooldown = 2f;
+
+        private static readonly Dictionary<long, float> _askedOthers = new Dictionary<long, float>();
 
         private static ZRoutedRpc _registeredOn;
 
@@ -186,6 +183,8 @@ namespace Rist
             _registeredOn = rpc;
             _reports.Clear();
             _characters.Clear();
+            _askedOthers.Clear();
+            Others.Clear();
             Gate.Forget();
             Throttle.Forget();
 
@@ -196,6 +195,8 @@ namespace Rist
             rpc.Register(RpcAskProfile, OnAskProfile);
             rpc.Register<string, string>(RpcProfile, OnProfile);
             rpc.Register<string>(RpcNotice, OnNotice);
+            rpc.Register(RpcAskOthers, OnAskOthers);
+            rpc.Register<string>(RpcOthers, OnOthers);
 
             // Client to client, not to the server: Oath-bound's shared minute, sent by the caster
             // of a forsaken power to each player it reached.
@@ -231,6 +232,16 @@ namespace Rist
         {
             if (ZRoutedRpc.instance == null || string.IsNullOrEmpty(cardId)) return;
             ZRoutedRpc.instance.InvokeRoutedRPC(RpcPick, cardId);
+        }
+
+        /// <summary>
+        /// Ask the server who else is on it and what they have carved. Sent when the page opens;
+        /// the answer replaces the list and nothing else is ever pushed.
+        /// </summary>
+        internal static void AskOthers()
+        {
+            if (ZRoutedRpc.instance == null) return;
+            ZRoutedRpc.instance.InvokeRoutedRPC(RpcAskOthers);
         }
 
         // ---- server handlers -----------------------------------------------------------
@@ -390,6 +401,104 @@ namespace Rist
             PushState(sender, rec);
         }
 
+        /// <summary>
+        /// Answer a request for the other characters, to the one who asked and to nobody else.
+        ///
+        /// Read only by construction: this builds text from the ledger and sends it, and no
+        /// handler anywhere accepts a character or a card from the reply, so there is no path
+        /// from a client back into another character's record. The requester's own character is
+        /// left out, since its page is the one it already has.
+        /// </summary>
+        private static void OnAskOthers(long sender)
+        {
+            if (!IsServer || !RistConfig.Enabled.Value || ZRoutedRpc.instance == null) return;
+
+            var me = OwnerOf(sender);
+            if (me == null) return;
+
+            var now = Time.time;
+            if (_askedOthers.TryGetValue(sender, out var last) && now - last < OthersCooldown) return;
+            _askedOthers[sender] = now;
+
+            var reply = RistConfig.ShareRanks.Value ? BuildOthers(me) : "";
+            ZRoutedRpc.instance.InvokeRoutedRPC(sender, RpcOthers, reply);
+        }
+
+        private static string BuildOthers(string me)
+        {
+            // Who is connected, by ledger key. _characters is never pruned when a peer leaves,
+            // so membership alone says "has been here this session"; the peer list says who is.
+            var online = new Dictionary<string, string>();
+            foreach (var pair in _characters)
+            {
+                if (!IsConnected(pair.Key)) continue;
+
+                var key = OwnerOf(pair.Key);
+                if (key != null) online[key] = NameOf(pair.Key);
+            }
+
+            var rows = new List<KeyValuePair<string, RistRecord>>();
+            foreach (var rec in Ledger.All())
+            {
+                if (rec.Owner == me) continue;
+
+                // A pre-character record is keyed by the platform alone and has no character id
+                // to show; it is not a character this page can name.
+                if (CharacterIdOf(rec.Owner) == 0L) continue;
+
+                var live = online.ContainsKey(rec.Owner);
+                if (!live && rec.Xp <= 0f && rec.Taken.Count == 0) continue;
+
+                rows.Add(new KeyValuePair<string, RistRecord>(rec.Owner, rec));
+            }
+
+            rows.Sort((a, b) =>
+            {
+                var oa = online.ContainsKey(a.Key);
+                var ob = online.ContainsKey(b.Key);
+                if (oa != ob) return oa ? -1 : 1;
+                return b.Value.Xp.CompareTo(a.Value.Xp);
+            });
+
+            if (rows.Count > MaxOthers) rows.RemoveRange(MaxOthers, rows.Count - MaxOthers);
+
+            var lines = new List<string>(rows.Count);
+            foreach (var row in rows)
+            {
+                var live = online.TryGetValue(row.Key, out var name);
+                lines.Add(Others.ToLine(CharacterIdOf(row.Key), live, live ? name : "", row.Value));
+            }
+
+            return string.Join("\n", lines.ToArray());
+        }
+
+        private static bool IsConnected(long uid)
+        {
+            if (ZNet.instance == null) return false;
+            if (ZNet.instance.GetPeer(uid) != null) return true;
+
+            return !ZNet.instance.IsDedicated() && uid == ZNet.GetUID();
+        }
+
+        private static string NameOf(long uid)
+        {
+            var peer = ZNet.instance == null ? null : ZNet.instance.GetPeer(uid);
+            if (peer != null) return peer.m_playerName ?? "";
+
+            var player = Player.m_localPlayer;
+            return player == null ? "" : player.GetPlayerName();
+        }
+
+        /// <summary>The character half of a ledger key, or 0 when the key has none.</summary>
+        private static long CharacterIdOf(string owner)
+        {
+            var at = owner == null ? -1 : owner.LastIndexOf('@');
+            if (at < 0) return 0L;
+
+            return long.TryParse(owner.Substring(at + 1), System.Globalization.NumberStyles.Integer,
+                                 System.Globalization.CultureInfo.InvariantCulture, out var id) ? id : 0L;
+        }
+
         private static void OnProfile(long sender, string facts, string skills)
         {
             if (!IsServer) return;
@@ -532,6 +641,14 @@ namespace Rist
                 RistPlugin.Log.LogInfo("State: level " + ClientState.Level + ", " +
                                        ClientState.Ranks.Count + " cards, " +
                                        ClientState.Owed + " to spend.");
+        }
+
+        private static void OnOthers(long sender, string wire)
+        {
+            Others.FromWire(wire);
+
+            if (RistConfig.Verbose.Value)
+                RistPlugin.Log.LogInfo("Other characters: " + Others.List.Count + " listed.");
         }
 
         private static void OnAskProfile(long sender)

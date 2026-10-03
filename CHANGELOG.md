@@ -7,6 +7,22 @@ and the mod uses [semantic versioning](https://semver.org).
 
 ### Added
 
+- **Other players' runestones** (LHM-65). When anyone else is on the server, a row of tabs sits above the rists
+  page: yours first, then one per character, each with its level and a dot that is green when they are online
+  and grey when they are not. Online characters come first, then every character the server has a record for,
+  highest level first, up to 40. Picking a tab shows that character's stones with the rank after each name, their
+  level, how many stones they have carved and how many marks, and the column beside the field still follows the
+  cursor. It is read only: there is nothing to carve, the next-rank line is gone and the foot of the column says so.
+  Nothing is sent until the page opens. It then asks the server once, and the server answers with one line per
+  character in the same text its ledger already uses, so there is no new storage and nothing is broadcast. A
+  character who is not online has no name to show, because the ledger keeps none and the server only knows the
+  names of the players connected, so they are shown as "Char" and the last four digits of their character id,
+  and the page says so. The host can turn the whole thing off with `ShareRanks` in the Plate section of the cfg
+  (on by default); off, the server answers with an empty list and the page looks as it did. Every player and the
+  server need this build, as the request is new.
+- `rist others` prints what the page was told, one line per character, and `rist others ask` sends the request
+  the page sends. Used by the new scenarios, `rist-others-solo` and the pair `paired-rist-others-viewer` and
+  `paired-rist-others-peer`.
 - **Blood-sworn**, a new runestone in Combat (LHM-55). Each rank gives 3 levels of blood magic and makes
   a blood magic shield absorb 10% more. Five ranks is +15 levels, and those levels also raise the shield's base
   absorb through the game's own per-skill-level figure, so the 1.5 times from the ranks applies on top of an
@@ -90,6 +106,12 @@ stone gives more.** The ranks, the stones' ids and the ledger are untouched. Wha
 - **Blood-sworn** was never built, so it took its idea (Deep ward) in at birth. See above.
 
 Each of the three stones' flavour text says what it learned.
+
+- **Each stone now has a ring of five segments around it**, one per rank, filled gold as ranks are carved, on your
+  own page and on everyone else's so they read alike. It used to be the runes cut into the rim alone; those stay.
+  The gap between a stone and its name grew by 3 or 4 pixels to make room for it.
+- **Your own page shows your total XP** beside your level, which until now only other players could see, on the
+  nameplate.
 
 ### Fixed
 
