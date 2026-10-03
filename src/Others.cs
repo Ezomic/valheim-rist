@@ -29,13 +29,18 @@ namespace Rist
             internal string Name = "";
 
             internal int Level;
-            internal float Xp;
             internal readonly Dictionary<string, List<int>> Taken = new Dictionary<string, List<int>>();
             internal readonly Dictionary<string, int> Ranks = new Dictionary<string, int>();
 
             internal bool Named => Name.Length > 0;
 
-            internal string Label => Named ? Name : "Char " + Digits(CharacterId);
+            /// <summary>
+            /// The tail of the character id an unnamed character is shown by. Four digits unless
+            /// another unnamed one on the same list ends the same, then as many as it takes.
+            /// </summary>
+            internal string Suffix = "";
+
+            internal string Label => Named ? Name : "Char " + Suffix;
 
             internal int RankOf(string id)
             {
@@ -90,10 +95,29 @@ namespace Rist
         /// The last four digits of the id, sign dropped. Short enough for a tab, and enough to
         /// tell two characters apart on any server this will run on; the full id is in the log.
         /// </summary>
-        internal static string Digits(long id)
+        internal static string Digits(long id, int length = 4)
         {
             var text = System.Math.Abs(id).ToString(CultureInfo.InvariantCulture);
-            return text.Length <= 4 ? text : text.Substring(text.Length - 4);
+            return text.Length <= length ? text : text.Substring(text.Length - length);
+        }
+
+        private static void AssignSuffixes()
+        {
+            for (var length = 4; length <= 20; length++)
+            {
+                var seen = new HashSet<string>();
+                var clash = false;
+
+                foreach (var peer in List)
+                {
+                    if (peer.Named) continue;
+
+                    peer.Suffix = Digits(peer.CharacterId, length);
+                    if (!seen.Add(peer.Suffix)) clash = true;
+                }
+
+                if (!clash) return;
+            }
         }
 
         internal static void Clear()
@@ -104,12 +128,11 @@ namespace Rist
             Version++;
         }
 
-        /// <summary>One line per character: id|online|name|level|xp|cards, lines joined with a newline.</summary>
+        /// <summary>One line per character: id|online|name|level|cards, lines joined with a newline.</summary>
         internal static string ToLine(long characterId, bool online, string name, RistRecord rec)
         {
             return characterId.ToString(CultureInfo.InvariantCulture) + "|" + (online ? "1" : "0") + "|" +
-                   Clean(name) + "|" + rec.Level.ToString(CultureInfo.InvariantCulture) + "|" +
-                   rec.Xp.ToString("R", CultureInfo.InvariantCulture) + "|" + rec.TakenWire();
+                   Clean(name) + "|" + rec.Level.ToString(CultureInfo.InvariantCulture) + "|" + rec.TakenWire();
         }
 
         /// <summary>
@@ -132,19 +155,20 @@ namespace Rist
                 foreach (var line in wire.Split('\n'))
                 {
                     var parts = line.Split('|');
-                    if (parts.Length < 6) continue;
+                    if (parts.Length < 5) continue;
                     if (!long.TryParse(parts[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var id) || id == 0L) continue;
 
                     var peer = new Peer { CharacterId = id, Online = parts[1] == "1", Name = parts[2] };
                     int.TryParse(parts[3], NumberStyles.Integer, CultureInfo.InvariantCulture, out peer.Level);
-                    float.TryParse(parts[4], NumberStyles.Float, CultureInfo.InvariantCulture, out peer.Xp);
 
-                    RistRecord.ParseTaken(parts[5], peer.Taken);
+                    RistRecord.ParseTaken(parts[4], peer.Taken);
                     foreach (var kv in peer.Taken) peer.Ranks[kv.Key] = kv.Value.Count;
 
                     List.Add(peer);
                 }
             }
+
+            AssignSuffixes();
 
             // A page left on a character who is no longer listed goes back to the viewer's own.
             if (Selected != 0L && Current == null) Selected = 0L;

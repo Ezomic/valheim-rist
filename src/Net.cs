@@ -622,8 +622,31 @@ namespace Rist
 
         // ---- client handlers -----------------------------------------------------------
 
+        /// <summary>
+        /// Whether a routed RPC meant for a client really came from the server. Routed RPCs keep the
+        /// originator's id, so a client forging one to another client arrives under its own id.
+        /// A host that is also a player is its own server, and its answers reach it under its own id.
+        /// </summary>
+        private static bool FromServer(long sender)
+        {
+            if (ZNet.instance == null) return false;
+            if (ZNet.instance.IsServer()) return sender == ZNet.GetUID();
+
+            var peer = ZNet.instance.GetServerPeer();
+            return peer != null && peer.m_uid == sender;
+        }
+
+        /// <summary>
+        /// A line per character is a few hundred bytes and the server caps the list, so this is
+        /// far above anything honest and well below anything that would make a client split a
+        /// megabyte of text.
+        /// </summary>
+        private const int MaxOthersWire = 64 * 1024;
+
         private static void OnState(long sender, string wire)
         {
+            if (!FromServer(sender)) return;
+
             var before = ClientState.Owed;
 
             ClientState.FromWire(wire);
@@ -645,6 +668,9 @@ namespace Rist
 
         private static void OnOthers(long sender, string wire)
         {
+            if (!FromServer(sender)) return;
+            if (wire != null && wire.Length > MaxOthersWire) return;
+
             Others.FromWire(wire);
 
             if (RistConfig.Verbose.Value)

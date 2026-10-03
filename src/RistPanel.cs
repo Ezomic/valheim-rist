@@ -57,6 +57,7 @@ namespace Rist
         private const float TabGap = 8f;
         private const float TabRowGap = 6f;
         private const float TabsAfter = 12f;
+        private const float NoteGap = 10f;
 
         private const float DetailWidth = 268f;
         private const float DetailPad = 22f;
@@ -143,7 +144,7 @@ namespace Rist
 
             internal float CellW, CellH, ColGap, RowGap, HeadingH, RuleAt, Gutter, BandGap;
             internal int BlockCols, BlockRows, PerBand;
-            internal float BlockW, BlockH, FieldW, FieldH, BoardW, ContentH, TotalH, TabsH;
+            internal float BlockW, BlockH, FieldW, FieldH, BoardW, ContentH, TotalH, TabsH, NoteH;
             internal float X0, Y0;
         }
 
@@ -463,7 +464,14 @@ namespace Rist
             l.FieldW = l.PerBand * l.BlockW + (l.PerBand - 1) * l.Gutter;
             l.FieldH = bands * l.BlockH + (bands - 1) * l.BandGap;
             l.BoardW = l.FieldW + DetailPad + DetailWidth;
-            l.ContentH = Mathf.Max(l.FieldH, DetailMinH);
+
+            // The note under another character's field takes room of its own, so the field is never
+            // drawn over by it. Reserved whenever there is a picker, on every rung, whether or not
+            // the page shown happens to be another character's, so that switching tabs never
+            // moves the board. The worst case text is measured, since the unnamed sentence is the
+            // longer one.
+            l.NoteH = _tabs.Count > 0 ? NoteGap + NoteHeight(l.FieldW, false) : 0f;
+            l.ContentH = Mathf.Max(l.FieldH + l.NoteH, DetailMinH);
             l.TabsH = TabsHeight(l.BoardW);
             l.TotalH = HeaderH + l.TabsH + l.ContentH;
 
@@ -523,7 +531,7 @@ namespace Rist
         private static void DrawViewedHead(float x, ref float y, float width, int maxRank)
         {
             var title = _view.Named ? _view.Name.ToUpperInvariant() + "'S RISTS"
-                                    : "RISTS OF CHARACTER " + Others.Digits(_view.CharacterId);
+                                    : "RISTS OF CHARACTER " + _view.Suffix;
 
             GUI.Label(new Rect(x, y, width * 0.5f, 32f), title, _title);
 
@@ -823,19 +831,31 @@ namespace Rist
         private static int RefreshTabs()
         {
             if (_tabsVersion == Others.Version && _tabsOwnLevel == ClientState.Level)
-                return _tabsVersion * 1000 + _tabs.Count;
+                return TabsKey();
 
             _tabsVersion = Others.Version;
             _tabsOwnLevel = ClientState.Level;
             _tabs.Clear();
 
-            if (Others.List.Count == 0) return _tabsVersion * 1000;
+            if (Others.List.Count == 0) return TabsKey();
 
             _tabs.Add(MakeTab(0L, "You", ClientState.Level, true));
             foreach (var peer in Others.List)
                 _tabs.Add(MakeTab(peer.CharacterId, peer.Label, peer.Level, peer.Online));
 
-            return _tabsVersion * 1000 + _tabs.Count;
+            return TabsKey();
+        }
+
+        /// <summary>
+        /// The level is in the key because a level-up can widen the viewer's own tab (L9 to L10)
+        /// without changing the list or the number of tabs, and the layout is cached on this.
+        /// </summary>
+        private static int TabsKey()
+        {
+            unchecked
+            {
+                return (_tabsVersion * 31 + _tabs.Count) * 31 + _tabsOwnLevel;
+            }
         }
 
         private static Tab MakeTab(long id, string label, int level, bool online)
@@ -919,15 +939,26 @@ namespace Rist
         /// The line under the field on another character's page. The last sentence is only said
         /// when it is true of the page being read.
         /// </summary>
-        private static void DrawNote(float x, float bottom, float width)
+        private static float NoteHeight(float width, bool named)
+        {
+            return Mathf.Max(18f, _note.CalcHeight(new GUIContent(NoteText(named)), width));
+        }
+
+        private static string NoteText(bool named)
         {
             var text = "Read only. The number after the name is the rank out of " + Mathf.Max(1, RistConfig.MaxRank.Value) +
                        ". Online players come first, then every character the server knows, greyed.";
 
-            if (!_view.Named)
+            if (!named)
                 text += " The server keeps no names, so a character who is not online is shown by the last digits of their id.";
 
-            var h = Mathf.Max(18f, _note.CalcHeight(new GUIContent(text), width));
+            return text;
+        }
+
+        private static void DrawNote(float x, float bottom, float width)
+        {
+            var text = NoteText(_view.Named);
+            var h = NoteHeight(width, _view.Named);
             GUI.Label(new Rect(x, bottom - h, width, h), text, _note);
         }
 
