@@ -29,6 +29,8 @@ and the mod uses [semantic versioning](https://semver.org).
   Other players see it too, because the flag a monster on another machine reads is the one that is held.
 - **Hall-raiser**, a new runestone in Utility (LHM-52). Each rank makes a crafting station cover 20% more
   ground for building, so five ranks doubles its radius and you stop dotting workbenches around a build.
+  A perfect roll made during a free roll refunds no stamina, since the refund is a share of what the roll cost and
+  it cost nothing, so chaining free rolls does not gain stamina.
   The capstone is your own arm: the hammer places, removes and repairs from twice as far. It is the reach
   version; the stamina version was dropped because a discount on a discount was too thin (it multiplies,
   so rank 5 at Crafting 100 would have taken the hammer from 2.50 stamina to 1.25). What the reach covers

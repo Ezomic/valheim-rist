@@ -369,6 +369,8 @@ namespace Rist
             }
 
             SayHello();
+                EelSlick.Forget();
+                Engineer.Forget();
 
             if (ClientState.Known) Effects.Apply(player, ClientState.Ranks);
 

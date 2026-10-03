@@ -31,7 +31,8 @@ namespace Rist
     ///
     /// The free roll is the dodge's stamina price read as zero, and only while UpdateDodge is
     /// the caller. GetDodgeStaminaUse is also what the perfect-dodge stamina return multiplies,
-    /// and zeroing that would take the refund off a perfect roll that was itself free. The plain
+    /// and zeroing it there would take the refund off a paid roll too. The refund is zeroed only for a roll that
+    /// was itself free, so chained free rolls cannot gain stamina. The plain
     /// discount was refused on the ideas board: the Dodge skill already halves the price at
     /// skill 100 and Tireless discounts it too, and the three multiply.
     /// </summary>
@@ -59,7 +60,7 @@ namespace Rist
         private static float _until;
 
         private static float _armedUntil = -1f;
-        private static bool _inUpdate;
+        private static bool _inUpdate, _inPerfect;
         private static float _staminaBefore;
 
         private static float _vanilla = -1f;
@@ -119,6 +120,22 @@ namespace Rist
                 _inUpdate = true;
             }
 
+            // A throwing UpdateDodge skips the postfix, and a flag left up would zero the price of
+            // every later GetDodgeStaminaUse caller.
+            [HarmonyPatch(typeof(Player), "UpdateDodge")]
+            [HarmonyFinalizer]
+            private static void Done()
+            {
+                _inUpdate = false;
+            }
+
+            [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
+            [HarmonyPostfix]
+            private static void Died(Player __instance)
+            {
+                if (ReferenceEquals(__instance, Player.m_localPlayer)) Forget();
+            }
+
             [HarmonyPatch(typeof(Player), "UpdateDodge")]
             [HarmonyPostfix]
             private static void After(Player __instance, bool __state)
@@ -170,6 +187,14 @@ namespace Rist
             private static void Before(Player __instance, out bool __state)
             {
                 __state = Mine(__instance) && !_beenHit(__instance);
+                _inPerfect = __state;
+            }
+
+            [HarmonyPatch(typeof(Player), "RPC_HitWhileDodging")]
+            [HarmonyFinalizer]
+            private static void Done()
+            {
+                _inPerfect = false;
             }
 
             [HarmonyPatch(typeof(Player), "RPC_HitWhileDodging")]
@@ -195,9 +220,24 @@ namespace Rist
             [HarmonyPostfix]
             private static void Cost(Player __instance, ref float __result)
             {
-                if (!_inUpdate || _armedUntil <= Time.time || !Mine(__instance)) return;
+                // The perfect-roll refund multiplies this same price, so a roll that cost nothing
+                // refunds nothing. Without that a free perfect roll paid stamina out and a chain
+                // of them gained it.
+                var free = _inUpdate ? _armedUntil > Time.time : _inPerfect && _lastFree;
+                if (!free || !Mine(__instance)) return;
                 __result = 0f;
             }
+        }
+
+        /// <summary>Logout and death: an armed roll, a held window and the call flags belong to one life.</summary>
+        internal static void Forget()
+        {
+            _armedUntil = -1f;
+            _inUpdate = false;
+            _inPerfect = false;
+            _holding = false;
+            _start = -1f;
+            _lastFree = false;
         }
 
         /// <summary>Starts a roll the way a keypress does. For `rist roll`.</summary>
