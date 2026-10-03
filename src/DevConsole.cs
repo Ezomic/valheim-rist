@@ -54,7 +54,7 @@ namespace Rist
             _registered = true;
 
             new Terminal.ConsoleCommand("rist",
-                "rist show | rist rank <card> <n> | rist roll | rist perfect - this character's standing, and forcing a rank for a test",
+                "rist show | rist rank <card> <n> | rist roll | rist perfect | rist fall <m> [roll] - this character's standing, and forcing a rank for a test",
                 OnCommand, isCheat: true);
 
             RistPlugin.Log.LogInfo("Console command 'rist' registered (needs devcommands, host or singleplayer).");
@@ -71,14 +71,28 @@ namespace Rist
             if (what == "rank") { Rank(term, args); return; }
             if (what == "powers") { Powers(term); return; }
             if (what == "roll") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.Start(Player.m_localPlayer)); return; }
+            if (what == "fall") { Say(term, Fall(args)); return; }
             if (what == "perfect") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.HitInWindow(Player.m_localPlayer)); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
             term.AddString("rist rank <card> <n> - force a card to exactly that rank");
             term.AddString("rist powers          - each forsaken power against every stone carved, and what reaches zero");
             term.AddString("rist roll            - start a dodge roll, as the key does");
+            term.AddString("rist fall <m> [roll] - land from m metres up, with a dodge pressed as you land when roll is given");
             term.AddString("rist perfect         - send a hit into the roll in progress, which the game counts as a perfect roll");
             term.AddString("card ids are the first field of cards.txt: thickhide, steadyfoot, longstride...");
+        }
+
+        private static string Fall(Terminal.ConsoleEventArgs args)
+        {
+            var player = Player.m_localPlayer;
+            if (player == null) return "rist: no player.";
+
+            float metres;
+            if (args.Length < 3 || !float.TryParse(args[2], NumberStyles.Float, CultureInfo.InvariantCulture, out metres) || metres <= 0f)
+                return "rist: fall how many metres? rist fall 20 [roll]";
+
+            return Sinews.Landing.Fall(player, metres, args.Length > 3 && args[3].ToLowerInvariant() == "roll");
         }
 
         // ---------------------------------------------------------------- powers
@@ -121,10 +135,10 @@ namespace Rist
         /// above zero, no real hand can reach it either.
         ///
         /// Flagged only when Rist alone and the power alone both stay above -1 and together they
-        /// do not. Sure-footed
-        /// on its own reaches -1 on fall damage, and that is its capstone working as designed -
-        /// immunity to falling is one of the unlocks the catalogue names - not a power leaking
-        /// into it. Run stamina is reported and not flagged, because MinRunStaminaCost floors it.
+        /// do not. Sure-footed tops out at -0.50 on fall damage now that its capstone is a landing
+        /// roll and not a second -50%, so fall damage is judged like every other stat: a power that
+        /// carried -0.50 of its own would be the one to flag. Run stamina is reported and not
+        /// flagged, because MinRunStaminaCost floors it.
         ///
         /// "Every power at once" is not a thought experiment. A power reaches every player in
         /// range when it is cast, so two friends each casting a different one put both on you.
@@ -311,6 +325,7 @@ namespace Rist
             term.AddString(Moving(player));
             term.AddString(BloodSworn.Probe(player));
             term.AddString(EelSlick.Probe());
+            term.AddString("falls: " + Sinews.Landing.Probe());
             term.AddString(HallRaiser.Probe(player));
             term.AddString(Engineer.Probe(player));
             term.AddString(Merges.Probe(player));

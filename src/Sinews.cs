@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using HarmonyLib;
 using UnityEngine;
 
@@ -40,6 +41,9 @@ namespace Rist
         /// so this is how far you can shuffle before you have to drop something.
         /// </summary>
         internal const string Overloaded = "*overloaded";
+
+        /// <summary>Sure-footed's capstone: a dodge pressed as you land makes the fall shorter. A flag, written 1.</summary>
+        internal const string LandingRoll = "*landing:roll";
 
         /// <summary>
         /// Never below a quarter of vanilla, whatever the catalogue asks. Being over the limit
@@ -143,6 +147,24 @@ namespace Rist
             private static float _takeoffTime;
             private static float _ratio;
 
+            /// <summary>
+            /// Metres a landing roll takes off a fall. Eight is 50% of the 16 m between the first
+            /// hurt (4 m) and a lethal fall (20 m), so a roll turns a fatal 24 m drop into a
+            /// 16 m one and a 12 m drop into one that does not hurt at all, and it comes off the
+            /// height before Sure-footed's own percentage, which then applies to what is left.
+            /// </summary>
+            private const float RollMetres = 8f;
+
+            /// <summary>
+            /// How long before touchdown the dodge may be pressed. The game queues a press for
+            /// 0.5 s (Player.Dodge sets m_queuedDodgeTimer), which would let a roll pressed
+            /// halfway down count. A third of a second is a press made as the ground arrives.
+            /// </summary>
+            private const float RollWindow = 0.3f;
+
+            private static float _pressedAt = -1f;
+            private static bool _rollSaidOnce;
+
             private static AccessTools.FieldRef<Character, float> _maxAir;
             private static AccessTools.FieldRef<Character, bool> _groundContact;
 
@@ -156,6 +178,134 @@ namespace Rist
             {
                 _inJump = false;
                 _jumper = null;
+                _pressedAt = -1f;
+            }
+
+            /// <summary>
+            /// Its own class so that a game update that moves Player.Dodge costs the landing roll
+            /// and not the jump guard beside it: PatchAll(type) throws for the whole class.
+            /// </summary>
+            internal static class Press
+            {
+                /// <summary>
+                /// The moment a dodge is asked for, which is the only moment that can be told from the
+                /// roll itself: Player.Dodge only queues it, and UpdateDodge runs it once the character
+                /// is on the ground, which is the same physics step as the landing and may come before
+                /// or after the prefix below. The queue timer is therefore not safe to read at the
+                /// landing, but the press is.
+                ///
+                /// Recorded only when the roll can happen. Dodge queues even with an empty bar and
+                /// UpdateDodge then refuses it with a flash, and a landing roll for a roll that never
+                /// took place would be a discount for nothing. Encumbered is refused by Dodge itself.
+                /// </summary>
+                [HarmonyPrefix]
+                [HarmonyPatch(typeof(Player), "Dodge")]
+                private static void Pressed(Player __instance)
+                {
+                    if (!ReferenceEquals(__instance, Player.m_localPlayer)) return;
+                    if (Effects.Cached(LandingRoll) <= 0f || __instance.IsEncumbered()) return;
+
+                    try
+                    {
+                        var cost = AccessTools.Method(typeof(Player), "GetDodgeStaminaUse");
+                        if (cost != null && !__instance.HaveStamina((float)cost.Invoke(__instance, null))) return;
+                    }
+                    catch (Exception e)
+                    {
+                        RistPlugin.Log.LogWarning("Landing roll could not price the dodge, so it does not check "
+                            + "the bar: " + e.Message);
+                    }
+
+                    _pressedAt = Time.time;
+                }
+            }
+
+            /// <summary>
+            /// Takes the fall's height down by RollMetres when a roll was pressed in time. Runs on
+            /// the landing step, before the game measures the fall, and always spends the press: a
+            /// dodge made before a ledge must not be saved for the next drop.
+            ///
+            /// Also remembers every damaging fall of the local player and what the game will charge
+            /// for it, for `rist show`. Fall damage is not readable afterwards in god mode, which is
+            /// how a scenario has to run, so the figure is worked out here through the same
+            /// SEMan.ModifyFallDamage the game calls.
+            /// </summary>
+            private static void Roll(Character landing)
+            {
+                if (!ReferenceEquals(landing, Player.m_localPlayer)) return;
+                if (_maxAir == null || _groundContact == null || !_groundContact(landing)) return;
+
+                var pressed = _pressedAt;
+                _pressedAt = -1f;
+
+                ref var apex = ref _maxAir(landing);
+                var y = landing.transform.position.y;
+                var fall = apex - y;
+                if (fall <= 4f) return;
+
+                var rolled = pressed >= 0f && Time.time - pressed <= RollWindow && Effects.Cached(LandingRoll) > 0f;
+                if (rolled)
+                {
+                    apex = y + Mathf.Max(0f, fall - RollMetres);
+
+                    if (landing is Player player)
+                        player.Message(MessageHud.MessageType.TopLeft, "Landing roll");
+                }
+
+                var counted = apex - y;
+                var damage = Mathf.Clamp01((counted - 4f) / 16f) * 100f;
+                var seman = landing.GetSEMan();
+                if (seman != null) seman.ModifyFallDamage(damage, ref damage);
+
+                _lastFall = fall;
+                _lastCounted = counted;
+                _lastRolled = rolled;
+                _lastDamage = damage;
+
+                if (rolled && (!_rollSaidOnce || RistConfig.Verbose.Value))
+                {
+                    _rollSaidOnce = true;
+                    RistPlugin.Log.LogInfo("Landing roll: fell " + fall.ToString("0.00")
+                        + "m, measured as " + counted.ToString("0.00") + "m. Fall damage starts at 4m.");
+                }
+            }
+
+            private static float _lastFall = -1f, _lastCounted, _lastDamage;
+            private static bool _lastRolled;
+
+            /// <summary>What `rist show` prints about the last damaging fall. Whole numbers, so it asserts.</summary>
+            internal static string Probe()
+            {
+                if (_lastFall < 0f) return "no fall measured yet";
+
+                return "last fall " + _lastFall.ToString("0", CultureInfo.InvariantCulture)
+                    + "m, counted " + _lastCounted.ToString("0", CultureInfo.InvariantCulture)
+                    + "m, landing roll " + (_lastRolled ? "yes" : "no")
+                    + ", fall damage " + _lastDamage.ToString("0", CultureInfo.InvariantCulture);
+            }
+
+            /// <summary>
+            /// A fall without a drop, for `rist fall`: raises the record of how high the player has
+            /// been to <paramref name="metres"/> above where they stand. The next physics step with
+            /// ground contact is a landing from that height, so the whole path runs, the game's
+            /// own measurement and damage included, with nobody needing to climb anything. With
+            /// <paramref name="roll"/> a dodge is pressed in the same call, which is inside the
+            /// window by construction.
+            /// </summary>
+            internal static string Fall(Player player, float metres, bool roll)
+            {
+                if (_maxAir == null) return "rist: the landing guard is not bound, so a fall cannot be staged.";
+                if (!player.IsOnGround()) return "rist: stand on the ground first.";
+
+                if (roll)
+                {
+                    var dodge = AccessTools.Method(typeof(Player), "Dodge");
+                    if (dodge == null) return "rist: the game's Dodge method was not found.";
+                    dodge.Invoke(player, new object[] { player.transform.forward });
+                }
+
+                _maxAir(player) = player.transform.position.y + metres;
+                return "rist: falling " + metres.ToString("0.#", CultureInfo.InvariantCulture) + "m" + (roll ? ", with a roll" : "") + ".";
             }
 
             [HarmonyPrefix]
@@ -197,6 +347,8 @@ namespace Rist
             [HarmonyPatch(typeof(Character), "UpdateGroundContact")]
             private static void Landed(Character __instance)
             {
+                Roll(__instance);
+
                 if (_jumper == null || !ReferenceEquals(__instance, _jumper)) return;
 
                 if (Time.time - _takeoffTime > Expiry) { _jumper = null; return; }

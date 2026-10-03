@@ -10,9 +10,9 @@
 # scenario and not a line of arithmetic in a comment. The full readout lands in the log, one
 # power per line, so a failure says which power and which stat.
 #
-# Run stamina is reported and never flagged, because MinRunStaminaCost floors it. Sure-footed's
-# own fall immunity is not flagged either: Rist alone reaches zero there by design, and the check
-# is for a power tipping a stat over, not for the capstone doing its job.
+# Run stamina is reported and never flagged, because MinRunStaminaCost floors it. Fall damage is
+# judged like the rest: Sure-footed stops at -0.50 now that its capstone is a landing roll, so a
+# line reading REACHES ZERO there would mean a power carrying -0.50 of its own.
 #
 # SINGLEPLAYER, or anywhere ObjectDB is loaded. It changes nothing and needs no ranks.
 

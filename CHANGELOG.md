@@ -91,6 +91,17 @@ stone gives more.** The ranks, the stones' ids and the ledger are untouched. Wha
 
 Each of the three stones' flavour text says what it learned.
 
+**Sure-footed no longer makes you immune to falling** (LHM-59). **This takes something away from anyone who carved
+it to rank five.** The ranks stay and keep what they gave, -10% fall damage each, so -50% at rank five. The capstone
+was a second -50%, which added up to -100% and turned a fall from any height into nothing. It is now a landing roll:
+a dodge pressed in the last 0.3 seconds before you touch down makes the fall count 8 metres shorter, before the
+percentage is taken. A fall of 20 metres, which kills in vanilla, counts as 12 and costs a quarter of your health at
+rank five where it used to cost nothing, and a fall from the top of a mountain still hurts, roll or no roll. The
+dodge has to be one you can make: it is not counted with an empty stamina bar or when you are over your carry limit,
+and it spends the stamina a roll always does. A roll pressed earlier than that, or after you land, does nothing, and
+a dodge cannot be saved for a later drop. Nothing is refunded; the capstone is simply a different thing at the same rank.
+`rist fall <metres> [roll]` stages a landing for testing and `rist show` prints the last one.
+
 ### Fixed
 
 - **The mouse could stick to the middle of the screen on the runestone page.** While the page is open Rist

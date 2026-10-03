@@ -145,6 +145,7 @@ namespace Rist
             // bonus is withheld until it is, because a higher jump measured from its full height
             // hurts on landing - see Sinews.Landing.
             Patch(typeof(Sinews.Landing));
+            Patch(typeof(Sinews.Landing.Press));
             Sinews.Landing.ConfirmGuard(PluginGuid);
 
             // The console command registers itself from Terminal's own init, so this one line
