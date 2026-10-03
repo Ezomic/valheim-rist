@@ -86,7 +86,7 @@ namespace Rist
 
             private const float EnemyRange = 8f;
 
-            private static bool EnemyNear(Player player)
+            internal static bool EnemyNear(Player player)
             {
                 var here = player.transform.position;
                 foreach (var c in Character.GetAllCharacters())

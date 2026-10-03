@@ -36,6 +36,8 @@
 #   *blood:absorb           how much more a blood magic shield absorbs (a companion of *blood:levels, never written alone)
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
+#   *roll:window            a dodge roll's invulnerable window ends later, by a share of its own length (0.07 is 7% longer)
+#   *roll:free              a perfect roll makes your next roll cost no stamina, for 8 seconds (value 1)
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
@@ -184,6 +186,12 @@ thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultip
 steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.05 | m_armorMultiplier         | 0.05 | E
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
 surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
+
+# Eel-slick lengthens the roll's invulnerable window, which ends later and never starts earlier, and
+# its capstone is a free next roll after a perfect one. Not a stamina discount: the Dodge skill
+# already halves the price and Tireless discounts it, and the discounts multiply. The sigil is
+# shared with Tide-borne, since all 26 are spoken for.
+eelslick    | Eel-slick      | The blow finds only the place you were. | *roll:window | 0.07  | *roll:free                | 1 | O
 
 # How long you can keep going, and how much you carry while you do.
 

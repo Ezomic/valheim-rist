@@ -103,6 +103,10 @@ namespace Rist
             Patch(typeof(Oathbound));
             Patch(typeof(Oathbound.Reset));
             Patch(typeof(BloodSworn));
+            Patch(typeof(EelSlick.Roll));
+            Patch(typeof(EelSlick.Mortal));
+            Patch(typeof(EelSlick.Perfect));
+            Patch(typeof(EelSlick.Price));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.

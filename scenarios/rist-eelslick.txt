@@ -1,0 +1,107 @@
+# Rist: Eel-slick, a dodge roll's invulnerable window 7% longer a rank, and at rank five a perfect
+# roll makes the next roll free.
+#
+# `rist roll` queues a roll the way the key does, and `rist perfect` sends a hit into the roll in
+# progress the way an attack does, which the game's own RPC_HitWhileDodging then counts as a perfect
+# roll. Both need devcommands like the rest of `rist`, and both only make sense in singleplayer.
+#
+# What `rist show` prints, all measured and none of it Rist's opinion of itself:
+#
+#   roll window Vs, asked +A%, got Gs   V is how long the game's own window lasted, from the roll
+#                                       starting to the DodgeMortal animation event. A is the share
+#                                       the hand asked for, which is what is asserted. G is how long
+#                                       the roll actually held, which the end of the roll's animation
+#                                       can cut short, so it is read in the log and not asserted.
+#   free roll armed Ns | not armed      the free roll waiting for the next roll.
+#   last roll cost X stamina            stamina before and after the roll started, on the frame it
+#                                       started. "(free)" when the free roll paid for it.
+#
+# THE ONE THING THIS CAN FIND OUT: whether +35% fits inside the roll. If the animation ends first,
+# "got" comes out shorter than V * 1.35. That is the design question the ticket left open, and it is
+# answered by reading the log line after rank 5, not by a failing step.
+#
+# A perfect roll needs an enemy within 8 metres, the same rule as Answering blow, so a Neck is
+# spawned in front of the player. God mode keeps it from mattering.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Eel-slick at rank 0.
+
+clear
+god
+
+mod rist rank eelslick 0
+wait 1
+
+# ---- rank 0: the vanilla window, measured, and no free roll.
+
+mod rist roll
+wait 2
+
+mod rist show
+printed asked +0% yes
+
+mod rist show
+printed free roll not armed yes
+
+# ---- rank 4: the boundary. A window 28% longer, and no capstone yet.
+
+mod rist rank eelslick 4
+wait 1
+
+mod rist roll
+wait 2
+
+mod rist show
+printed asked +28% yes
+
+# A perfect roll at rank 4 must not arm anything, which is the capstone paid before it is earned.
+spawn Neck
+wait 1
+mod rist roll
+wait 0.25
+mod rist perfect
+wait 2
+
+mod rist show
+printed free roll not armed yes
+
+banish Neck 30
+wait 1
+
+# ---- rank 5: 35% longer, and the capstone.
+
+mod rist rank eelslick 5
+wait 1
+
+mod rist roll
+wait 2
+
+mod rist show
+printed asked +35% yes
+
+spawn Neck
+wait 1
+mod rist roll
+wait 0.25
+mod rist perfect
+wait 0.5
+
+mod rist show
+printed free roll armed yes
+
+# The roll that follows is paid for by the perfect one: nothing comes off the stamina bar.
+wait 1.5
+mod rist roll
+wait 2
+
+mod rist show
+printed last roll cost 0.0 stamina (free) yes
+
+# And it was spent, not kept: the next roll finds nothing armed.
+mod rist show
+printed free roll not armed yes
+
+banish Neck 30
+mod rist rank eelslick 0
+wait 1

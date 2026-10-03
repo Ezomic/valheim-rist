@@ -18,6 +18,18 @@ and the mod uses [semantic versioning](https://semver.org).
   summon is the player's own, published as one flag on the character so it holds when the summon is
   owned by another client. The tooltip on the staff does not show the bigger shield, because it is
   worked out on the shared item and not on the one you cast.
+- **Eel-slick**, a new runestone in Survival (LHM-56). Each rank makes a dodge roll's invulnerable
+  window 7% longer, 35% at rank five. The capstone: a perfect roll, one that took a hit inside the
+  window, makes your next roll cost no stamina, for 8 seconds, and only against an enemy within 8
+  metres. The plain stamina discount was refused: the Dodge skill already halves the price at skill 100,
+  Tireless discounts it too, and the three multiply. The window ends later and never starts earlier. The
+  game closes it with one animation event partway through the roll and leaves the animation's tail
+  exposed, so Rist holds that event back by a share of the time it took to arrive and leaves the
+  animation and the roll's price alone. The longer window stops where the roll's own animation does.
+  Other players see it too, because the flag a monster on another machine reads is the one that is held.
+- Two specials for `cards.txt`: `*roll:window` and `*roll:free`. `rist roll` starts a roll as the key does
+  and `rist perfect` sends a hit into the one in progress, for scenarios; `rist show` prints the measured
+  window, whether a free roll is waiting, and what the last roll cost.
 - Four specials for `cards.txt`: `*blood:levels`, `*blood:absorb`, `*blood:summon` and `*blood:refill`,
   and the companion mechanism behind them, so a stone can give two things for one carving. `rist show`
   prints the blood magic level the game reads, the ratio a blood shield is set to, and the summon bonus.

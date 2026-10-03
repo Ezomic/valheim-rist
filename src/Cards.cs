@@ -397,6 +397,8 @@ namespace Rist
             { BloodSworn.Absorb, "blood shield absorbs" },
             { BloodSworn.Summon, "one more summon than the staff allows" },
             { BloodSworn.Refill, "recasting the shield refills it" },
+            { EelSlick.Window, "roll invulnerability" },
+            { EelSlick.Free, "a perfect roll makes the next roll free" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -421,7 +423,7 @@ namespace Rist
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             Sinews.JumpHeight, Sinews.Overloaded,
-            BloodSworn.Absorb,
+            BloodSworn.Absorb, EelSlick.Window,
         };
 
         /// <summary>
@@ -439,6 +441,7 @@ namespace Rist
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded,
             BloodSworn.Levels, BloodSworn.Absorb, BloodSworn.Summon, BloodSworn.Refill,
+            EelSlick.Window, EelSlick.Free,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -449,7 +452,7 @@ namespace Rist
         private static readonly HashSet<string> Unlocks = new HashSet<string>
         {
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
-            BloodSworn.Summon, BloodSworn.Refill,
+            BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free,
         };
 
         /// <summary>
