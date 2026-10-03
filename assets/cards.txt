@@ -36,6 +36,8 @@
 #   *blood:absorb           how much more a blood magic shield absorbs (a companion of *blood:levels, never written alone)
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
+#   *engineer:damage        traps and siege weapons you build do more damage (0.08 is 8% more), stamped on the piece when placed
+#   *engineer:calibrated    ballistae you build never fire on a player, stamped on the piece when placed (value 1)
 #   *reach:station         the ground a crafting station covers for building, as a share of its radius (0.20 is 20% wider)
 #   *reach:hammer          how far the hammer places, removes and repairs, as a share of its reach (1.0 is twice as far)
 #   *roll:window            a dodge roll's invulnerable window ends later, by a share of its own length (0.07 is 7% longer)
@@ -188,6 +190,12 @@ thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultip
 steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.05 | m_armorMultiplier         | 0.05 | E
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
 surefooted  | Sure-footed    | You have fallen further than this.| m_fallDamageModifier     | -0.10 | m_fallDamageModifier      | -0.50 | S
+
+# Engineer is stamped onto each piece as it is set down, not read from the builder when it does harm:
+# a ballista fires on whichever machine owns it, so "built by this player" is not answerable then.
+# Carving the stone later therefore does not re-arm what already stands, and another player's pieces
+# are never touched. The sigil is shared with Low draw, since all 26 are spoken for.
+engineer    | Engineer       | A trap is only as good as its hand. | *engineer:damage | 0.08  | *engineer:calibrated      | 1 | G
 
 # Eel-slick lengthens the roll's invulnerable window, which ends later and never starts earlier, and
 # its capstone is a free next roll after a perfect one. Not a stamina discount: the Dodge skill

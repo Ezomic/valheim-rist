@@ -401,6 +401,8 @@ namespace Rist
             { EelSlick.Free, "a perfect roll makes the next roll free" },
             { HallRaiser.Station, "station reach" },
             { HallRaiser.Hammer, "hammer reach" },
+            { Engineer.Damage, "trap and siege damage" },
+            { Engineer.Calibrated, "your ballistae never fire on a player" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -426,6 +428,7 @@ namespace Rist
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             Sinews.JumpHeight, Sinews.Overloaded,
             BloodSworn.Absorb, EelSlick.Window, HallRaiser.Station, HallRaiser.Hammer,
+            Engineer.Damage,
         };
 
         /// <summary>
@@ -444,6 +447,7 @@ namespace Rist
             Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded,
             BloodSworn.Levels, BloodSworn.Absorb, BloodSworn.Summon, BloodSworn.Refill,
             EelSlick.Window, EelSlick.Free, HallRaiser.Station, HallRaiser.Hammer,
+            Engineer.Damage, Engineer.Calibrated,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -454,7 +458,7 @@ namespace Rist
         private static readonly HashSet<string> Unlocks = new HashSet<string>
         {
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
-            BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free,
+            BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free, Engineer.Calibrated,
         };
 
         /// <summary>

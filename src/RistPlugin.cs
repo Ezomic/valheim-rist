@@ -108,6 +108,10 @@ namespace Rist
             Patch(typeof(EelSlick.Perfect));
             Patch(typeof(EelSlick.Price));
             Patch(typeof(HallRaiser));
+            Patch(typeof(Engineer.Stamp));
+            Patch(typeof(Engineer.Hits));
+            Patch(typeof(Engineer.Shots));
+            Patch(typeof(Engineer.Calibration));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.

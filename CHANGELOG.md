@@ -40,6 +40,18 @@ and the mod uses [semantic versioning](https://semver.org).
   the hammer is in hand, so Jafna's hoe is not doubled with it, and Skaft's sweep radius is unchanged
   (it comes from the Crafting skill and is measured around the piece you hover), though a longer arm starts
   a sweep from further away and Skaft's own station check follows the wider reach.
+- **Engineer**, a new runestone in Survival (LHM-54). Each rank makes the traps and siege weapons you build
+  do 8% more damage, 40% at rank five. The capstone, Calibrated: a ballista you build never fires on a
+  player. A ballista fires on whichever machine owns it, which is usually whoever stands nearest, and a
+  trap's spikes are worked out on the machine that stepped on it, so the game cannot say who built a piece
+  at the moment it does harm. The rank is therefore stamped onto the piece as it is placed. Two things follow
+  and both are meant. Carving the stone later does not re-arm anything already standing, and the stamp stays
+  if the stone is later reset. And pieces placed by anyone without the stone, or before it, are exactly as
+  vanilla, so another player's traps are never touched. The stamp covers a ballista, a trap, a catapult, the
+  battering ram and any piece with a damaging area on it, which is how the sharp stakes work. It does not
+  cover the fires and workshops that carry an area for other reasons. The ballista's bolt and the catapult's
+  load are scaled as they are fired; stakes, trap spikes and the ram's punch as they hit. Calibrated clears the
+  ballista's own "target players" setting, so it skips every player and not only the one who built it.
 - Two specials for `cards.txt`: `*reach:station` and `*reach:hammer`. `rist show` prints the reach the game
   gives from the nearest station, whether the no-spawn circle moved, and the hammer reach.
 - Two specials for `cards.txt`: `*roll:window` and `*roll:free`. `rist roll` starts a roll as the key does
