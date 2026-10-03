@@ -353,10 +353,10 @@ namespace Rist
                 OwnInventoryRows.Backdrop.Tick();
             }
 
-            if (!RistConfig.Enabled.Value) return;
             // Before the Enabled return: switching Rist off mid-session must still restore the hammer.
             HallRaiser.Tick(Player.m_localPlayer);
 
+            if (!RistConfig.Enabled.Value) return;
 
             if (Net.IsServer) Ledger.Tick(Time.time);
 
@@ -369,9 +369,9 @@ namespace Rist
                 Nameplate.Forget();
                 BloodSworn.Forget();
                 HallRaiser.Forget();
-                return;
                 EelSlick.Forget();
                 Engineer.Forget();
+                return;
             }
 
             SayHello();

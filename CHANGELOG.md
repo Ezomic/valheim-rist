@@ -29,10 +29,10 @@ and the mod uses [semantic versioning](https://semver.org).
   exposed, so Rist holds that event back by a share of the time it took to arrive and leaves the
   animation and the roll's price alone. The longer window stops where the roll's own animation does.
   Other players see it too, because the flag a monster on another machine reads is the one that is held.
-- **Hall-raiser**, a new runestone in Utility (LHM-52). Each rank makes a crafting station cover 20% more
-  ground for building, so five ranks doubles its radius and you stop dotting workbenches around a build.
   A perfect roll made during a free roll refunds no stamina, since the refund is a share of what the roll cost and
   it cost nothing, so chaining free rolls does not gain stamina.
+- **Hall-raiser**, a new runestone in Utility (LHM-52). Each rank makes a crafting station cover 20% more
+  ground for building, so five ranks doubles its radius and you stop dotting workbenches around a build.
   The capstone is your own arm: the hammer places, removes and repairs from twice as far. It is the reach
   version; the stamina version was dropped because a discount on a discount was too thin (it multiplies,
   so rank 5 at Crafting 100 would have taken the hammer from 2.50 stamina to 1.25). What the reach covers
@@ -82,13 +82,13 @@ stone gives more.** The ranks, the stones' ids and the ledger are untouched. Wha
 - **Brimming**, which took in Eitr-thrift: every rank now also takes 5% off the eitr a staff cast costs, 25% at rank five,
   on top of the 8% regen it already gave. Its capstone is now one cast on an empty bar, once per refill, and
   it keeps the extra 10% regen. The capstone was a bigger number and is now a new behaviour, as it should be.
+  The lent cast is not given to a staff that charges per burst, since the game checks the bar again for every burst
+  and would stop the cast on an empty one, and it is only spent when the cast actually begins.
 - **Answering blow**, which took in Reeling blow: every rank now also makes your melee hits stagger 6% harder, 30% at rank
   five. Its capstone, the 30% chance to stagger what a parry would, now also keeps you from being staggered during
   your own secondary attack.
 - **Blood-sworn** was never built, so it took its idea (Deep ward) in at birth. See above.
 
-  The lent cast is not given to a staff that charges per burst, since the game checks the bar again for every burst
-  and would stop the cast on an empty one, and it is only spent when the cast actually begins.
 Each of the three stones' flavour text says what it learned.
 
 ### Fixed
