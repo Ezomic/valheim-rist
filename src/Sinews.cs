@@ -202,8 +202,14 @@ namespace Rist
                 [HarmonyPatch(typeof(Player), "Dodge")]
                 private static void Pressed(Player __instance)
                 {
-                    if (!ReferenceEquals(__instance, Player.m_localPlayer)) return;
+                    if (!RistConfig.Enabled.Value || !ReferenceEquals(__instance, Player.m_localPlayer)) return;
                     if (Effects.Cached(LandingRoll) <= 0f || __instance.IsEncumbered()) return;
+
+                    // The rest of what UpdateDodge asks before it starts a roll. Dodge queues for
+                    // half a second whatever the state, and a press the game then refuses must not
+                    // count. Ground is left out: the press is made in the air by design.
+                    if (__instance.IsDead() || __instance.InAttack() || __instance.IsStaggering()
+                        || __instance.InDodge()) return;
 
                     try
                     {
@@ -232,7 +238,7 @@ namespace Rist
             /// </summary>
             private static void Roll(Character landing)
             {
-                if (!ReferenceEquals(landing, Player.m_localPlayer)) return;
+                if (!RistConfig.Enabled.Value || !ReferenceEquals(landing, Player.m_localPlayer)) return;
                 if (_maxAir == null || _groundContact == null || !_groundContact(landing)) return;
 
                 var pressed = _pressedAt;
@@ -347,8 +353,12 @@ namespace Rist
             [HarmonyPatch(typeof(Character), "UpdateGroundContact")]
             private static void Landed(Character __instance)
             {
-                Roll(__instance);
+                JumpGuard(__instance);
+                SafeRoll(__instance);
+            }
 
+            private static void JumpGuard(Character __instance)
+            {
                 if (_jumper == null || !ReferenceEquals(__instance, _jumper)) return;
 
                 if (Time.time - _takeoffTime > Expiry) { _jumper = null; return; }
@@ -380,6 +390,28 @@ namespace Rist
             }
 
             private static bool _saidOnce;
+            private static bool _rollFailedOnce;
+
+            /// <summary>
+            /// Runs after the jump guard, never before: Long stride's correction brings a raised
+            /// jump back down to what a vanilla jump would have fallen, and the roll then takes its
+            /// eight metres off that. In the other order the roll came first and the correction,
+            /// which only ever lowers the apex it is given, worked on a figure the roll had already
+            /// changed. Caught so that a throw costs the roll and never the guard or the physics step.
+            /// </summary>
+            private static void SafeRoll(Character landing)
+            {
+                try
+                {
+                    Roll(landing);
+                }
+                catch (Exception e)
+                {
+                    if (_rollFailedOnce) return;
+                    _rollFailedOnce = true;
+                    RistPlugin.Log.LogError("Landing roll failed and is skipped: " + e);
+                }
+            }
 
             /// <summary>
             /// Ask Harmony whether both ends really are attached, and bind the two fields. Called
@@ -402,12 +434,13 @@ namespace Rist
                     {
                         Guarded = true;
                         RistPlugin.Log.LogInfo("Long stride: the landing guard is in place.");
-                        return;
                     }
-
-                    RistPlugin.Log.LogError("Long stride: the landing guard is not attached, so its "
-                        + "jump bonus is withheld this session. A higher jump measured from its full "
-                        + "height hurts on landing at high Jump skill.");
+                    else
+                    {
+                        RistPlugin.Log.LogError("Long stride: the landing guard is not attached, so its "
+                            + "jump bonus is withheld this session. A higher jump measured from its full "
+                            + "height hurts on landing at high Jump skill.");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -415,6 +448,17 @@ namespace Rist
                     // poisons every patch the class carries.
                     RistPlugin.Log.LogError("Long stride: could not confirm the landing guard ("
                         + e.Message + "), so its jump bonus is withheld this session.");
+                }
+
+                try
+                {
+                    if (!Attached(AccessTools.Method(typeof(Player), "Dodge"), harmonyId, "Pressed", prefix: true))
+                        RistPlugin.Log.LogError("Landing roll: the dodge press is not attached, so Sure-footed's "
+                            + "capstone never rolls this session. The game's Player.Dodge probably moved.");
+                }
+                catch (Exception e)
+                {
+                    RistPlugin.Log.LogError("Landing roll: could not confirm the dodge press (" + e.Message + ").");
                 }
             }
 
