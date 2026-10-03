@@ -99,7 +99,7 @@ namespace Rist
                 "front-loaded, so this counteracts a flood of early cards.\n" +
                 "This is the shape rather than the scale: lowering it helps the late game far " +
                 "more than the early one, which is where the old 1.5 hurt. It is also what " +
-                "keeps the catalogue scarce - it holds one pick per card per rank, 135 with 27 " +
+                "keeps the catalogue scarce - it holds one pick per card per rank, 155 with 31 " +
                 "cards at MaxRank 5, and a " +
                 "curve flat enough to hand out all of them turns a free choice into an order " +
                 "of purchase. Every card added makes the catalogue deeper against the same curve.");

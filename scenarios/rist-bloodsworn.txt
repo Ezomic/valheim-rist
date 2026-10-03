@@ -1,0 +1,97 @@
+# Rist: Blood-sworn, 3 blood magic levels a rank, a blood shield 10% more absorbent a rank, and at
+# rank five one more summon and a shield that a recast refills.
+#
+# Everything is read back off the game by `rist show`, never off Rist's own opinion of itself:
+#
+#   blood magic N (character C, +D)   Skills.GetSkillLevel against the level on the character, so
+#                                     D is what SEMan.ModifySkillLevel added. Gated to BloodMagic.
+#   blood shield absorbs xR           the game's own blood magic shield (found by the skill it
+#                                     levels on breaking) is cloned twice and SetLevel is run on
+#                                     both, one belonging to this player and one to nobody. R is
+#                                     the ratio, so the absorb figure never has to be known.
+#   soaked after a recast S of 50     the shield is given 50 points of soaked damage and SetLevel
+#                                     is run again, which is what a recast does. 50 is vanilla,
+#                                     0 is refilled.
+#   summons +N                        the cap bonus the Tameable patch applies for this player.
+#
+# The boundary is read first. Rank 4 has the levels and the absorb and NOT the capstone, so it must
+# say +12, x1.40, 50 and +0 - a capstone paid before it is earned passes any test that only
+# looks at rank 5.
+#
+# Not covered, because a scenario cannot cast: the live cap on a real summon, and a real shield
+# being refilled. Those need the staff in hand. This proves the figures the patches work from.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Blood-sworn at rank 0 and Blood magic at 0.
+
+clear
+god
+
+mod rist rank bloodsworn 0
+skill BloodMagic 20
+wait 1
+
+mod rist show
+printed blood magic 20 (character 20, +0) yes
+
+mod rist show
+printed blood shield absorbs x1.00 yes
+
+mod rist show
+printed summons +0 yes
+
+# ---- rank 1: one rank of levels and absorb.
+
+mod rist rank bloodsworn 1
+wait 1
+
+mod rist show
+printed blood magic 23 (character 20, +3) yes
+
+mod rist show
+printed blood shield absorbs x1.10 yes
+
+# ---- rank 4: the boundary. Levels and absorb in full, no capstone.
+
+mod rist rank bloodsworn 4
+wait 1
+
+mod rist show
+printed blood magic 32 (character 20, +12) yes
+
+mod rist show
+printed blood shield absorbs x1.40 yes
+
+mod rist show
+printed summons +0 yes
+
+mod rist show
+printed soaked after a recast 50 of 50 yes
+
+# ---- rank 5: the capstone arrives.
+
+mod rist rank bloodsworn 5
+wait 1
+
+mod rist show
+printed blood magic 35 (character 20, +15) yes
+
+mod rist show
+printed blood shield absorbs x1.50 yes
+
+mod rist show
+printed summons +1 yes
+
+mod rist show
+printed soaked after a recast 0 of 50 yes
+
+mod rist rank bloodsworn 0
+skill BloodMagic 0
+wait 1
+
+mod rist show
+printed summons +0 yes
+
+mod rist show
+printed blood shield absorbs x1.00 yes

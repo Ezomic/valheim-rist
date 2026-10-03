@@ -5,6 +5,92 @@ and the mod uses [semantic versioning](https://semver.org).
 
 ## [Unreleased]
 
+### Added
+
+- **Blood-sworn**, a new runestone in Combat (LHM-55). Each rank gives 3 levels of blood magic and makes
+  a blood magic shield absorb 10% more. Five ranks is +15 levels, and those levels also raise the shield's base
+  absorb through the game's own per-skill-level figure, so the 1.5 times from the ranks applies on top of an
+  already larger base and the shield ends up thicker than 1.5 times the old one.
+  The capstone is one more summon than the staff allows, and a recast of the shield refills it. This
+  is Deep ward from the ideas board, folded in. The levels count wherever the game reads the skill, so
+  they also raise a staff's damage and the thresholds in a summon's table, and they raise no other
+  skill. The shield is found by the skill it levels when it breaks, so a staff of the other school
+  keeps its shield as it was. In vanilla a recast keeps the damage the shield has already soaked and
+  only restarts its timer, so the refill is new behaviour and not a restatement of the old. The extra
+  summon is the player's own, published as one flag on the character so it holds when the summon is
+  owned by another client. The tooltip on the staff does not show the bigger shield, because it is
+  worked out on the shared item and not on the one you cast.
+- **Eel-slick**, a new runestone in Survival (LHM-56). Each rank makes a dodge roll's invulnerable
+  window 7% longer, 35% at rank five. The capstone: a perfect roll, one that took a hit inside the
+  window, makes your next roll cost no stamina, for 8 seconds, and only against an enemy within 8
+  metres. The plain stamina discount was refused: the Dodge skill already halves the price at skill 100,
+  Tireless discounts it too, and the three multiply. The window ends later and never starts earlier. The
+  game closes it with one animation event partway through the roll and leaves the animation's tail
+  exposed, so Rist holds that event back by a share of the time it took to arrive and leaves the
+  animation and the roll's price alone. The longer window stops where the roll's own animation does.
+  Other players see it too, because the flag a monster on another machine reads is the one that is held.
+  A perfect roll made during a free roll refunds no stamina, since the refund is a share of what the roll cost and
+  it cost nothing, so chaining free rolls does not gain stamina.
+- **Hall-raiser**, a new runestone in Utility (LHM-52). Each rank makes a crafting station cover 20% more
+  ground for building, so five ranks doubles its radius and you stop dotting workbenches around a build.
+  The capstone is your own arm: the hammer places, removes and repairs from twice as far. It is the reach
+  version; the stamina version was dropped because a discount on a discount was too thin (it multiplies,
+  so rank 5 at Crafting 100 would have taken the hammer from 2.50 stamina to 1.25). What the reach covers
+  is what the game's own station test covers, which is whether a piece that needs a bench may be built:
+  the distance you stand from a bench to craft at it is a different number and is unchanged. The circle
+  that keeps enemies from spawning in a base is not widened. The game ties it to the station's radius,
+  so Rist leaves the radius alone and asks the question again with a larger one when the first answer is
+  no. The marker circle shown while you build is redrawn at the wider radius. The arm applies only while
+  the hammer is in hand, so Jafna's hoe is not doubled with it, and Skaft's sweep radius is unchanged
+  (it comes from the Crafting skill and is measured around the piece you hover), though a longer arm starts
+  a sweep from further away and Skaft's own station check follows the wider reach. Jafna's Raise ground station gate asks the same
+  question (HaveBuildStationInRange), so it widens with Hall-raiser the way Skaft's does.
+- **Engineer**, a new runestone in Survival (LHM-54). Each rank makes the traps and siege weapons you build
+  do 8% more damage, 40% at rank five. The capstone, Calibrated: a ballista you build never fires on a
+  player. A ballista fires on whichever machine owns it, which is usually whoever stands nearest, and a
+  trap's spikes are worked out on the machine that stepped on it, so the game cannot say who built a piece
+  at the moment it does harm. The rank is therefore stamped onto the piece as it is placed. Two things follow
+  and both are meant. Carving the stone later does not re-arm anything already standing, and the stamp stays
+  if the stone is later reset. And pieces placed by anyone without the stone, or before it, are exactly as
+  vanilla, so another player's traps are never touched. The stamp covers a ballista, a trap, a catapult, the
+  battering ram and any piece with a damaging area on it, which is how the sharp stakes work. It does not
+  cover the fires and workshops that carry an area for other reasons. The ballista's bolt and the catapult's
+  load are scaled as they are fired; stakes, trap spikes and the ram's punch as they hit. Calibrated clears the
+  ballista's own "target players" setting, so it skips every player and not only the one who built it.
+- Six specials for `cards.txt`: `*parry:rear`, `*eitr:regen`, `*eitr:thrift`, `*eitr:lastcast`, `*stagger:dealt` and
+  `*stagger:secondary`. `rist show` prints the parry arc, the melee stagger and secondary-attack guard, Brimming's
+  lent cast, and the eitr price of a staff against what it would be without the thrift.
+- Two specials for `cards.txt`: `*reach:station` and `*reach:hammer`. `rist show` prints the reach the game
+  gives from the nearest station, whether the no-spawn circle moved, and the hammer reach.
+- Two specials for `cards.txt`: `*roll:window` and `*roll:free`. `rist roll` starts a roll as the key does
+  and `rist perfect` sends a hit into the one in progress, for scenarios; `rist show` prints the measured
+  window, whether a free roll is waiting, and what the last roll cost.
+- Four specials for `cards.txt`: `*blood:levels`, `*blood:absorb`, `*blood:summon` and `*blood:refill`,
+  and the companion mechanism behind them, so a stone can give two things for one carving. `rist show`
+  prints the blood magic level the game reads, the ratio a blood shield is set to, and the summon bonus.
+
+### Changed
+
+Four ideas from the board were folded into stones that already existed (LHM-53), and three of those stones are
+carried by players. **Nothing anyone has carved is taken away or refunded: every rank keeps what it gave and each
+stone gives more.** The ranks, the stones' ids and the ledger are untouched. What changes, rank by rank:
+
+- **Turned blade**, which took in Quick guard: its capstone now also lets a parry cover 30 degrees behind you, counted past
+  your shoulders, so the parry arc goes from 180 degrees to 240. The -8% block stamina it had stays. A rank of the
+  stone is still +8% parry bonus. That field is the extra block power of a perfect parry, not how long the window
+  lasts: the window is a fixed quarter of a second in the game, and the stone's tile reads "parry bonus".
+- **Brimming**, which took in Eitr-thrift: every rank now also takes 5% off the eitr a staff cast costs, 25% at rank five,
+  on top of the 8% regen it already gave. Its capstone is now one cast on an empty bar, once per refill, and
+  it keeps the extra 10% regen. The capstone was a bigger number and is now a new behaviour, as it should be.
+  The lent cast is not given to a staff that charges per burst, since the game checks the bar again for every burst
+  and would stop the cast on an empty one, and it is only spent when the cast actually begins.
+- **Answering blow**, which took in Reeling blow: every rank now also makes your melee hits stagger 6% harder, 30% at rank
+  five. Its capstone, the 30% chance to stagger what a parry would, now also keeps you from being staggered during
+  your own secondary attack.
+- **Blood-sworn** was never built, so it took its idea (Deep ward) in at birth. See above.
+
+Each of the three stones' flavour text says what it learned.
+
 ### Fixed
 
 - **The mouse could stick to the middle of the screen on the runestone page.** While the page is open Rist

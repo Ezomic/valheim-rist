@@ -1,0 +1,97 @@
+# Rist: Engineer, traps and siege weapons you built do 8% more damage a rank, and at rank five your
+# ballistae never fire on a player.
+#
+# The point of the design is that the rank is STAMPED onto each piece as it is set down, because a
+# ballista fires on whichever machine owns it and a trap is worked out on the machine that stepped on
+# it, so "built by this player" cannot be asked when it does harm. This scenario places the same three
+# pieces at three different ranks and then reads them all back at once, which is the only way to see
+# that each kept the rank it was built under:
+#
+#   rank 0   a sharp stakes, a ballista and a troll trap with no stamp
+#   rank 4   the same three, stamped +32%, and the capstone not yet earned
+#   rank 5   the same three, stamped +40%, the ballista calibrated
+#
+# `rist show` lists every trap and siege weapon within 40 m. For a stake or a trap it prints the
+# damage ratio the game's own Aoe.GetDamage returns, the call a hit uses, so a stamp that never reached
+# a hit would read "+40%" beside "hits x1.00". For a ballista it prints whether it still targets
+# players, which is the field the capstone clears.
+#
+# The carving is then dropped back to rank 0 to prove the stamps stay: the pieces already standing are
+# not disarmed.
+#
+# Not covered, because a scenario cannot fire a ballista or step on a trap: the shot itself. The bolt's
+# damage is scaled in Projectile.Setup while Turret.ShootProjectile is running, and that needs a ballista
+# with ammo and something to shoot at. A catapult is not placed here for the same reason.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Engineer at rank 0.
+
+clear
+god
+
+mod rist rank engineer 0
+wait 1
+
+place piece_sharpstakes 5 -5
+place piece_turret 5 0
+place piece_trap_troll 5 5
+wait 2
+
+mod rist show
+printed piece_turret unstamped, targets players yes
+
+mod rist show
+printed piece_sharpstakes unstamped, hits x1.00 yes
+
+# ---- rank 4: the boundary. The damage is stamped and the ballista is not calibrated.
+
+mod rist rank engineer 4
+wait 1
+
+place piece_sharpstakes 9 -5
+place piece_turret 9 0
+place piece_trap_troll 9 5
+wait 2
+
+mod rist show
+printed piece_turret +32%, targets players yes
+
+mod rist show
+printed piece_sharpstakes +32%, hits x1.32 yes
+
+mod rist show
+printed piece_trap_troll +32%, hits x1.32 yes
+
+# ---- rank 5: the capstone.
+
+mod rist rank engineer 5
+wait 1
+
+place piece_sharpstakes 13 -5
+place piece_turret 13 0
+place piece_trap_troll 13 5
+wait 2
+
+mod rist show
+printed piece_turret +40% calibrated, does not target players yes
+
+mod rist show
+printed piece_sharpstakes +40%, hits x1.40 yes
+
+mod rist show
+printed piece_trap_troll +40%, hits x1.40 yes
+
+# ---- the stamps stay, and earlier pieces are untouched by the later carving.
+
+mod rist show
+printed piece_turret +32%, targets players yes
+
+mod rist show
+printed piece_turret unstamped, targets players yes
+
+mod rist rank engineer 0
+wait 1
+
+mod rist show
+printed piece_turret +40% calibrated, does not target players yes

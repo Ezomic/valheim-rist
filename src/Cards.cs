@@ -81,6 +81,88 @@ namespace Rist
         }
 
         /// <summary>
+        /// The second thing a stone gives for the same carving, keyed by the effect that brings it.
+        /// The value is the companion's share of the effect's amount: Blood-sworn writes 3 levels
+        /// a rank and its shield is 10% a rank, so the shield's share is a third of the level.
+        ///
+        /// Effects adds the companions to the totals beside the effect itself, which means every
+        /// consumer reads each as a plain effect of its own. The panel prints them under the main
+        /// line in the detail column and leaves the tile alone, because a tile that named both
+        /// would widen every cell on the field.
+        /// </summary>
+        internal static readonly Dictionary<string, KeyValuePair<string, float>[]> Companions =
+            new Dictionary<string, KeyValuePair<string, float>[]>
+            {
+                {
+                    BloodSworn.Levels, new[]
+                    {
+                        new KeyValuePair<string, float>(BloodSworn.Absorb, 0.10f / 3f),
+                    }
+                },
+                {
+                    BloodSworn.Summon, new[]
+                    {
+                        new KeyValuePair<string, float>(BloodSworn.Refill, 1f),
+                    }
+                },
+                // Turned blade's capstone keeps the block stamina it always gave: 30 degrees of arc
+                // and -8% in one carving.
+                {
+                    Merges.ParryRear, new[]
+                    {
+                        new KeyValuePair<string, float>("m_blockStaminaUseModifier", -0.08f / 30f),
+                    }
+                },
+                // Brimming: 8% regen a rank brings 5% off a cast, and the capstone keeps its extra 10% regen.
+                {
+                    Merges.EitrRegen, new[]
+                    {
+                        new KeyValuePair<string, float>(Merges.EitrThrift, 0.05f / 0.08f),
+                    }
+                },
+                {
+                    Merges.LastCast, new[]
+                    {
+                        new KeyValuePair<string, float>("m_eitrRegenMultiplier", 0.10f),
+                    }
+                },
+                // Answering blow: 10% a rank brings 6% harder stagger, and the 30% stagger chance brings
+                // the guard through a secondary attack.
+                {
+                    AnsweringBlow.Bonus, new[]
+                    {
+                        new KeyValuePair<string, float>(Merges.StaggerDealt, 0.06f / 0.10f),
+                    }
+                },
+                {
+                    AnsweringBlow.Stagger, new[]
+                    {
+                        new KeyValuePair<string, float>(Merges.StaggerSecondary, 1f / 0.30f),
+                    }
+                },
+            };
+
+        /// <summary>The companions of the effect at <paramref name="rank"/>, one per line, or nothing.</summary>
+        internal string DescribeAlso(int rank)
+        {
+            return Also(Effect, PerRank * Mathf.Max(1, rank));
+        }
+
+        internal string DescribeBonusAlso(int times)
+        {
+            return Also(BonusEffect, BonusPerRank * Mathf.Max(1, times));
+        }
+
+        private static string Also(string effect, float total)
+        {
+            if (string.IsNullOrEmpty(effect) || !Companions.TryGetValue(effect, out var also)) return "";
+
+            var lines = new List<string>();
+            foreach (var pair in also) lines.Add(Format(pair.Key, total * pair.Value));
+            return string.Join("\n", lines.ToArray());
+        }
+
+        /// <summary>
         /// Effects stored as a positive amount of benefit but read by a player as something
         /// shrinking. Weatherly's value is how much of the dead zone is taken away, and
         /// "+6% dead zone" would say the zone grows. Shown with the sign turned, so the tile
@@ -91,7 +173,7 @@ namespace Rist
         /// </summary>
         private static readonly HashSet<string> ShownAsReduction = new HashSet<string>
         {
-            Horizon.WindCone,
+            Horizon.WindCone, Merges.EitrThrift,
         };
 
         private static string Format(string effect, float total)
@@ -346,6 +428,22 @@ namespace Rist
             { Sinews.StaminaDelay, "s less before stamina returns" },
             { Sinews.JumpHeight, "jump height" },
             { Sinews.Overloaded, "stamina walking overloaded" },
+            { BloodSworn.Levels, "blood magic levels" },
+            { BloodSworn.Absorb, "blood shield absorbs" },
+            { BloodSworn.Summon, "one more summon than the staff allows" },
+            { BloodSworn.Refill, "recasting the shield refills it" },
+            { EelSlick.Window, "roll invulnerability" },
+            { EelSlick.Free, "a perfect roll makes the next roll free" },
+            { HallRaiser.Station, "station reach" },
+            { HallRaiser.Hammer, "hammer reach" },
+            { Engineer.Damage, "trap and siege damage" },
+            { Engineer.Calibrated, "your ballistae never fire on a player" },
+            { Merges.ParryRear, "degrees of parry behind you" },
+            { Merges.EitrRegen, "eitr regen" },
+            { Merges.EitrThrift, "eitr per cast" },
+            { Merges.LastCast, "one cast on an empty bar, once per refill" },
+            { Merges.StaggerDealt, "melee stagger" },
+            { Merges.StaggerSecondary, "nothing staggers you during a secondary attack" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -370,6 +468,8 @@ namespace Rist
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             Sinews.JumpHeight, Sinews.Overloaded,
+            BloodSworn.Absorb, EelSlick.Window, HallRaiser.Station, HallRaiser.Hammer,
+            Engineer.Damage, Merges.EitrRegen, Merges.EitrThrift, Merges.StaggerDealt,
         };
 
         /// <summary>
@@ -386,6 +486,11 @@ namespace Rist
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded,
+            BloodSworn.Levels, BloodSworn.Absorb, BloodSworn.Summon, BloodSworn.Refill,
+            EelSlick.Window, EelSlick.Free, HallRaiser.Station, HallRaiser.Hammer,
+            Engineer.Damage, Engineer.Calibrated,
+            Merges.ParryRear, Merges.EitrRegen, Merges.EitrThrift, Merges.LastCast,
+            Merges.StaggerDealt, Merges.StaggerSecondary,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -396,6 +501,8 @@ namespace Rist
         private static readonly HashSet<string> Unlocks = new HashSet<string>
         {
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
+            BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free, Engineer.Calibrated,
+            Merges.LastCast, Merges.StaggerSecondary,
         };
 
         /// <summary>

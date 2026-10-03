@@ -54,7 +54,7 @@ namespace Rist
             _registered = true;
 
             new Terminal.ConsoleCommand("rist",
-                "rist show | rist rank <card> <n> - this character's standing, and forcing a rank for a test",
+                "rist show | rist rank <card> <n> | rist roll | rist perfect - this character's standing, and forcing a rank for a test",
                 OnCommand, isCheat: true);
 
             RistPlugin.Log.LogInfo("Console command 'rist' registered (needs devcommands, host or singleplayer).");
@@ -70,10 +70,14 @@ namespace Rist
             if (what == "show") { Show(term); return; }
             if (what == "rank") { Rank(term, args); return; }
             if (what == "powers") { Powers(term); return; }
+            if (what == "roll") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.Start(Player.m_localPlayer)); return; }
+            if (what == "perfect") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.HitInWindow(Player.m_localPlayer)); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
             term.AddString("rist rank <card> <n> - force a card to exactly that rank");
             term.AddString("rist powers          - each forsaken power against every stone carved, and what reaches zero");
+            term.AddString("rist roll            - start a dodge roll, as the key does");
+            term.AddString("rist perfect         - send a hit into the roll in progress, which the game counts as a perfect roll");
             term.AddString("card ids are the first field of cards.txt: thickhide, steadyfoot, longstride...");
         }
 
@@ -305,6 +309,11 @@ namespace Rist
 
             term.AddString(Armour(player));
             term.AddString(Moving(player));
+            term.AddString(BloodSworn.Probe(player));
+            term.AddString(EelSlick.Probe());
+            term.AddString(HallRaiser.Probe(player));
+            term.AddString(Engineer.Probe(player));
+            term.AddString(Merges.Probe(player));
         }
 
         /// <summary>

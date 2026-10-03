@@ -102,6 +102,22 @@ namespace Rist
             Patch(typeof(DeepDraught.Keep));
             Patch(typeof(Oathbound));
             Patch(typeof(Oathbound.Reset));
+            Patch(typeof(BloodSworn));
+            Patch(typeof(BloodSworn.Spawning));
+            Patch(typeof(EelSlick.Roll));
+            Patch(typeof(EelSlick.Mortal));
+            Patch(typeof(EelSlick.Perfect));
+            Patch(typeof(EelSlick.Price));
+            Patch(typeof(HallRaiser));
+            Patch(typeof(Engineer.Stamp));
+            Patch(typeof(Engineer.Hits));
+            Patch(typeof(Engineer.Shots));
+            Patch(typeof(Engineer.Calibration));
+            Patch(typeof(Merges.Parry));
+            Patch(typeof(Merges.Thrift));
+            Patch(typeof(Merges.Last));
+            Patch(typeof(Merges.Reeling));
+            Patch(typeof(Merges.Secondary));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -337,6 +353,9 @@ namespace Rist
                 OwnInventoryRows.Backdrop.Tick();
             }
 
+            // Before the Enabled return: switching Rist off mid-session must still restore the hammer.
+            HallRaiser.Tick(Player.m_localPlayer);
+
             if (!RistConfig.Enabled.Value) return;
 
             if (Net.IsServer) Ledger.Tick(Time.time);
@@ -348,6 +367,10 @@ namespace Rist
                 // republishes rather than trusting what the last world's ZDO was told.
                 _saidHello = false;
                 Nameplate.Forget();
+                BloodSworn.Forget();
+                HallRaiser.Forget();
+                EelSlick.Forget();
+                Engineer.Forget();
                 return;
             }
 
@@ -362,6 +385,8 @@ namespace Rist
             // The three numbers other players read off this character. Throttled inside, and
             // silent until the server has said what the level is.
             Nameplate.Publish(player);
+            BloodSworn.Publish(player);
+            Merges.Last.Tick(player);
 
             // A shared forsaken-power minute that arrived a moment before its effect.
             Oathbound.Tick();
