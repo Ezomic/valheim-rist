@@ -99,7 +99,7 @@ percentage is taken. A fall of 20 metres, which kills in vanilla, counts as 12 a
 rank five where it used to cost nothing, and a fall from the top of a mountain still hurts, roll or no roll. The
 dodge has to be one you can make: it is not counted with an empty stamina bar or when you are over your carry limit,
 and it spends the stamina a roll always does. A roll pressed earlier than that, or after you land, does nothing, and
-a dodge cannot be saved for a later drop. Nothing is refunded; the capstone is simply a different thing at the same rank.
+a dodge cannot be saved for a later drop. A dodge the game would refuse (mid-attack, staggered, already rolling) is not counted either, and a roll made free by Eel-slick counts even with an empty stamina bar. With Long stride too, the roll is taken off after Long stride's own correction, so a raised jump is still never harder than a vanilla one. Nothing is refunded; the capstone is simply a different thing at the same rank.
 `rist fall <metres> [roll]` stages a landing for testing and `rist show` prints the last one.
 
 ### Fixed
