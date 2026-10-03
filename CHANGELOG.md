@@ -41,7 +41,8 @@ and the mod uses [semantic versioning](https://semver.org).
   no. The marker circle shown while you build is redrawn at the wider radius. The arm applies only while
   the hammer is in hand, so Jafna's hoe is not doubled with it, and Skaft's sweep radius is unchanged
   (it comes from the Crafting skill and is measured around the piece you hover), though a longer arm starts
-  a sweep from further away and Skaft's own station check follows the wider reach.
+  a sweep from further away and Skaft's own station check follows the wider reach. Jafna's Raise ground station gate asks the same
+  question (HaveBuildStationInRange), so it widens with Hall-raiser the way Skaft's does.
 - **Engineer**, a new runestone in Survival (LHM-54). Each rank makes the traps and siege weapons you build
   do 8% more damage, 40% at rank five. The capstone, Calibrated: a ballista you build never fires on a
   player. A ballista fires on whichever machine owns it, which is usually whoever stands nearest, and a

@@ -50,6 +50,9 @@ namespace Rist
         private static AccessTools.FieldRef<Player, PieceTable> _pieces;
         private static bool _bound, _bindFailed;
 
+        // The name is read once per table object, not every frame.
+        private static PieceTable _hammer, _other;
+
         private static Player _scaled;
         private static float _factor = 1f;
 
@@ -146,7 +149,18 @@ namespace Rist
         private static bool HammerInHand(Player player)
         {
             var table = _pieces(player);
-            return table != null && table.name == HammerTable;
+            if (table == null) return false;
+            if (ReferenceEquals(table, _hammer)) return true;
+            if (ReferenceEquals(table, _other)) return false;
+
+            if (table.name == HammerTable)
+            {
+                _hammer = table;
+                return true;
+            }
+
+            _other = table;
+            return false;
         }
 
         /// <summary>Forget what was scaled. A rank reset writes nothing back to a Player that is gone.</summary>

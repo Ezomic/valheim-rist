@@ -353,6 +353,9 @@ namespace Rist
             }
 
             if (!RistConfig.Enabled.Value) return;
+            // Before the Enabled return: switching Rist off mid-session must still restore the hammer.
+            HallRaiser.Tick(Player.m_localPlayer);
+
 
             if (Net.IsServer) Ledger.Tick(Time.time);
 
@@ -382,7 +385,6 @@ namespace Rist
             // silent until the server has said what the level is.
             Nameplate.Publish(player);
             BloodSworn.Publish(player);
-            HallRaiser.Tick(player);
             Merges.Last.Tick(player);
 
             // A shared forsaken-power minute that arrived a moment before its effect.
