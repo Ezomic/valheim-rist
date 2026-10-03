@@ -96,6 +96,15 @@ namespace Rist
             return RistConfig.Enabled.Value && ReferenceEquals(player, Player.m_localPlayer) && Bind();
         }
 
+        /// <summary>
+        /// True while a free roll is armed for this player. Landing roll asks it, because it prices
+        /// the dodge outside UpdateDodge, where the zeroed price in Price.Cost does not apply.
+        /// </summary>
+        internal static bool FreeArmed(Player player)
+        {
+            return _armedUntil > Time.time && Mine(player);
+        }
+
         internal static class Roll
         {
             [HarmonyPatch(typeof(Player), "UpdateDodge")]
