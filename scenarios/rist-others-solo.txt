@@ -1,0 +1,32 @@
+# Rist: the page that shows other characters' stones (LHM-65), the part one machine can prove.
+#
+# Opening the page sends a request and the server answers once with one line per character it
+# knows, in the ledger's own format. `rist others ask` sends the same request the page sends and
+# `rist others` prints what the page was told, so what is asserted here is the page's own data and
+# not a second reading of the ledger.
+#
+# Run in SINGLEPLAYER, or as a host: the host's request is answered inline, so the answer is
+# already here when the next step reads it. The same file on a client of a dedicated server also
+# passes, because it waits for the reply. What this cannot show is the other half, a second
+# character who is actually online and carved something, and that is
+# paired-rist-others-viewer.txt.
+#
+# It does not count the characters listed: a singleplayer ledger holds whatever other characters
+# have been played on this machine, and that is not a number a scenario may assume. It asserts
+# that the request was answered, that the answer parses (the header line is printed from the
+# parsed list), and that the viewer's own character is not in it, since its own page is the one
+# it already has.
+
+clear
+
+mod rist others ask
+printed rist others: asked yes
+wait 3
+
+mod rist others
+printed answered yes yes
+printed others: yes
+
+# The viewer is online and is this character, and must not be listed to itself, so with nobody
+# else connected the header counts no online characters.
+printed 0 online yes

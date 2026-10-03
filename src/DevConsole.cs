@@ -70,12 +70,14 @@ namespace Rist
             if (what == "show") { Show(term); return; }
             if (what == "rank") { Rank(term, args); return; }
             if (what == "powers") { Powers(term); return; }
+            if (what == "others") { OthersList(term, args.Length > 2 && args[2].ToLowerInvariant() == "ask"); return; }
             if (what == "roll") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.Start(Player.m_localPlayer)); return; }
             if (what == "perfect") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.HitInWindow(Player.m_localPlayer)); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
             term.AddString("rist rank <card> <n> - force a card to exactly that rank");
             term.AddString("rist powers          - each forsaken power against every stone carved, and what reaches zero");
+            term.AddString("rist others [ask]    - the other characters the page lists; ask sends the request first");
             term.AddString("rist roll            - start a dodge roll, as the key does");
             term.AddString("rist perfect         - send a hit into the roll in progress, which the game counts as a perfect roll");
             term.AddString("card ids are the first field of cards.txt: thickhide, steadyfoot, longstride...");
@@ -420,6 +422,43 @@ namespace Rist
                 line += " and +" + flat.ToString("0.#", CultureInfo.InvariantCulture) + " flat";
 
             return line;
+        }
+
+        // ---------------------------------------------------------------- others
+
+        /// <summary>
+        /// What the other-players page has been told, one line a character. The numbers are the
+        /// ones the page draws from, so a scenario asserting on them is asserting on the page's
+        /// own data and not on a second reading of the ledger.
+        ///
+        /// `ask` sends the request and says so without printing the list: the answer is a routed
+        /// message and is not here yet, on anything but a host. A second call, after a wait,
+        /// reads it. Needs no devcommands on a client, and changes nothing on any machine.
+        /// </summary>
+        private static void OthersList(Terminal term, bool ask)
+        {
+            if (ask)
+            {
+                Others.Ask();
+                term.AddString("rist others: asked.");
+                return;
+            }
+
+            var online = 0;
+            foreach (var peer in Others.List)
+                if (peer.Online) online++;
+
+            term.AddString("others: " + Others.List.Count + " listed, " + online + " online, answered " +
+                           (Others.Answered ? "yes" : "no"));
+
+            foreach (var peer in Others.List)
+            {
+                Others.Counts(peer, out var carved, out var marks);
+
+                term.AddString("  " + (peer.Online ? "online" : "offline") + " " + peer.Label +
+                               (peer.Named ? "" : " (no name)") + " level " + peer.Level +
+                               " carved " + carved + " marks " + marks);
+            }
         }
 
         // ---------------------------------------------------------------- rank

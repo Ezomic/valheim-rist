@@ -1,0 +1,52 @@
+#! partner paired-rist-others-peer
+# Rist, TWO CLIENTS - the viewer of the other-players page (LHM-65).
+#
+# Run this one on client A. Its partner is paired-rist-others-peer.txt on client B, and neither
+# proves anything alone: the page lists characters the SERVER knows about, so a second client
+# has to be connected for there to be an online character to list, and the answer is a routed
+# message from the server to one client.
+#
+# What it proves, from A's side:
+#   - the request the page sends is answered by a dedicated server, not only by a host
+#   - B, connected, is listed and is marked online, with the name the server has for it
+#   - A is not listed to itself
+#
+# What it does NOT prove, and is read in play: the ranks on B's stones, because B's character is
+# a fresh one on the dev server and a client cannot force a rank there (`rist rank` refuses off
+# the host, which is the rule that keeps ranks out of a client's hands). So a card that is carved
+# on B and shows carved on A's page is a thing to look at with the page open, not here.
+#
+# HOW TO RUN IT
+#
+#   1. own-profile\pair.ps1: builds, checks the three profiles match, starts the dev server and
+#      both clients and joins them. Core's gate compares the build id, so the same build on all
+#      three is not optional.
+#   2. In "Valheim A": F6 > Scenarios > Two players > this file > Run. Devkit starts the
+#      partner on B by itself.
+#
+# Both sides rendezvous through a global key whose name is not a GlobalKeys member, so it is
+# inert world state.
+
+unkey rig_rist_peer_ready
+unkey rig_rist_viewer_done
+
+# B sets this once it has been in the world long enough to have said hello to the server.
+waitfor rig_rist_peer_ready 300
+
+mod rist others ask
+printed rist others: asked yes
+wait 3
+
+mod rist others
+printed answered yes yes
+printed 1 online yes
+
+# A character line, which is the only thing that says "carved".
+printed carved yes
+
+# The viewer is never in its own list: two clients, so exactly one other character is online.
+printed 2 online no
+
+key rig_rist_viewer_done
+wait 2
+unkey rig_rist_peer_ready
