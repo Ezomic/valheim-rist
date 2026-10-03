@@ -54,11 +54,14 @@ namespace Rist
         /// three rows, the carved-at track, and the take and close lines at its foot. A short
         /// field is stretched to this rather than the column being clipped.
         ///
-        /// 376 rather than 340 since the rows wrap: NEXT and CAPSTONE can both take a second
-        /// line on the same stone, and each costs about 18px. Only a short field ever reaches
-        /// this - five standing towers are twice as tall.
+        /// 432 rather than 340 since the rows wrap: NEXT and CAPSTONE can both take a second
+        /// line on the same stone, and each costs about 18px. The companion lines of the merged
+        /// stones add more: Answering blow's capstone is four wrapped lines under a two-line
+        /// flavour, which by hand needs about 404 to keep the carved slots clear of the carve
+        /// prompt, so 376 let them touch. Only a short field ever reaches this - five standing
+        /// towers are twice as tall.
         /// </summary>
-        private const float DetailMinH = 376f;
+        private const float DetailMinH = 432f;
 
         /// <summary>
         /// The three stone sizes and what is cut into each. Snapped rather than any integer so
@@ -584,6 +587,11 @@ namespace Rist
             GUI.Label(new Rect(rect.x, rect.yMax - 18f, w, 18f), "Escape to close", _foot);
         }
 
+        private static string WithAlso(string main, string also)
+        {
+            return also.Length == 0 ? main : main + "\n" + also;
+        }
+
         /// <summary>
         /// A labelled line in the detail column.
         ///
@@ -596,11 +604,6 @@ namespace Rist
         /// every value while they were "+5% carry weight" and cut off the 1.5 capstones:
         /// "★ arrows from a crouch land silent at rank 5" is wider than the 268px column.
         /// </summary>
-        private static string WithAlso(string main, string also)
-        {
-            return also.Length == 0 ? main : main + "\n" + also;
-        }
-
         private static float Row(float x, float y, float w, string label, string value, GUIStyle style)
         {
             GUI.Label(new Rect(x, y, w, 18f), label, _label);
