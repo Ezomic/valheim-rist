@@ -1,0 +1,102 @@
+# Rist: Hall-raiser, a crafting station covers 20% more ground a rank for building, and at rank five
+# the hammer places, removes and repairs from twice as far.
+#
+# It is the REACH version. The stamina discount was dropped: a discount on a discount was too thin.
+#
+# `rist show` asks the game, never the hand:
+#
+#   station reach: NAME B m, reaches E m (xR)   B is the station's own radius. E is found by asking
+#                                               CraftingStation.HaveBuildStationInRange at growing
+#                                               distances until it stops answering, so R is the
+#                                               reach the build menu and PlacePiece actually get.
+#   no-spawn circle xC                          the station's effect-area collider, the circle that
+#                                               keeps enemies from spawning in a base, against the
+#                                               station's own radius. Nothing writes it, so it has
+#                                               to read x1.00 at every rank. That is the line that
+#                                               catches a widened m_buildRange, which would widen
+#                                               the circle with it.
+#   hammer reach xH (A m of V m, TABLE)         Player.m_maxPlaceDistance against what it was, and
+#                                               the piece table in hand. H moves only while the
+#                                               hammer's table is.
+#
+# The boundary is read first: at rank 4 the station reach is x1.80 and the hammer is still x1.00,
+# because the arm is the capstone. The hoe is then put in hand at rank 5 to prove the arm is the
+# hammer's alone and Jafna's hoe is not doubled on the way.
+#
+# Not covered, because a scenario has no second player: that two players at one bench each get
+# their own answer. That is by construction (the point asked about is the local player's), and
+# worth one look with two clients.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Hall-raiser at rank 0.
+
+clear
+god
+
+mod rist rank hallraiser 0
+place piece_workbench 4 0
+give Hammer:1
+give Hoe:1
+wait 3
+
+mod rist show
+printed reaches yes
+
+# ---- rank 0: vanilla.
+
+mod rist show
+printed (x1.00) yes
+
+mod rist show
+printed no-spawn circle x1.00 yes
+
+mod rist show
+printed hammer reach x1.00 yes
+
+# ---- rank 4: the boundary. Four ranks of station reach and no arm.
+
+mod rist rank hallraiser 4
+tool Hammer
+wait 3
+
+mod rist show
+printed (x1.80) yes
+
+mod rist show
+printed no-spawn circle x1.00 yes
+
+mod rist show
+printed hammer reach x1.00 yes
+
+# ---- rank 5: double the reach, and the arm.
+
+mod rist rank hallraiser 5
+wait 3
+
+mod rist show
+printed (x2.00) yes
+
+# The circle that keeps enemies out of a base stays where it was.
+mod rist show
+printed no-spawn circle x1.00 yes
+
+mod rist show
+printed hammer reach x2.00 yes
+
+# ---- the arm is the hammer's alone.
+
+tool Hoe
+wait 2
+
+mod rist show
+printed hammer reach x1.00 yes
+
+mod rist show
+printed (x2.00) yes
+
+mod rist rank hallraiser 0
+wait 2
+
+mod rist show
+printed (x1.00) yes

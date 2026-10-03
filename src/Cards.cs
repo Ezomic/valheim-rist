@@ -399,6 +399,8 @@ namespace Rist
             { BloodSworn.Refill, "recasting the shield refills it" },
             { EelSlick.Window, "roll invulnerability" },
             { EelSlick.Free, "a perfect roll makes the next roll free" },
+            { HallRaiser.Station, "station reach" },
+            { HallRaiser.Hammer, "hammer reach" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -423,7 +425,7 @@ namespace Rist
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             Sinews.JumpHeight, Sinews.Overloaded,
-            BloodSworn.Absorb, EelSlick.Window,
+            BloodSworn.Absorb, EelSlick.Window, HallRaiser.Station, HallRaiser.Hammer,
         };
 
         /// <summary>
@@ -441,7 +443,7 @@ namespace Rist
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
             Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded,
             BloodSworn.Levels, BloodSworn.Absorb, BloodSworn.Summon, BloodSworn.Refill,
-            EelSlick.Window, EelSlick.Free,
+            EelSlick.Window, EelSlick.Free, HallRaiser.Station, HallRaiser.Hammer,
             "*stamina:move", "*stamina:fight",
         };
 

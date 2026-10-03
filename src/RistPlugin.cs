@@ -107,6 +107,7 @@ namespace Rist
             Patch(typeof(EelSlick.Mortal));
             Patch(typeof(EelSlick.Perfect));
             Patch(typeof(EelSlick.Price));
+            Patch(typeof(HallRaiser));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -354,6 +355,7 @@ namespace Rist
                 _saidHello = false;
                 Nameplate.Forget();
                 BloodSworn.Forget();
+                HallRaiser.Forget();
                 return;
             }
 
@@ -369,6 +371,7 @@ namespace Rist
             // silent until the server has said what the level is.
             Nameplate.Publish(player);
             BloodSworn.Publish(player);
+            HallRaiser.Tick(player);
 
             // A shared forsaken-power minute that arrived a moment before its effect.
             Oathbound.Tick();

@@ -27,6 +27,21 @@ and the mod uses [semantic versioning](https://semver.org).
   exposed, so Rist holds that event back by a share of the time it took to arrive and leaves the
   animation and the roll's price alone. The longer window stops where the roll's own animation does.
   Other players see it too, because the flag a monster on another machine reads is the one that is held.
+- **Hall-raiser**, a new runestone in Utility (LHM-52). Each rank makes a crafting station cover 20% more
+  ground for building, so five ranks doubles its radius and you stop dotting workbenches around a build.
+  The capstone is your own arm: the hammer places, removes and repairs from twice as far. It is the reach
+  version; the stamina version was dropped because a discount on a discount was too thin (it multiplies,
+  so rank 5 at Crafting 100 would have taken the hammer from 2.50 stamina to 1.25). What the reach covers
+  is what the game's own station test covers, which is whether a piece that needs a bench may be built:
+  the distance you stand from a bench to craft at it is a different number and is unchanged. The circle
+  that keeps enemies from spawning in a base is not widened. The game ties it to the station's radius,
+  so Rist leaves the radius alone and asks the question again with a larger one when the first answer is
+  no. The marker circle shown while you build is redrawn at the wider radius. The arm applies only while
+  the hammer is in hand, so Jafna's hoe is not doubled with it, and Skaft's sweep radius is unchanged
+  (it comes from the Crafting skill and is measured around the piece you hover), though a longer arm starts
+  a sweep from further away and Skaft's own station check follows the wider reach.
+- Two specials for `cards.txt`: `*reach:station` and `*reach:hammer`. `rist show` prints the reach the game
+  gives from the nearest station, whether the no-spawn circle moved, and the hammer reach.
 - Two specials for `cards.txt`: `*roll:window` and `*roll:free`. `rist roll` starts a roll as the key does
   and `rist perfect` sends a hit into the one in progress, for scenarios; `rist show` prints the measured
   window, whether a free roll is waiting, and what the last roll cost.

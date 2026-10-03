@@ -311,6 +311,7 @@ namespace Rist
             term.AddString(Moving(player));
             term.AddString(BloodSworn.Probe(player));
             term.AddString(EelSlick.Probe());
+            term.AddString(HallRaiser.Probe(player));
         }
 
         /// <summary>

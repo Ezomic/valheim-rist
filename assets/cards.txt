@@ -36,6 +36,8 @@
 #   *blood:absorb           how much more a blood magic shield absorbs (a companion of *blood:levels, never written alone)
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
+#   *reach:station         the ground a crafting station covers for building, as a share of its radius (0.20 is 20% wider)
+#   *reach:hammer          how far the hammer places, removes and repairs, as a share of its reach (1.0 is twice as far)
 #   *roll:window            a dodge roll's invulnerable window ends later, by a share of its own length (0.07 is 7% longer)
 #   *roll:free              a perfect roll makes your next roll cost no stamina, for 8 seconds (value 1)
 #   *exploreradius          the map uncovers further as you walk
@@ -255,6 +257,11 @@ farsight    | Far sight      | The land gives up its shape.      | *exploreradiu
 tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O
 weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *rowspeed                 | 0.20 | W
 surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | m_staminaRegenMultiplier  | 0.12 | J
+# Hall-raiser widens the radius a station covers for building and nothing else about it: the circle
+# that keeps enemies from spawning in a base is a separate thing and stays where it is, and the
+# distance you stand from a bench to craft at it is unchanged. The sigil is shared with Quiet wake,
+# since all 26 are spoken for.
+hallraiser  | Hall-raiser    | The hall stands wherever you point. | *reach:station    | 0.20  | *reach:hammer             | 1.0 | N
 quickstudy  | Quick study    | Lessons stick the first time.     | m_raiseSkillModifier     | 0.05  | m_skillLevelModifier      | 2 | M
 
 # The forsaken power. The cooldown cut applies when you cast, and has a floor of half. The
