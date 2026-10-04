@@ -180,6 +180,11 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   another stone's job. What was lost is counted from your health falling and shrinks by any other healing, so a mead drunk
   mid-fight does not get healed a second time, and a hit or a swing while it is mending cancels the rest. The 8% health regen
   from the ranks is unchanged.
+- **Long wind**: the capstone is now Second wind. The first time your stamina runs out, a quarter of the bar comes back at
+  once, and it cannot happen again for 90 seconds. It is the gasp that buys one more roll or swing, and it is not regen
+  speed, so it no longer doubles the stone's own stat. It used to be another 10% stamina regen on top of 8% a rank. Running dry on a sprint triggers it as well. Long wind and Brimming's Last spark now
+  share a shape, an emergency button that comes back with time; the 90 seconds is the knob if that is too much.
+- `rist spend <n>` spends stamina the way swinging does, and a large number empties the bar. For the Second wind scenario.
 <!-- LHM44 -->
 
 ### Fixed
