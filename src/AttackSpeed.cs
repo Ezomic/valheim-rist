@@ -56,7 +56,7 @@ namespace Rist
         /// A staff is ElementalMagic or BloodMagic, and Quick chant covers both. It was the one
         /// weapon no card touched for as long as there were three of these.
         /// </summary>
-        private static string CategoryOf(ItemDrop.ItemData weapon)
+        internal static string CategoryOf(ItemDrop.ItemData weapon)
         {
             if (weapon == null || weapon.m_shared == null) return null;
 

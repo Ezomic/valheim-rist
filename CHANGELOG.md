@@ -143,6 +143,11 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   works the same when another player's machine owns the creature. One refund per swing: a sweep that kills three
   gives it back once. A weapon that charges nothing for the shot refunds nothing.
 
+- **Keen hand**: the capstone is now Combo holds. A weapon combo chains from a swing up to 0.6 seconds late, where the
+  game drops it back to the first hit after 0.2. It forgives your rhythm instead of adding speed to a stone that is
+  already about speed. It used to be +5% damage on every weapon, close to Keen edge's own effect, so melee damage no
+  longer comes from this stone at all. Melee weapons only, and the axe counts as a tool, the same split the swing-speed
+  cards use.
 <!-- LHM44 -->
 
 ### Fixed

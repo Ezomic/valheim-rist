@@ -447,6 +447,7 @@ namespace Rist
             { Merges.StaggerSecondary, "nothing staggers you during a secondary attack" },
             // The capstones of LHM-44, each a thing you can now do rather than a number.
             { LastBlow.Key, "the swing that kills gives its stamina back" },
+            { ComboHold.Key, "a weapon combo chains from a swing 0.6 s late" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -494,7 +495,7 @@ namespace Rist
             Engineer.Damage, Engineer.Calibrated,
             Merges.ParryRear, Merges.EitrRegen, Merges.EitrThrift, Merges.LastCast,
             Merges.StaggerDealt, Merges.StaggerSecondary,
-            LastBlow.Key,
+            LastBlow.Key, ComboHold.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -507,7 +508,7 @@ namespace Rist
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
             BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free, Engineer.Calibrated,
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
-            LastBlow.Key,
+            LastBlow.Key, ComboHold.Key,
         };
 
         /// <summary>
