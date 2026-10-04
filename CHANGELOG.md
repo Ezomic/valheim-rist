@@ -167,6 +167,13 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   drowning are untouched, and so is damage over time. Thick-hided's armour from the ranks is unchanged.
 - `rist hurt <n> [enemy]` takes a plain hit through the game's own damage path and prints what it took off the health
   bar, as a creature's hit with `enemy`. It exists so Shrug and the other health-reading capstones have a scenario.
+- **Steady footing**: the capstone is now Footing back. For three seconds after you recover from a stagger, nothing staggers
+  you again, so a stagger can no longer be chained into the next and the next. It used to be another 5% armour, which is
+  Thick-hided's stat. The first stagger is exactly as dangerous as before; the guard only ends the chain behind it.
+  **This is the alternative offered for Rooted, on purpose.** Rooted as proposed, no knockback from a creature's hits, is
+  too strong a capstone: a Troll or a Lox that cannot shove you is a lot more than a stagger bar, it would have made the stone
+  the obvious pick, and knockback is how a fight is escaped as well as how it is lost. Steady footing's ranks are unchanged.
+- `rist stagger` staggers the character the way a creature's blow does, for the scenarios that need one.
 <!-- LHM44 -->
 
 ### Fixed

@@ -54,7 +54,7 @@ namespace Rist
             _registered = true;
 
             new Terminal.ConsoleCommand("rist",
-                "rist show | rist rank <card> <n> | rist powers | rist others [ask] | rist roll | rist perfect | rist fall <m> [roll] | rist hurt <n> [enemy] - this character's standing, and forcing a rank for a test",
+                "rist show | rist rank <card> <n> | rist powers | rist others [ask] | rist roll | rist perfect | rist fall <m> [roll] | rist hurt <n> [enemy] | rist stagger - this character's standing, and forcing a rank for a test",
                 OnCommand, isCheat: true);
 
             RistPlugin.Log.LogInfo("Console command 'rist' registered (needs devcommands, host or singleplayer).");
@@ -74,6 +74,7 @@ namespace Rist
             if (what == "roll") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.Start(Player.m_localPlayer)); return; }
             if (what == "fall") { Say(term, Fall(args)); return; }
             if (what == "hurt") { Say(term, Hurt(args)); return; }
+            if (what == "stagger") { Say(term, Player.m_localPlayer == null ? "rist: no player." : FootingBack.Stagger(Player.m_localPlayer)); return; }
             if (what == "perfect") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.HitInWindow(Player.m_localPlayer)); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
@@ -83,6 +84,7 @@ namespace Rist
             term.AddString("rist roll            - start a dodge roll, as the key does");
             term.AddString("rist fall <m> [roll] - land from m metres up, with a dodge pressed as you land when roll is given");
             term.AddString("rist hurt <n> [enemy] - take n damage as a plain hit, or as a creature's hit with enemy");
+            term.AddString("rist stagger         - stagger this character, as a blow from a creature would");
             term.AddString("rist perfect         - send a hit into the roll in progress, which the game counts as a perfect roll");
             term.AddString("card ids are the first field of cards.txt: thickhide, steadyfoot, longstride...");
         }
@@ -371,6 +373,7 @@ namespace Rist
             term.AddString(Riposte.Probe());
             term.AddString(SecondNock.Probe());
             term.AddString(Shrug.Probe());
+            term.AddString(FootingBack.Probe());
         }
 
         /// <summary>

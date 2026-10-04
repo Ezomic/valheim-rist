@@ -125,6 +125,7 @@ namespace Rist
             Patch(typeof(SecondNock.Loose));
             Patch(typeof(SecondNock.Draw));
             Patch(typeof(Shrug.Small));
+            Patch(typeof(FootingBack.Refuse));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -381,6 +382,7 @@ namespace Rist
                 Engineer.Forget();
                 LastBlow.Forget();
                 SecondNock.Forget();
+                FootingBack.Forget();
                 return;
             }
 
@@ -398,6 +400,7 @@ namespace Rist
             BloodSworn.Publish(player);
             Merges.Last.Tick(player);
             LastBlow.Tick(player);
+            FootingBack.Tick(player);
 
             // A shared forsaken-power minute that arrived a moment before its effect.
             Oathbound.Tick();

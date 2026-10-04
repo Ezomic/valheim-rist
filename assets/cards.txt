@@ -38,6 +38,7 @@
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
 #   *draw:second            the next bow draw begun within 1.5 s of a shot starts 30% full (value 1)
+#   *stagger:guard          nothing staggers you for 3 s after you recover from a stagger (value 1)
 #   *shrug                  creature hits under 4% of your maximum health do nothing (value 1)
 #   *parry:rear             a parry covers this many degrees behind you, past your shoulders (30)
 #   *eitr:regen             eitr regen, and with it casts cost 5% less eitr per 8% of regen
@@ -89,8 +90,7 @@
 # ideas board and the formula agrees with him.
 #
 # NOTHING GRANTS FLAT ARMOUR ANY MORE. Steady footing's capstone went the same way, +5% rather
-# than +2, which keeps the two stones mirrors of each other: Steady footing's capstone has
-# always been a dose of whatever Thick-hided does per rank. The case flat armour was kept for is
+# than +2, and has since stopped being armour at all (LHM-44). The case flat armour was kept for is
 # the other branch of the curve, a hit bigger than twice your armour, where the game subtracts
 # rather than divides - and there +2 saves exactly 2 damage while +5% saves 5% of your armour,
 # so the flat number only wins below 40 armour. That is leather and troll hide, and it is a
@@ -217,7 +217,11 @@ bloodsworn  | Blood-sworn    | The blood keeps what it was promised. | *blood:le
 # nothing. It used to be another 5% of armour, the stone's own stat again. Judged after armour,
 # so what is small grows with both food and armour; the swarm case is what it is for.
 thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | *shrug                    | 1    | H
-steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.05 | m_armorMultiplier         | 0.05 | E
+# Steady footing's capstone is the footing back: for 3 s after you recover from a stagger, nothing
+# staggers you again, which ends the chain. It used to be another 5% armour. Rooted, no knockback
+# from a creature's hit, was the first idea and was too much: it would have made the stone the obvious
+# pick, and knockback is how a fight is escaped as well as how it is lost.
+steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.05 | *stagger:guard            | 1    | E
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
 # Sure-footed's ranks are -10% fall damage each, -50% at rank five, and that is all they buy. The
 # capstone used to be a second -50%, which made rank five immune to falling and left nothing to
