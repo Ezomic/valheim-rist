@@ -191,6 +191,12 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   A creature's AI runs on whichever machine owns the creature and that machine holds only its own player's stones, so the
   stone is published as a flag on your character that every client reads; that flag is the shared plumbing for Soft step,
   Quiet wake and Weatherly, and it is written only when it changes. Soft step's ranks, -8% detection each, are unchanged.
+- **Quiet wake**: the capstone is now Sleepers sleep on. A sleeping creature is not woken by you walking close, only by real
+  noise, which is what the stone's own ranks make smaller. It used to be -10% detection, which is Soft step's own effect.
+  If another player without the stone is close enough to wake it, it wakes as it always did, and a sleeper that hunts
+  players wakes as usual. This is the weakest capstone of the round, since it only matters where creatures sleep, and which
+  of them do is prefab data nobody has read yet. Quiet wake's -8% noise a rank is unchanged. The stone is published on your
+  character for the creature's owner to read, with the flag Soft step added.
 <!-- LHM44 -->
 
 ### Fixed

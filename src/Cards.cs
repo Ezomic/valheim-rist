@@ -456,6 +456,7 @@ namespace Rist
             { PatchUp.Key, "10 s after a fight, a quarter of the health you lost comes back" },
             { SecondWind.Key, "when stamina runs out, a quarter of the bar comes back, once in 90 s" },
             { LoseThem.Key, "a creature that has lost you gives up the hunt after 12 s, not 30" },
+            { SleepersSleepOn.Key, "a sleeping creature is woken by noise, never by you walking close" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -505,7 +506,7 @@ namespace Rist
             Merges.StaggerDealt, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
             Shrug.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key,
-            LoseThem.Key,
+            LoseThem.Key, SleepersSleepOn.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -520,6 +521,7 @@ namespace Rist
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
             Shrug.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key, LoseThem.Key,
+            SleepersSleepOn.Key,
         };
 
         /// <summary>

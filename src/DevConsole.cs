@@ -391,6 +391,7 @@ namespace Rist
             term.AddString(PatchUp.Probe());
             term.AddString(SecondWind.Probe(player));
             term.AddString(LoseThem.Probe());
+            term.AddString(SleepersSleepOn.Probe());
             term.AddString(Carried.Probe(player));
         }
 
