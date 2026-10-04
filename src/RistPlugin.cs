@@ -327,10 +327,31 @@ namespace Rist
             // the host has no panel, and two players' screens have nothing to agree about.
             Suite.Local(RistConfig.PanelBottomInset);
 
+            // The three on-screen choices are one player's screen, not a server rule: left
+            // synced, the host's value would replace a player's on join and be put back on
+            // every edit. Local is also what lets Core's settings screen list them (LHM-51).
+            Suite.Local(RistConfig.ShowInfoTab, RistConfig.ShowPlate, RistConfig.ShowXpBar);
+
+            try { ListOnSettingsScreen(); }
+            catch (System.Exception e) { Log.LogInfo("Core has no settings screen to list on, so these settings are in the .cfg only: " + e.Message); }
+
             // WeightGeneration is deliberately not in that list. It is not a shared rule about
             // what things are worth, it is a server-side instruction to re-price the ledger
             // once - and the ledger only exists on the server. Syncing it would push a stamp
             // to clients that have nothing to stamp.
+        }
+
+        /// <summary>
+        /// The display choices this mod lists on Core's settings screen (LHM-51). Never inlined
+        /// and called inside a try, so an older Core with no such screen costs the listing and
+        /// nothing else.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ListOnSettingsScreen()
+        {
+            SettingsPanel.Add(RistConfig.ShowInfoTab, "Rist tab in the compendium", SettingsGroup.Display, summary: "info tab|no info tab");
+            SettingsPanel.Add(RistConfig.ShowPlate, "Rist line above players", SettingsGroup.Display, summary: "name plate|no name plate");
+            SettingsPanel.Add(RistConfig.ShowXpBar, "Experience bar", SettingsGroup.Display, summary: "xp bar|no xp bar");
         }
 
         private void OnDestroy()
