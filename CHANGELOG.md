@@ -160,6 +160,13 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   draw-speed stone, so it is the closest of these capstones to its stone's own stat; what is new is that it rewards
   the second arrow and not the first. Bows only; the crossbow keeps the reload speed from the ranks. The head start is
   30% of the bow's real draw time at your skill and composes with the ranks' faster draw.
+- **Thick-hided**: the capstone is now Shrug. A creature's hit worth under 4% of your maximum health does nothing, which
+  is the swarm case (Deathsquitos, ticks, Seekers) that a percentage of armour cannot touch, while armour keeps its own
+  job. It used to be another 5% armour, the stone's own stat again. It is judged after armour and resistances, so
+  the line rises with food and armour; a Troll is not shrugged and a swarm is. Creature hits only: falls, fire, poison and
+  drowning are untouched, and so is damage over time. Thick-hided's armour from the ranks is unchanged.
+- `rist hurt <n> [enemy]` takes a plain hit through the game's own damage path and prints what it took off the health
+  bar, as a creature's hit with `enemy`. It exists so Shrug and the other health-reading capstones have a scenario.
 <!-- LHM44 -->
 
 ### Fixed

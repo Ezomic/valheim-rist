@@ -451,6 +451,7 @@ namespace Rist
             { ComboHold.Key, "a weapon combo chains from a swing 0.6 s late" },
             { Riposte.Key, "a parry throws a quarter of what it blocked back at the attacker" },
             { SecondNock.Key, "the next draw within 1.5 s of a shot starts 30% full" },
+            { Shrug.Key, "creature hits under 4% of your health do nothing" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -499,6 +500,7 @@ namespace Rist
             Merges.ParryRear, Merges.EitrRegen, Merges.EitrThrift, Merges.LastCast,
             Merges.StaggerDealt, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
+            Shrug.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -512,6 +514,7 @@ namespace Rist
             BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free, Engineer.Calibrated,
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
+            Shrug.Key,
         };
 
         /// <summary>

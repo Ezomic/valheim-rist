@@ -2,12 +2,12 @@
 #
 # The whole point of the 1.6.0 change, and the one thing a flat bonus and a percentage cannot
 # both pass. It reads the ratio twice, in the lightest armour in the game and then in the
-# heaviest, without changing the ranks in between. A percentage answers x1.20 both times. A
+# heaviest, without changing the ranks in between. A percentage answers x1.15 both times. A
 # flat +10 answers about x6 in rags and about x1.16 in padded, and fails both halves.
 #
-# The number asserted is the GAME's: `rist show` prints "game x1.20" from
+# The number asserted is the GAME's: `rist show` prints "game x1.15" from
 # Player.GetBodyArmor, which is what Character.Damage hands to the armour curve, beside
-# "rist x1.20" which is only this mod's opinion of what it did. Assert the game one. The two
+# "rist x1.15" which is only this mod's opinion of what it did. Assert the game one. The two
 # are printed apart precisely so that a test cannot pass on the mod agreeing with itself.
 #
 # SINGLEPLAYER. Ranks live on the server and `rist rank` says so and refuses on a client, so
@@ -40,11 +40,12 @@ wait 1
 mod rist show
 printed game x1.00 yes
 
-# Five ranks: 3% a rank and 5% more at the fifth, which is +20%.
+# Five ranks: 3% a rank and nothing more at armour. The fifth rank's capstone is the shrug (LHM-44),
+# which judges hits and does not touch armour, so five ranks is +15% and not the old +20%.
 mod rist rank thickhide 5
 wait 1
 mod rist show
-printed game x1.20 yes
+printed game x1.15 yes
 
 # ---- padded: the heaviest set in the game, and the same ranks.
 
@@ -57,9 +58,9 @@ wait 1
 # The assertion the change is about. Same stone, same rank, thirty times the armour under it,
 # and the answer has to be the same multiplier. A flat bonus cannot be here.
 mod rist show
-printed game x1.20 yes
+printed game x1.15 yes
 
-# And it is not stuck at 1.20 either: four ranks is 12%, with no capstone.
+# And it is not stuck at 1.15 either: four ranks is 12%, with no capstone.
 mod rist rank thickhide 4
 wait 1
 mod rist show

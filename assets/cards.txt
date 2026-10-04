@@ -38,6 +38,7 @@
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
 #   *draw:second            the next bow draw begun within 1.5 s of a shot starts 30% full (value 1)
+#   *shrug                  creature hits under 4% of your maximum health do nothing (value 1)
 #   *parry:rear             a parry covers this many degrees behind you, past your shoulders (30)
 #   *eitr:regen             eitr regen, and with it casts cost 5% less eitr per 8% of regen
 #   *eitr:thrift            how much less eitr a cast costs (a companion of *eitr:regen)
@@ -212,7 +213,10 @@ bloodsworn  | Blood-sworn    | The blood keeps what it was promised. | *blood:le
 
 == Survival
 
-thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | m_armorMultiplier         | 0.05 | H
+# Thick-hided's capstone is the shrug: a creature's hit worth under 4% of your maximum health does
+# nothing. It used to be another 5% of armour, the stone's own stat again. Judged after armour,
+# so what is small grows with both food and armour; the swarm case is what it is for.
+thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | *shrug                    | 1    | H
 steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.05 | m_armorMultiplier         | 0.05 | E
 swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
 # Sure-footed's ranks are -10% fall damage each, -50% at rank five, and that is all they buy. The
