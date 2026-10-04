@@ -14,6 +14,9 @@ namespace Rist
         internal static float Xp;
         internal static int DraftsTaken;
 
+        /// <summary>The part of Xp the server says came from kills. 0 from an older server.</summary>
+        internal static float KillXp;
+
         /// <summary>Card id to the levels that bought its ranks. A 0 is a rank whose level
         /// was never recorded - see RistRecord.Taken.</summary>
         internal static readonly Dictionary<string, List<int>> Taken = new Dictionary<string, List<int>>();
@@ -84,6 +87,7 @@ namespace Rist
         internal static void Clear()
         {
             Xp = 0f;
+            KillXp = 0f;
             DraftsTaken = 0;
             Taken.Clear();
             Ranks.Clear();
@@ -112,6 +116,9 @@ namespace Rist
                 int.TryParse(parts[4], out ServerLevel);
             }
 
+            if (parts.Length >= 6)
+                float.TryParse(parts[5], NumberStyles.Float, CultureInfo.InvariantCulture, out KillXp);
+
             Known = true;
         }
     }
@@ -128,6 +135,7 @@ namespace Rist
     {
         private const string RpcHello = "Rist_Hello";
         private const string RpcSkillUp = "Rist_SkillUp";
+        private const string RpcKills = "Rist_Kills";
         private const string RpcPick = "Rist_Pick";
         private const string RpcState = "Rist_State";
         private const string RpcAskProfile = "Rist_AskProfile";
@@ -187,9 +195,11 @@ namespace Rist
             Others.Clear();
             Gate.Forget();
             Throttle.Forget();
+            Kills.Forget();
 
             rpc.Register<long>(RpcHello, OnHello);
             rpc.Register<int, float>(RpcSkillUp, OnSkillUp);
+            rpc.Register<string>(RpcKills, OnKills);
             rpc.Register<string>(RpcPick, OnPick);
             rpc.Register<string>(RpcState, OnState);
             rpc.Register(RpcAskProfile, OnAskProfile);
@@ -226,6 +236,16 @@ namespace Rist
         {
             if (ZRoutedRpc.instance == null) return;
             ZRoutedRpc.instance.InvokeRoutedRPC(RpcSkillUp, (int)type, level);
+        }
+
+        /// <summary>
+        /// Report kill counts by kind, as "name:count,name:count". Counts only, never XP: the
+        /// server prices them, and what it does not recognise pays nothing.
+        /// </summary>
+        internal static void ReportKills(string wire)
+        {
+            if (ZRoutedRpc.instance == null || string.IsNullOrEmpty(wire)) return;
+            ZRoutedRpc.instance.InvokeRoutedRPC(RpcKills, wire);
         }
 
         internal static void SendPick(string cardId)
@@ -354,6 +374,19 @@ namespace Rist
                 RistPlugin.Log.LogInfo(owner + " reached Rist level " + rec.Level + ".");
 
             PushState(sender, rec);
+        }
+
+        private static void OnKills(long sender, string wire)
+        {
+            if (!IsServer || !RistConfig.Enabled.Value) return;
+
+            var owner = OwnerOf(sender);
+            if (owner == null) return;
+
+            var rec = Ledger.For(owner);
+            if (rec == null) return;
+
+            if (Kills.Apply(owner, rec, wire)) PushState(sender, rec);
         }
 
         private static void OnPick(long sender, string cardId)

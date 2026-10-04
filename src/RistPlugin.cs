@@ -318,7 +318,9 @@ namespace Rist
             // test curve on one machine made a dedicated server refuse every pick.
             Suite.Sync(RistConfig.XpPerSkillLevel, RistConfig.LevelBaseXp, RistConfig.LevelExponent,
                        RistConfig.MaxRank, RistConfig.BonusEvery,
-                       RistConfig.SkillWeights, RistConfig.DefaultSkillWeight);
+                       RistConfig.SkillWeights, RistConfig.DefaultSkillWeight,
+                       RistConfig.KillXp, RistConfig.KillMilestones, RistConfig.KillHealthUnit,
+                       RistConfig.KillWeightMin, RistConfig.KillWeightMax);
 
             // How much of the bottom of this player's own window a taskbar covers. Core
             // absorbs every bound entry as a host rule unless told otherwise, so without this
@@ -397,6 +399,8 @@ namespace Rist
             }
 
             SayHello();
+
+            Kills.Tick(Time.time);
 
             if (ClientState.Known) Effects.Apply(player, ClientState.Ranks);
 

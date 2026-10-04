@@ -171,7 +171,10 @@ namespace Rist
             var before = rec.Xp;
             var beforeLevel = rec.Level;
 
-            rec.Xp = Weights.WorthOf(rec.Snapshot);
+            // Kills are re-priced in the same breath, so a re-price under new weights cannot
+            // leave the kill share at what the old config paid.
+            Kills.Reprice(rec);
+            rec.Xp = Weights.WorthOf(rec.Snapshot) + rec.KillXp;
             rec.WeightGen = generation;
             Ledger.Touch();
 
@@ -210,7 +213,7 @@ namespace Rist
             // shared with the re-pricing above so the two can never drift apart. They must
             // agree exactly: if crediting priced a character higher than re-pricing does, the
             // next login would undo every re-price, and the mod would look like it forgot.
-            var worth = Weights.WorthOf(reported);
+            var worth = Weights.WorthOf(reported) + rec.KillXp;
 
             // Never downward. Only the shortfall is paid, so this is idempotent.
             if (worth <= rec.Xp + 0.001f) return false;

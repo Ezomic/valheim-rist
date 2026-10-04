@@ -59,6 +59,20 @@ namespace Rist
         /// </summary>
         internal string WeightGen = "";
 
+        /// <summary>
+        /// The part of <see cref="Xp"/> that came from kills (LHM-40), kept apart so a re-price
+        /// of the skill side, which rebuilds Xp from the baseline, can add it back instead of
+        /// wiping it. Always equal to Kills.WorthOf(KillSeen) as of the last report or re-price.
+        /// </summary>
+        internal float KillXp;
+
+        /// <summary>
+        /// The highest kill count this server has been told for each kind of creature, keyed by
+        /// the game's own name for it ("$enemy_boar"). Monotonic, like Snapshot, so a client
+        /// reporting a lower number than it once did cannot talk its pay down or up.
+        /// </summary>
+        internal readonly Dictionary<string, int> KillSeen = new Dictionary<string, int>();
+
         internal bool HasSnapshot => Snapshot.Count > 0;
 
         internal int Level => Levels.LevelForXp(Xp);
@@ -208,6 +222,17 @@ namespace Rist
 
             sb.Append('|').Append(WeightGen ?? "");
 
+            // Appended after the weight generation so every older line still reads: its
+            // parser looks fields up by position and never sees these.
+            sb.Append('|').Append(KillXp.ToString("R", CultureInfo.InvariantCulture)).Append('|');
+            first = true;
+            foreach (var kv in KillSeen)
+            {
+                if (!first) sb.Append(',');
+                sb.Append(kv.Key).Append(':').Append(kv.Value);
+                first = false;
+            }
+
             return sb.ToString();
         }
 
@@ -276,6 +301,20 @@ namespace Rist
             var genAt = snapshotAt + 1;
             if (parts.Length > genAt) rec.WeightGen = parts[genAt];
 
+            if (parts.Length > genAt + 1)
+                float.TryParse(parts[genAt + 1], NumberStyles.Float, CultureInfo.InvariantCulture, out rec.KillXp);
+
+            if (parts.Length > genAt + 2)
+            {
+                foreach (var pair in parts[genAt + 2].Split(','))
+                {
+                    var at = pair.LastIndexOf(':');
+                    if (at <= 0) continue;
+                    int count;
+                    if (int.TryParse(pair.Substring(at + 1), out count) && count > 0) rec.KillSeen[pair.Substring(0, at)] = count;
+                }
+            }
+
             return rec;
         }
 
@@ -284,7 +323,7 @@ namespace Rist
         /// client never needs the owner id, and must never be handed anything it could send
         /// back as authority.
         ///
-        ///   xp|draftsTaken|id:level;level,id:level|owed|level
+        ///   xp|draftsTaken|id:level;level,id:level|owed|level|killXp
         ///
         /// Owed and level are sent rather than left to the client to work out. It used to
         /// derive both from xp through the level curve, which is config - and a client whose
@@ -298,6 +337,7 @@ namespace Rist
             sb.Append(Xp.ToString("R", CultureInfo.InvariantCulture)).Append('|').Append(DraftsTaken).Append('|');
             AppendTaken(sb);
             sb.Append('|').Append(Owed).Append('|').Append(Level);
+            sb.Append('|').Append(KillXp.ToString("R", CultureInfo.InvariantCulture));
             return sb.ToString();
         }
 

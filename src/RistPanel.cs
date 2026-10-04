@@ -412,7 +412,7 @@ namespace Rist
             // carries it to everyone in range except the character wearing it.
             GUI.Label(new Rect(x + 200f, y + 9f, Mathf.Max(360f, width - 480f), 20f),
                       "Level " + ClientState.Level + " · " + Mathf.RoundToInt(ClientState.Xp).ToString("N0", CultureInfo.InvariantCulture) +
-                      " XP · " + held + " of " + Cards.All.Count +
+                      " XP" + Kills.Note() + " · " + held + " of " + Cards.All.Count +
                       " carved · " + marks + " of " + Cards.All.Count * maxRank +
                       " marks", _sub);
 

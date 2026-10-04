@@ -22,6 +22,11 @@ namespace Rist
         internal static ConfigEntry<string> SkillWeights;
         internal static ConfigEntry<float> DefaultSkillWeight;
         internal static ConfigEntry<string> WeightGeneration;
+        internal static ConfigEntry<float> KillXp;
+        internal static ConfigEntry<string> KillMilestones;
+        internal static ConfigEntry<float> KillHealthUnit;
+        internal static ConfigEntry<float> KillWeightMin;
+        internal static ConfigEntry<float> KillWeightMax;
 
         internal static ConfigEntry<int> MaxRank;
         internal static ConfigEntry<int> BonusEvery;
@@ -152,6 +157,52 @@ namespace Rist
                 "which is the honest reading - the picks were spent, and handing them back " +
                 "would be a free rebuild of the whole character rather than a re-pricing.");
 
+            // The second XP source (LHM-40). Per KIND of creature, read off the game's own
+            // per-name kill counter, never a total: a total is a farm for whichever creature is
+            // safest, and a kind-by-kind ladder pays for meeting the whole bestiary instead.
+            KillXp = cfg.Bind("Kills", "KillXp", 10f,
+                "XP paid each time a kind of creature reaches one of its KillMilestones, before " +
+                "the creature's weight. 0 turns kill XP off, and so does Enabled.\n" +
+                "Sized against the curve, not against skills. With the default LevelBaseXp 40 " +
+                "and LevelExponent 1.4 level 5 costs 380 xp and level 10 costs 1004. The first " +
+                "kill of a kind pays 10 times its weight, so meeting the first fifteen kinds " +
+                "of the Meadows and Black Forest is about 90 xp, a level or two early on; and " +
+                "the whole bestiary at every milestone is about 1800, so a character that has " +
+                "done everything has a level or fifteen out of it and the skills still carry " +
+                "the rest. Kill XP is a bonus on the skill track, never a replacement for it.\n" +
+                "Host rule: the server decides what a kill is worth, so clients are given the " +
+                "host's value.");
+
+            KillMilestones = cfg.Bind("Kills", "KillMilestones", "1,10,100",
+                "Kill counts at which a kind of creature pays KillXp, comma separated, as many " +
+                "as you like. Each is paid once per kind and never again, so one kind is worth " +
+                "at most (number of milestones) x KillXp x its weight however many are killed. " +
+                "That ceiling is the whole farming defence: a thousand boars pay what a hundred " +
+                "do. The default is the first meeting, the first handful and a genuine " +
+                "campaign against that kind.\n" +
+                "Counts come from the character file's per-kind counter, so kills made before " +
+                "this mod was installed are paid on the first login, the way existing skills " +
+                "are. A change here applies from the next report; it does not take XP away " +
+                "from anybody unless WeightGeneration is bumped.");
+
+            KillHealthUnit = cfg.Bind("Kills", "KillHealthUnit", 100f,
+                "A kind's weight is the square root of its health divided by this, so a " +
+                "100-health Draugr is worth 1 and a 400-health creature is worth 2: tougher " +
+                "things pay more, but not in proportion, because a troll is not forty times " +
+                "the achievement of a neck. Health is read off the creature's own prefab on " +
+                "the server, so a creature added by another mod is priced with no entry here, " +
+                "and a name the server cannot find a creature for pays nothing (this also keeps " +
+                "player-versus-player kills out).");
+
+            KillWeightMin = cfg.Bind("Kills", "KillWeightMin", 0.25f,
+                "The floor of a kind's weight, so a 5-health pest still pays something " +
+                "for its first meeting rather than rounding to nothing.");
+
+            KillWeightMax = cfg.Bind("Kills", "KillWeightMax", 4f,
+                "The ceiling of a kind's weight. Bosses sit here: their health is in the " +
+                "thousands, and without a ceiling one boss kill would pay more than a hundred " +
+                "ordinary kinds. Bosses are kinds like any other and are normally killed once, " +
+                "so they only ever reach the first milestone.");
             // A thing on screen rather than a key, which is the standing preference here,
             // and now the only way in - the keybind is gone rather than merely unbound.
             ShowInfoTab = cfg.Bind("General", "ShowInfoTab", true,

@@ -1,0 +1,51 @@
+# Rist: kill milestones (LHM-40), the part one machine can prove.
+
+# XP from kills is the game's own per-kind counter, paid by the server at milestones of
+# KillMilestones (default 1, 10, 100) and priced from the creature's own prefab. Nothing here
+# kills anything: `rist kills set` writes the count into this character's file, `rist kills send`
+# reports it the way the five-second watch would, and `rist kills <name>` prints what the client
+# works out beside what the server says it paid.
+#
+#   N of 3 milestones   Kills.Reached over the configured marks, so this scenario assumes the
+#                       DEFAULT KillMilestones 1,10,100 and fails on an edited list.
+#   kills agree         the client's sum over every kind equals the server's KillXp. Needs
+#                       an otherwise untouched profile: a character that has killed other things
+#                       agrees too, because the sum is over every kind it has.
+#   kills disagree      asserted on purpose at the end: the server keeps the highest count it was
+#                       told, so a LOWER report must not take XP back, and the client's own sum
+#                       then falls below the server's.
+#
+# SINGLEPLAYER or host: `set` and `reset` need the record in this process. The first line takes
+# back whatever kill XP the record held, so the scenario starts from nothing; the last line does
+# it again and leaves the character at the level it had before. The one thing it cannot undo is the
+# count `set` wrote into the character file, which is why the last set is back to 0.
+
+clear
+
+mod rist kills reset
+printed rist kills: took back yes
+
+mod rist kills set $enemy_boar 10
+mod rist kills send
+wait 2
+mod rist kills $enemy_boar
+printed 2 of 3 milestones yes
+printed kills agree yes
+
+mod rist kills set $enemy_boar 1000
+mod rist kills send
+wait 2
+mod rist kills $enemy_boar
+printed 3 of 3 milestones yes
+printed all reached yes
+printed kills agree yes
+
+mod rist kills set $enemy_boar 5
+mod rist kills send
+wait 2
+mod rist kills $enemy_boar
+printed 1 of 3 milestones yes
+printed kills disagree yes
+
+mod rist kills reset
+mod rist kills set $enemy_boar 0

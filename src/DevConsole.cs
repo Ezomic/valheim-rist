@@ -54,7 +54,7 @@ namespace Rist
             _registered = true;
 
             new Terminal.ConsoleCommand("rist",
-                "rist show | rist rank <card> <n> | rist powers | rist others [ask] | rist roll | rist perfect | rist fall <m> [roll] - this character's standing, and forcing a rank for a test",
+                "rist show | rist rank <card> <n> | rist powers | rist others [ask] | rist kills | rist roll | rist perfect | rist fall <m> [roll] - this character's standing, and forcing a rank for a test",
                 OnCommand, isCheat: true);
 
             RistPlugin.Log.LogInfo("Console command 'rist' registered (needs devcommands, host or singleplayer).");
@@ -70,6 +70,7 @@ namespace Rist
             if (what == "show") { Show(term); return; }
             if (what == "rank") { Rank(term, args); return; }
             if (what == "powers") { Powers(term); return; }
+            if (what == "kills") { KillsCommand(term, args); return; }
             if (what == "others") { OthersList(term, args.Length > 2 && args[2].ToLowerInvariant() == "ask"); return; }
             if (what == "roll") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.Start(Player.m_localPlayer)); return; }
             if (what == "fall") { Say(term, Fall(args)); return; }
@@ -79,6 +80,7 @@ namespace Rist
             term.AddString("rist rank <card> <n> - force a card to exactly that rank");
             term.AddString("rist powers          - each forsaken power against every stone carved, and what reaches zero");
             term.AddString("rist others [ask]    - the other characters the page lists; ask sends the request first");
+            term.AddString("rist kills [set <name> <n> | send | reset] - kill XP per kind of creature; set and reset are singleplayer or host only");
             term.AddString("rist roll            - start a dodge roll, as the key does");
             term.AddString("rist fall <m> [roll] - land from m metres up, with a dodge pressed as you land when roll is given");
             term.AddString("rist perfect         - send a hit into the roll in progress, which the game counts as a perfect roll");
@@ -474,6 +476,85 @@ namespace Rist
                                (peer.Named ? "" : " (no name)") + " level " + peer.Level +
                                " carved " + carved + " marks " + marks);
             }
+        }
+
+        // ---------------------------------------------------------------- kills
+
+        private static void KillsCommand(Terminal term, Terminal.ConsoleEventArgs args)
+        {
+            var sub = args.Length > 2 ? args[2].ToLowerInvariant() : "";
+
+            if (sub == "send")
+            {
+                term.AddString(Kills.Report(true) ? "rist kills: sent every kind to the server." : "rist kills: nothing to send.");
+                return;
+            }
+
+            if (sub == "set")
+            {
+                int n;
+                if (args.Length < 5 || !int.TryParse(args[4], NumberStyles.Integer, CultureInfo.InvariantCulture, out n) || n < 0)
+                { term.AddString("rist kills set <name> <n>, e.g. rist kills set $enemy_boar 10"); return; }
+
+                var counts = Kills.Profile();
+                if (counts == null) { term.AddString("rist kills: no character profile yet."); return; }
+                if (Kills.WeightOf(args[3]) <= 0f) { term.AddString("rist kills: no creature called '" + args[3] + "'."); return; }
+
+                counts[args[3]] = n;
+                term.AddString("rist kills: " + args[3] + " set to " + n + " in this character's file. Run rist kills send to report it.");
+                return;
+            }
+
+            if (sub == "reset")
+            {
+                long peer;
+                string owner;
+                if (!Net.IsServer || !Net.LocalOwner(out peer, out owner))
+                { term.AddString("rist kills: reset needs singleplayer or a host with a record."); return; }
+
+                var rec = Ledger.For(owner);
+                if (rec == null) { term.AddString("rist kills: no ledger record."); return; }
+
+                var taken = rec.KillXp;
+                rec.Xp = Mathf.Max(0f, rec.Xp - rec.KillXp);
+                rec.KillXp = 0f;
+                rec.KillSeen.Clear();
+                Ledger.Touch();
+                Net.PushState(peer, rec);
+                term.AddString("rist kills: took back " + taken.ToString("0.#", CultureInfo.InvariantCulture) + " xp and forgot every reported count.");
+                return;
+            }
+
+            var mine = Kills.Profile();
+            if (mine == null) { term.AddString("rist kills: no character profile yet."); return; }
+
+            var marks = Kills.Marks();
+            var local = 0f;
+            var kinds = 0;
+            foreach (var kv in mine)
+            {
+                var weight = Kills.WeightOf(kv.Key);
+                if (weight <= 0f || kv.Value < 1f) continue;
+
+                kinds++;
+                local += Kills.WorthOf(kv.Key, kv.Value);
+
+                if (sub.Length > 0 && !kv.Key.ToLowerInvariant().Contains(sub)) continue;
+
+                var next = Kills.Next(kv.Value);
+                term.AddString("  " + kv.Key + ": " + kv.Value.ToString("0", CultureInfo.InvariantCulture) + " kills, "
+                               + Kills.Reached(kv.Value) + " of " + marks.Length + " milestones, weight "
+                               + weight.ToString("0.00", CultureInfo.InvariantCulture) + ", worth "
+                               + Kills.WorthOf(kv.Key, kv.Value).ToString("0.#", CultureInfo.InvariantCulture) + " xp"
+                               + (next > 0 ? ", next at " + next : ", all reached"));
+            }
+
+            term.AddString("kills: " + kinds + " kinds count, worth " + local.ToString("0.#", CultureInfo.InvariantCulture)
+                           + " xp by this config, server says " + ClientState.KillXp.ToString("0.#", CultureInfo.InvariantCulture));
+
+            // Equal to a tenth of an xp rather than exact: the server sums a table of whole
+            // counts and this sums floats, and a scenario must not fail on rounding.
+            term.AddString(Mathf.Abs(local - ClientState.KillXp) < 0.1f ? "kills agree" : "kills disagree");
         }
 
         // ---------------------------------------------------------------- rank

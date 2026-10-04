@@ -7,6 +7,23 @@ and the mod uses [semantic versioning](https://semver.org).
 
 ### Added
 
+- **Kill milestones** (LHM-40). A second source of XP: the game's own per-kind kill counter. Each kind of
+  creature pays `KillXp` times its weight when its count reaches a milestone (`KillMilestones`, default 1, 10 and
+  100), once per kind. A kind's weight is the square root of the creature's health over `KillHealthUnit`, kept
+  between `KillWeightMin` and `KillWeightMax`, read from the creature's own prefab on the server. The ceiling of
+  three milestones per kind is the defence against farming, and a name the server cannot match to a creature pays
+  nothing. Counts are the lifetime ones in the character file, so earlier kills are paid on the first login. The
+  client reports the kinds that changed every five seconds (`Rist_Kills`), the server stores the highest count it
+  has seen per kind and derives the pay from that table, so a repeat or a lower number pays nothing. The ledger
+  line gains two trailing fields (kill XP and the table) and older lines still read. The wire state gains the kill
+  share, shown in the panel heading as "(N from kills)". All five settings are host rules. Every player and the
+  server need this build.
+- `rist kills` lists each kind with its count, milestones reached, weight and next milestone, and says whether the
+  client's own sum agrees with the server's. `rist kills set <name> <n>`, `send` and `reset` drive it from a
+  scenario. New scenario `rist-kill-milestones`.
+- The info tab, the name plate and the XP bar are listed on Core's settings screen (LHM-51), as personal
+  settings: with Core the host no longer imposes them.
+
 - **Other players' runestones** (LHM-65). When anyone else is on the server, a row of tabs sits above the rists
   page: yours first, then one per character, each with its level and a dot that is green when they are online
   and grey when they are not. Online characters come first, then every character the server has a record for,

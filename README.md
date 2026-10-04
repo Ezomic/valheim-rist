@@ -9,7 +9,8 @@ text file, no asset bundle.
 
 ## Features
 
-- A character level with its own curve, fed by skill level-ups.
+- A character level with its own curve, fed by skill level-ups and, as a smaller second source, by
+  how many of each kind of creature you have killed.
 - One pick per level. Picks bank; nothing expires.
 - Runestones raise a stat by a fixed amount per rank, to rank 5 by default. Every fifth rank
   grants a capstone, a second and different effect.
@@ -28,9 +29,10 @@ text file, no asset bundle.
 
 ### XP and levels
 
-XP comes from skill level-ups and from nothing else. Almost everything in Valheim raises some
-skill, so building, sneaking, sailing, cooking and fishing all pay in without Rist keeping a
-list of what counts.
+XP comes from skill level-ups and from kill milestones, and from nothing else. Almost everything in
+Valheim raises some skill, so building, sneaking, sailing, cooking and fishing all pay in without
+Rist keeping a list of what counts. Kills are the one thing that gets a list, and it is the
+game's own (see "Kill milestones" below).
 
 A level-up is worth the skill level it reached, not a flat amount, multiplied by that skill's
 weight. Vanilla's own skill cost curve is `pow(level+1, 1.5)`, so early levels are nearly free;
@@ -59,6 +61,29 @@ Changing the weights affects new XP only. To re-price characters that already ex
 login, from the skill levels the server has watched it reach. Runestones already taken are
 kept, so a character re-priced from level 12 to level 6 still holds all twelve ranks and earns
 no new pick until it passes level 12 again.
+
+#### Kill milestones
+
+The game keeps a kill counter for every kind of creature on the character (boar, greydwarf, troll,
+and so on). Rist reads it and pays XP when a kind reaches a milestone: by default the 1st, 10th and
+100th kill of that kind. Each milestone is paid once per kind, so the most one kind can ever pay is
+three milestones, however many are killed. A thousand boars pay what a hundred do, and the only
+way to keep earning is to meet more kinds. That ceiling is the whole defence against farming, and
+it is why the counter that matters is per kind and not the game's total or boss-kill number.
+
+What a milestone is worth is `KillXp` (10) times the kind's weight. The weight is the square root
+of the creature's own health over `KillHealthUnit` (100), kept between `KillWeightMin` (0.25) and
+`KillWeightMax` (4). So a 100-health Draugr is worth 1, a troll about 2.5 and a boss sits at the
+ceiling, and a creature added by another mod is priced with no entry anywhere. A name the server
+cannot find a creature for pays nothing, which also keeps player-versus-player kills out. Against
+the curve: the first meeting of the first fifteen kinds is about 90 XP, a level or two early on,
+and every kind at every milestone is about 1800, so kills are a bonus on the skill track and
+never a replacement for it.
+
+Kills made before Rist was installed are paid on the first login, the same way existing skills
+are. The server prices them, so the host's numbers apply to everyone, and the panel heading shows
+how much of your XP came from kills. `rist kills` lists each kind, its count and its next
+milestone.
 
 ### Spending picks
 
@@ -257,7 +282,7 @@ If a change appears to do nothing, check the file.
 | --- | --- | --- |
 | `Enabled` | `true` | Off leaves levels and runestones recorded but stops granting and applying them |
 | `Verbose` | `false` | Log every XP grant, rejection and runestone applied, plus a dump of the vanilla UI this mod clones |
-| `ShowInfoTab` | `true` | Add the runestone tab to the compendium bar. There is no keybind, so off means no way in |
+| `ShowInfoTab` | `true` | Add the runestone tab to the compendium bar. There is no keybind, so off means no way in. Also on Core's settings screen |
 
 ### Levelling
 
@@ -269,6 +294,18 @@ If a change appears to do nothing, check the file.
 | `SkillWeights` | see table above | `Skill=multiplier` pairs, comma separated. Names are `Skills.SkillType` names and are case-insensitive; a raw type number also works. Negatives are clamped to zero |
 | `DefaultSkillWeight` | `1` | What a skill not named in `SkillWeights` is worth |
 | `WeightGeneration` | `1` | Change to any different text to recompute every character once, on its next login |
+
+### Kills
+
+| Key | Default | Effect |
+| --- | --- | --- |
+| `KillXp` | `10` | XP per milestone, before the kind's weight. 0 turns kill XP off |
+| `KillMilestones` | `1,10,100` | Kill counts at which a kind pays, once each |
+| `KillHealthUnit` | `100` | A kind's weight is the square root of its health over this |
+| `KillWeightMin` | `0.25` | Floor of a kind's weight |
+| `KillWeightMax` | `4` | Ceiling of a kind's weight, where bosses sit |
+
+All five are host rules, applied to connected clients when Core is installed.
 
 ### Cards
 
@@ -315,6 +352,9 @@ with the picks to take most of the catalogue. If that matters on your server, re
 join rather than withholding XP. [Dyrr](https://github.com/Ezomic/valheim-dyrr) does that.
 
 ### Plate
+
+`ShowPlate`, `ShowInfoTab` and `ShowXpBar` are a player's own screen choices, so with Core they
+are not imposed by the host and are listed on Core's settings screen in the compendium.
 
 | Key | Default | Effect |
 | --- | --- | --- |
