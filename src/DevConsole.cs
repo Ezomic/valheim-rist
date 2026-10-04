@@ -394,6 +394,7 @@ namespace Rist
             term.AddString(SleepersSleepOn.Probe());
             term.AddString(SteepGround.Probe(player));
             term.AddString(Lookahead.Probe());
+            term.AddString(Gasp.Probe());
             term.AddString(Carried.Probe(player));
         }
 

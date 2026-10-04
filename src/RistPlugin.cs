@@ -131,6 +131,7 @@ namespace Rist
             Patch(typeof(SleepersSleepOn.Sleep));
             Patch(typeof(SteepGround.Slide));
             Patch(typeof(Lookahead.Ahead));
+            Patch(typeof(Gasp.Swimming));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -389,6 +390,7 @@ namespace Rist
                 FootingBack.Forget();
                 SecondWind.Forget();
                 Carried.Forget();
+                Gasp.Forget();
                 return;
             }
 
