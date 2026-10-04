@@ -131,6 +131,20 @@ and it spends the stamina a roll always does. A roll pressed earlier than that, 
 a dodge cannot be saved for a later drop. A dodge the game would refuse (mid-attack, staggered, already rolling) is not counted either, and a roll made free by Eel-slick counts even with an empty stamina bar. With Long stride too, the roll is taken off after Long stride's own correction, so a raised jump is still never harder than a vanilla one. Nothing is refunded; the capstone is simply a different thing at the same rank.
 `rist fall <metres> [roll]` stages a landing for testing and `rist show` prints the last one.
 
+Fifteen capstones were replaced so that each is a new behaviour in its own stone's theme, and none is a bigger number
+on the stone's own stat or another stone's effect (LHM-44). **Ranks are untouched, so everything anyone has carved stays
+exactly as it was, and no pick is refunded: anyone who carved a stone to rank five has the new capstone from this
+version, and loses the old one.** Stone ids, ledgers and the per-rank effects are unchanged. Brimming's Last spark
+was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LHM-59, so neither is touched here.
+
+- **Steady arm**: the capstone is now Last blow. The swing that kills gives its stamina back in full. It used to be +20%
+  parry bonus, which the stone has nothing to do with. The price is read where the game works it out, after every
+  discount, and the kill is read from the creature's health a moment after the hit rather than from its death, so it
+  works the same when another player's machine owns the creature. One refund per swing: a sweep that kills three
+  gives it back once. A weapon that charges nothing for the shot refunds nothing.
+
+<!-- LHM44 -->
+
 ### Fixed
 
 - **Switching Rist off now also switches off the landing roll, Engineer's stamped damage and its calibrated

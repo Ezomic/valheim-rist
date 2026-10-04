@@ -52,6 +52,7 @@
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
+#   *kill:refund            the swing that kills gives its stamina back (value 1)
 #
 # Rank 5 is meant to be the moment, so a capstone should be an unlock rather than a larger
 # number wherever the game gives us one: a row of inventory, a roll that cushions a landing, levels in
@@ -170,7 +171,10 @@
 
 == Combat
 
-steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | m_timedBlockBonus         | 0.20 | P
+# Steady arm's capstone is the last blow: the swing that kills is paid back in full. It used to be
+# +20% parry bonus, a number on a stat the stone has nothing to do with. Read from the target's
+# health after the hit, so it holds when another client owns the creature.
+steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | *kill:refund              | 1    | P
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | m_damageModifier          | 0.05 | Z
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
 turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:rear | 30 | X

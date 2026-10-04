@@ -224,6 +224,7 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*eitr:lastcast` | One cast on an empty bar, once per refill: a staff cast the bar cannot pay for goes ahead and takes what is left, and it is ready again when the bar is full. Magic weapons only, and not a staff that charges per burst, because the game re-checks the bar every burst and would stop the cast. A flag: write `1`. A companion rides along: +10% eitr regen |
 | `*stagger:dealt` | Your melee hits stagger harder, as a fraction of the hit's own stagger. A companion of `*answer`: 6% for every 10% of answering blow. A staff and a bow are not melee |
 | `*stagger:secondary` | Nothing staggers you during your own secondary attack. A companion of `*answer:stagger`. The stagger bar still fills and a stagger after the attack is not refused |
+| `*kill:refund` | The swing that kills gives its stamina back, once per swing, whatever it killed. The price is the one the game charged, after every discount. A kill is read from the creature's own health a moment after your hit, for 1.5 seconds, so it holds when another client owns the creature; a creature killed by someone else in that window refunds too. A weapon that charges nothing for the shot refunds nothing. A flag: write `1` |
 | `*inventoryrow` | Adds rows to the player inventory grid. Not used by the default catalogue, since Valheim 1.0 sells rows from the trader, but still recognised for custom ones |
 
 A line has one effect and one capstone, so a stone that gives two things for one carving names
