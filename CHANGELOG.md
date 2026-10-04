@@ -222,7 +222,30 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   to be +12% stamina regen, which is Long wind's job. What a swing wears off the tool is read around the attack and 40% of
   it is put back, never more than was spent, so it cannot mend a tool. It is by skill, so an axe swung in a fight wears
   less too, and the hammer and the hoe are not covered. The +3% tool swing speed a rank is unchanged.
-<!-- LHM44 -->
+**Balance note for the capstones (LHM-44), written before anyone has played them.** Judged against the capstones that
+were already behaviours (Quick chant, Answering blow, Unseen blow, about a 3 out of 5), and meant to leave no capstone the obvious
+pick. None of this has been tested in play.
+
+- **The three to watch, strongest first.** Thick-hided's Shrug is the one most likely to be too good late: the line is 4% of
+  maximum health after armour, so a well-fed player in heavy armour ignores a great many hits that were never small, and
+  nothing in it scales down. If it is too much, a flat ceiling on the line is the fix, and `Shrug.Share` is the number. Long
+  stride's Steep ground is always on, and on a mountain it removes the thing that makes slopes a hazard, so it is the
+  one a mountain player takes first; eight degrees is `SteepGround.Extra`. Turned blade's Riposte is only a
+  parry build's, and a quarter of a parried hit is modest by itself, but the stone now also carries the 240 degree
+  parry and the block stamina from LHM-53, so it is the heaviest capstone in the list; dropping those two companions
+  is one line in `Card.Companions` and leaves the others untouched.
+- **Level, around a 3.** Footing back (it ends stagger chains, and nothing else about a stagger), Second wind, Lose them,
+  Second nock. Second wind and Brimming's Last spark are both an emergency button that comes back with time, so
+  they share a shape; the 90 seconds is `SecondWind.Cooldown`.
+- **Around a 2.** Last blow, Combo holds, Patch-up (it saves potions and not lives), Gasp (it rescues a swimmer and
+  never extends range), Rides the waves (storm sailing only), Whetted.
+- **The weakest, on purpose and by nature.** Sleepers sleep on only matters where creatures sleep, and which prefabs do
+  is prefab data nobody has read yet, so it may be near nothing until a Devkit rip says. Lookahead is still a map stone and
+  uncovers ground in the direction of travel, no more. The Utility stones were already the weakest picks and still are.
+  Raising them was not attempted: a capstone that is only ever felt in one place is the right size for a stone that is felt
+  in one place.
+- **Two were not built.** Brimming's Last spark was already built as its capstone in LHM-53 and is left alone, and
+  Rooted for Steady footing was replaced by its alternative, Footing back, as set out above.
 
 ### Fixed
 
