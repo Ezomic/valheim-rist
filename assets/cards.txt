@@ -38,6 +38,7 @@
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
 #   *draw:second            the next bow draw begun within 1.5 s of a shot starts 30% full (value 1)
+#   *stealth:losethem       a creature that has lost you gives up the hunt after 12 s instead of 30 (value 1)
 #   *stamina:secondwind     the first time your stamina runs out, a quarter of the bar comes back at once, once in 90 s (value 1)
 #   *mend:patchup           10 s after your last swing or hit taken, a quarter of the health you lost comes back over 5 s (value 1)
 #   *stagger:guard          nothing staggers you for 3 s after you recover from a stagger (value 1)
@@ -280,7 +281,10 @@ deepdraught | Deep draught   | A long pull lasts a long way.     | *mead:duratio
 # helps a weapon that has one.
 lowdraw     | Low draw       | The deer never hears the string.  | *lowdraw                 | 1     | *lowdraw:silent           | 1 | G
 unseenblow  | Unseen blow    | The first cut lands before they know.| *sneakattack          | 0.10  | *sneakattack:stagger      | 1 | B
-softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | -0.08 | m_noiseModifier           | -0.10 | I
+# Soft step's capstone is losing them: a creature that has lost you gives up the hunt after 12 s
+# instead of 30, bosses and creatures that hunt players excepted. It used to be -10% noise, which was
+# Quiet wake's own effect. The creature's owner reads the stone from a flag the carver publishes.
+softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | -0.08 | *stealth:losethem         | 1    | I
 quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifier          | -0.08 | m_stealthModifier         | -0.10 | N
 
 # Two cards that widen what the world gives back rather than what you do to it, and neither

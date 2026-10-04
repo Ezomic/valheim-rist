@@ -390,6 +390,8 @@ namespace Rist
             term.AddString(FootingBack.Probe());
             term.AddString(PatchUp.Probe());
             term.AddString(SecondWind.Probe(player));
+            term.AddString(LoseThem.Probe());
+            term.AddString(Carried.Probe(player));
         }
 
         /// <summary>

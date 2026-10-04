@@ -185,6 +185,12 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   speed, so it no longer doubles the stone's own stat. It used to be another 10% stamina regen on top of 8% a rank. Running dry on a sprint triggers it as well. Long wind and Brimming's Last spark now
   share a shape, an emergency button that comes back with time; the 90 seconds is the knob if that is too much.
 - `rist spend <n>` spends stamina the way swinging does, and a large number empties the bar. For the Second wind scenario.
+- **Soft step**: the capstone is now Lose them. A creature that has lost you gives up the hunt after 12 seconds instead of 30,
+  where "lost" means it has neither seen nor heard you for that long. Bosses and creatures that hunt players are left
+  alone. It used to be -10% noise, which is exactly Quiet wake's effect, so the two stones were each other's capstones.
+  A creature's AI runs on whichever machine owns the creature and that machine holds only its own player's stones, so the
+  stone is published as a flag on your character that every client reads; that flag is the shared plumbing for Soft step,
+  Quiet wake and Weatherly, and it is written only when it changes. Soft step's ranks, -8% detection each, are unchanged.
 <!-- LHM44 -->
 
 ### Fixed

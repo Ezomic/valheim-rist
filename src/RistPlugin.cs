@@ -127,6 +127,7 @@ namespace Rist
             Patch(typeof(Shrug.Small));
             Patch(typeof(FootingBack.Refuse));
             Patch(typeof(SecondWind.Spent));
+            Patch(typeof(LoseThem.Drop));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -385,6 +386,7 @@ namespace Rist
                 SecondNock.Forget();
                 FootingBack.Forget();
                 SecondWind.Forget();
+                Carried.Forget();
                 return;
             }
 
@@ -400,6 +402,7 @@ namespace Rist
             // silent until the server has said what the level is.
             Nameplate.Publish(player);
             BloodSworn.Publish(player);
+            Carried.Publish(player);
             Merges.Last.Tick(player);
             LastBlow.Tick(player);
             FootingBack.Tick(player);
