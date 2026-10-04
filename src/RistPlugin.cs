@@ -129,6 +129,7 @@ namespace Rist
             Patch(typeof(SecondWind.Spent));
             Patch(typeof(LoseThem.Drop));
             Patch(typeof(SleepersSleepOn.Sleep));
+            Patch(typeof(SteepGround.Slide));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -152,12 +153,11 @@ namespace Rist
             // Not a card - a floor under all of them together. See RunStamina.
             Patch(typeof(RunStamina));
 
-            // Long stride's landing guard, confirmed with Harmony rather than assumed. The jump
-            // bonus is withheld until it is, because a higher jump measured from its full height
-            // hurts on landing - see Sinews.Landing.
+            // Sure-footed's landing roll, confirmed with Harmony rather than assumed: PatchAll returning
+            // is not proof that both ends of the roll are attached - see Sinews.Landing.
             Patch(typeof(Sinews.Landing));
             Patch(typeof(Sinews.Landing.Press));
-            Sinews.Landing.ConfirmGuard(PluginGuid);
+            Sinews.Landing.Confirm(PluginGuid);
 
             // The console command registers itself from Terminal's own init, so this one line
             // is the difference between `rist` existing and every scenario failing on step one.

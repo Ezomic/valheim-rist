@@ -392,6 +392,7 @@ namespace Rist
             term.AddString(SecondWind.Probe(player));
             term.AddString(LoseThem.Probe());
             term.AddString(SleepersSleepOn.Probe());
+            term.AddString(SteepGround.Probe(player));
             term.AddString(Carried.Probe(player));
         }
 
@@ -418,18 +419,10 @@ namespace Rist
             var running = 1f;
             if (seman != null) seman.ModifyRunStaminaDrain(1f, ref running, Vector3.zero, minZero: false);
 
-            var jumpBase = Sinews.VanillaJump(player);
-            var jumpRatio = jumpBase > 0f ? player.m_jumpForce / jumpBase : 1f;
-
-            // Height, not push: the rise goes with the square of the push, and height is what the
-            // card promises and what a player sees. Worked out from the game's own jump force
-            // rather than read back off the hand, so a card that wrote the wrong push shows here.
-            var heightRatio = jumpRatio * jumpRatio;
-
-            // A ratio and a difference rather than the two raw numbers, because both baselines
-            // are asset data on the Player prefab and neither is readable outside the running
-            // game. Asserting "jump 12.0" in a scenario would be asserting a value nobody here
-            // has measured; "jump height x1.15" is true whatever the prefab carries. The absolutes are
+            // A ratio and a difference rather than the two raw numbers, because the baselines
+            // are asset data on the Player prefab and not readable outside the running game.
+            // Asserting an absolute in a scenario would be asserting a value nobody here has
+            // measured; "overloaded x0.50" is true whatever the prefab carries. The absolutes are
             // printed after them for reading, which is the same split as armour above.
             //
             // The delay figure is what was actually taken off, not what the cards asked for, so
@@ -437,7 +430,7 @@ namespace Rist
             var delayOff = Sinews.VanillaDelay(player) - player.m_staminaRegenDelay;
 
             // Stagger through the game's own sum, which is what a hit is scaled by. The overload
-            // drain is a ratio for the same reason jump is: its baseline is prefab data.
+            // drain is a ratio for the same reason: its baseline is prefab data.
             var stagger = 1f;
             if (seman != null) seman.ModifyStagger(1f, ref stagger);
 
@@ -448,10 +441,7 @@ namespace Rist
                    + "  delay " + delayOff.ToString("0.00", CultureInfo.InvariantCulture)
                    + "s off (" + player.m_staminaRegenDelay.ToString("0.00", CultureInfo.InvariantCulture)
                    + "s of " + Sinews.VanillaDelay(player).ToString("0.00", CultureInfo.InvariantCulture)
-                   + "s)  jump height x" + heightRatio.ToString("0.00", CultureInfo.InvariantCulture)
-                   + " (push " + player.m_jumpForce.ToString("0.00", CultureInfo.InvariantCulture)
-                   + " of " + jumpBase.ToString("0.00", CultureInfo.InvariantCulture) + ")"
-                   + "  stagger x" + stagger.ToString("0.00", CultureInfo.InvariantCulture)
+                   + "s)  stagger x" + stagger.ToString("0.00", CultureInfo.InvariantCulture)
                    + "  overloaded x" + overload.ToString("0.00", CultureInfo.InvariantCulture);
         }
 

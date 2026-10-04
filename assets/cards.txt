@@ -30,7 +30,6 @@
 #   *power:cooldown         the forsaken power's cooldown, negative is shorter
 #   *power:duration         seconds added to the forsaken power for everyone it reaches, when you cast it
 #   *staminadelay           seconds off the pause before stamina starts coming back
-#   *jumpheight             jumps higher, as a share of how high you jump: 0.15 is 15% higher
 #   *overloaded             stamina walking costs while over your carry limit: -0.50 is half
 #   *landing:roll           a dodge pressed in the last 0.3 s before touchdown makes the fall count 8 m shorter (value 1)
 #   *blood:levels           blood magic levels, and with them a blood shield that absorbs 10% more per 3 levels
@@ -38,6 +37,7 @@
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
 #   *draw:second            the next bow draw begun within 1.5 s of a shot starts 30% full (value 1)
+#   *slope:steep            you hold your footing on slopes up to 46 degrees instead of 38 (value 1)
 #   *noise:sleepers         a sleeping creature is woken by noise and never by you walking close (value 1)
 #   *stealth:losethem       a creature that has lost you gives up the hunt after 12 s instead of 30 (value 1)
 #   *stamina:secondwind     the first time your stamina runs out, a quarter of the bar comes back at once, once in 90 s (value 1)
@@ -315,7 +315,11 @@ quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifi
 
 == Utility
 
-longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *jumpheight               | 0.15 | R
+# Long stride's capstone is steep ground: you hold your footing on slopes up to 46 degrees where the
+# game starts a slide at 38. It used to be 15% jump height, which is gone with its landing guard
+# (nothing else used the special). Not a second speed source: the 10% cap and the one-source rule
+# below are untouched, because this is about whether you stay on your feet and not how fast you are.
+longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *slope:steep              | 1    | R
 farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *exploreradius            | 0.10 | F
 tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O
 weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *rowspeed                 | 0.20 | W

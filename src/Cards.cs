@@ -427,7 +427,6 @@ namespace Rist
             // Read as the wait it removes, not as the delay it leaves. "0.6s less before
             // stamina returns" is the thing a player feels the moment they stop running.
             { Sinews.StaminaDelay, "s less before stamina returns" },
-            { Sinews.JumpHeight, "jump height" },
             { Sinews.Overloaded, "stamina walking overloaded" },
             { Sinews.LandingRoll, "a dodge as you land makes the fall 8 m shorter" },
             { BloodSworn.Levels, "blood magic levels" },
@@ -457,6 +456,7 @@ namespace Rist
             { SecondWind.Key, "when stamina runs out, a quarter of the bar comes back, once in 90 s" },
             { LoseThem.Key, "a creature that has lost you gives up the hunt after 12 s, not 30" },
             { SleepersSleepOn.Key, "a sleeping creature is woken by noise, never by you walking close" },
+            { SteepGround.Key, "you hold your footing on slopes up to 46 degrees, not 38" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -480,7 +480,7 @@ namespace Rist
             // map sight" where they meant +5%. WarnAboutMissingLabels checks for both at load.
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.JumpHeight, Sinews.Overloaded,
+            Sinews.Overloaded,
             BloodSworn.Absorb, EelSlick.Window, HallRaiser.Station, HallRaiser.Hammer,
             Engineer.Damage, Merges.EitrRegen, Merges.EitrThrift, Merges.StaggerDealt,
         };
@@ -498,7 +498,7 @@ namespace Rist
             UnseenBlow.Bonus, UnseenBlow.Stagger, DeepDraught.Duration, DeepDraught.FullCask,
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded, Sinews.LandingRoll,
+            Sinews.StaminaDelay, Sinews.Overloaded, Sinews.LandingRoll,
             BloodSworn.Levels, BloodSworn.Absorb, BloodSworn.Summon, BloodSworn.Refill,
             EelSlick.Window, EelSlick.Free, HallRaiser.Station, HallRaiser.Hammer,
             Engineer.Damage, Engineer.Calibrated,
@@ -506,7 +506,7 @@ namespace Rist
             Merges.StaggerDealt, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
             Shrug.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key,
-            LoseThem.Key, SleepersSleepOn.Key,
+            LoseThem.Key, SleepersSleepOn.Key, SteepGround.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -521,7 +521,7 @@ namespace Rist
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
             Shrug.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key, LoseThem.Key,
-            SleepersSleepOn.Key,
+            SleepersSleepOn.Key, SteepGround.Key,
         };
 
         /// <summary>

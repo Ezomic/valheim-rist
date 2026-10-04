@@ -197,6 +197,13 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   players wakes as usual. This is the weakest capstone of the round, since it only matters where creatures sleep, and which
   of them do is prefab data nobody has read yet. Quiet wake's -8% noise a rank is unchanged. The stone is published on your
   character for the creature's owner to read, with the flag Soft step added.
+- **Long stride**: the capstone is now Steep ground. You hold your footing on slopes up to 46 degrees, where the game
+  starts a slide at 38, so mountainsides that dump a walking player into a slide can be walked. It is not a second speed
+  source, so the 10% cap and the one-source rule on movement speed are untouched: this is whether you stay on your feet,
+  not how fast you are. It replaces the 15% jump height, and with it **the `*jumpheight` special and the landing guard
+  that measured a raised jump from the height a vanilla jump would have reached are removed**, since nothing else used
+  them; the landing roll that shares the code is untouched. A catalogue line naming `*jumpheight` is skipped with the usual
+  warning. Long stride's +2% movement speed a rank is unchanged. `rist show` no longer prints a jump height.
 <!-- LHM44 -->
 
 ### Fixed
