@@ -401,6 +401,7 @@ namespace Rist
             Merges.Last.Tick(player);
             LastBlow.Tick(player);
             FootingBack.Tick(player);
+            PatchUp.Tick(player);
 
             // A shared forsaken-power minute that arrived a moment before its effect.
             Oathbound.Tick();

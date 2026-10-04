@@ -1,0 +1,66 @@
+# Rist: Swift-mending's capstone, Patch-up. Ten seconds after your last swing or hit taken, a quarter
+# of the health you lost comes back over five seconds.
+#
+# `rist hurt <n>` takes a plain hit through the game's own ApplyDamage, which is a hit taken as far as
+# the capstone can tell, and `rist show` prints
+#
+#   patch-up: not carved | carved, lost L, mending M, mended N times (H health)
+#
+# L is what has fallen off the health bar since the last mend and is owed a quarter of, M is what is
+# still being paid out, N and H count mends and the health they gave back.
+#
+# FOOD WRECKS THIS TEST. Food regen heals a little every ten seconds, and the capstone counts every
+# rise in health that is not its own as already recovered, so a fed character reads a smaller "lost"
+# than was dealt. Run it with no food eaten. Health below full is also needed to be healed at all,
+# and the character needs more than 10 health: a character with no food has 25.
+#
+# THE BOUNDARY MATTERS MOST: rank four must owe nothing. A capstone paid before it is earned passes
+# any test that only ever looks at rank five.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client. About 25 seconds.
+#
+# It leaves Swift-mending at rank 0.
+
+clear
+god
+
+mod rist rank swiftmend 0
+wait 1
+mod rist show
+printed patch-up: not carved yes
+
+# ---- rank 4: hurt, wait, and nothing is owed or paid.
+
+mod rist rank swiftmend 4
+wait 1
+mod rist hurt 8
+wait 1
+mod rist show
+printed patch-up: not carved yes
+
+# ---- rank 5: the loss is counted, and ten quiet seconds start the mend.
+
+mod rist rank swiftmend 5
+wait 12
+mod rist show
+printed patch-up: carved, lost 0.0 yes
+
+mod rist hurt 8
+wait 1
+mod rist show
+printed lost 8.0 yes
+
+# Ten seconds after the hit the mend begins and the tally is spent: a quarter of 8 is 2.
+wait 10
+mod rist show
+printed lost 0.0 yes
+
+# And five seconds later it has been paid in full.
+wait 6
+mod rist show
+printed mended 1 times (2.0 health) yes
+
+mod rist rank swiftmend 0
+wait 1
+mod rist show
+printed patch-up: not carved yes

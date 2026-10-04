@@ -374,6 +374,7 @@ namespace Rist
             term.AddString(SecondNock.Probe());
             term.AddString(Shrug.Probe());
             term.AddString(FootingBack.Probe());
+            term.AddString(PatchUp.Probe());
         }
 
         /// <summary>

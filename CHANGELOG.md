@@ -174,6 +174,12 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   too strong a capstone: a Troll or a Lox that cannot shove you is a lot more than a stagger bar, it would have made the stone
   the obvious pick, and knockback is how a fight is escaped as well as how it is lost. Steady footing's ranks are unchanged.
 - `rist stagger` staggers the character the way a creature's blow does, for the scenarios that need one.
+- **Swift-mending**: the capstone is now Patch-up. Ten seconds after your last swing or hit taken, you recover a quarter of
+  the health you lost in that fight, over five seconds. It is regen that arrives when the fight ends, so it saves
+  potions and not lives, and it does nothing to soften a death in the middle of one. It used to be +2 flat armour, which is
+  another stone's job. What was lost is counted from your health falling and shrinks by any other healing, so a mead drunk
+  mid-fight does not get healed a second time, and a hit or a swing while it is mending cancels the rest. The 8% health regen
+  from the ranks is unchanged.
 <!-- LHM44 -->
 
 ### Fixed

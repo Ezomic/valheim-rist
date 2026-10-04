@@ -453,6 +453,7 @@ namespace Rist
             { SecondNock.Key, "the next draw within 1.5 s of a shot starts 30% full" },
             { Shrug.Key, "creature hits under 4% of your health do nothing" },
             { FootingBack.Key, "nothing staggers you for 3 s after you recover from a stagger" },
+            { PatchUp.Key, "10 s after a fight, a quarter of the health you lost comes back" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -501,7 +502,7 @@ namespace Rist
             Merges.ParryRear, Merges.EitrRegen, Merges.EitrThrift, Merges.LastCast,
             Merges.StaggerDealt, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
-            Shrug.Key, FootingBack.Key,
+            Shrug.Key, FootingBack.Key, PatchUp.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -515,7 +516,7 @@ namespace Rist
             BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free, Engineer.Calibrated,
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
-            Shrug.Key, FootingBack.Key,
+            Shrug.Key, FootingBack.Key, PatchUp.Key,
         };
 
         /// <summary>
