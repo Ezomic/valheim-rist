@@ -395,6 +395,7 @@ namespace Rist
             term.AddString(SteepGround.Probe(player));
             term.AddString(Lookahead.Probe());
             term.AddString(Gasp.Probe());
+            term.AddString(RidesTheWaves.Probe());
             term.AddString(Carried.Probe(player));
         }
 

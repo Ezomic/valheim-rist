@@ -213,6 +213,11 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   its first tick instead of one, which is time to reach a boat or the shore. The bar empties exactly as fast as before and the
   ticks after the first are the game's own, so it rescues a swimmer and never extends their range. It used to be another
   10% off swim stamina, which was the stone's own stat. The +6% swim speed a rank is unchanged.
+- **Weatherly**: the capstone is now Rides the waves. Slams into waves do no hull damage while you hold the helm, which is
+  the other half of staying afloat in weather: the ranks bend the sail to windward and this keeps the hull. Only the water impact is
+  spared; a ship that is upside down and the Ashlands still hurt it. The ship's physics run on whichever machine owns the ship, so
+  the stone is read from the flag the helmsman publishes, and a passenger's stone does nothing. It used to be 20% rowing speed,
+  a second kind of speed on the stone's own job. `*rowspeed` is still a supported special for a catalogue that names it.
 <!-- LHM44 -->
 
 ### Fixed
