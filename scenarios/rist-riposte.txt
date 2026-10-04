@@ -1,0 +1,48 @@
+# Rist: Turned blade's capstone, Riposte. A parry throws a quarter of what it blocked back at the attacker.
+#
+# What a scenario can assert is the boundary and the companions: Riposte is the fifth rank's and not
+# the fourth's, and the 30 degrees behind you that LHM-53 folded into this capstone is still there
+# with it. The parry itself needs a creature swinging at a shield held inside the first quarter
+# second, which no scenario can do, so the thrown damage is read in play: carve Turned blade to
+# five, hold a shield with a timed block bonus, parry a Greydwarf, and `rist show` counts it.
+#
+# What `rist show` prints:
+#
+#   riposte: not carved | carved, thrown back N times[, last X damage]
+#   parry reaches D degrees behind you (threshold T)
+#
+# In play X is a quarter of what the parry blocked, so a Greydwarf swing that would have done 20
+# and was parried returns about 5, less the Greydwarf's own resistances.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Turned blade at rank 0.
+
+clear
+god
+
+mod rist rank turnedblade 0
+wait 1
+mod rist show
+printed riposte: not carved yes
+
+mod rist rank turnedblade 4
+wait 1
+mod rist show
+printed riposte: not carved yes
+
+mod rist show
+printed parry reaches 0 degrees behind you yes
+
+mod rist rank turnedblade 5
+wait 1
+mod rist show
+printed riposte: carved, thrown back 0 times yes
+
+mod rist show
+printed parry reaches 30 degrees behind you (threshold 0.50) yes
+
+mod rist rank turnedblade 0
+wait 1
+mod rist show
+printed riposte: not carved yes

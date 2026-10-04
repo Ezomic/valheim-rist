@@ -105,12 +105,13 @@ namespace Rist
                         new KeyValuePair<string, float>(BloodSworn.Refill, 1f),
                     }
                 },
-                // Turned blade's capstone keeps the block stamina it always gave: 30 degrees of arc
-                // and -8% in one carving.
+                // Turned blade's capstone is the riposte, and keeps what LHM-53 folded into it: the arc
+                // behind you and the -8% block stamina it always gave, all in one carving.
                 {
-                    Merges.ParryRear, new[]
+                    Riposte.Key, new[]
                     {
-                        new KeyValuePair<string, float>("m_blockStaminaUseModifier", -0.08f / 30f),
+                        new KeyValuePair<string, float>(Merges.ParryRear, 30f),
+                        new KeyValuePair<string, float>("m_blockStaminaUseModifier", -0.08f),
                     }
                 },
                 // Brimming: 8% regen a rank brings 5% off a cast, and the capstone keeps its extra 10% regen.
@@ -448,6 +449,7 @@ namespace Rist
             // The capstones of LHM-44, each a thing you can now do rather than a number.
             { LastBlow.Key, "the swing that kills gives its stamina back" },
             { ComboHold.Key, "a weapon combo chains from a swing 0.6 s late" },
+            { Riposte.Key, "a parry throws a quarter of what it blocked back at the attacker" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -495,7 +497,7 @@ namespace Rist
             Engineer.Damage, Engineer.Calibrated,
             Merges.ParryRear, Merges.EitrRegen, Merges.EitrThrift, Merges.LastCast,
             Merges.StaggerDealt, Merges.StaggerSecondary,
-            LastBlow.Key, ComboHold.Key,
+            LastBlow.Key, ComboHold.Key, Riposte.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -508,7 +510,7 @@ namespace Rist
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
             BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free, Engineer.Calibrated,
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
-            LastBlow.Key, ComboHold.Key,
+            LastBlow.Key, ComboHold.Key, Riposte.Key,
         };
 
         /// <summary>

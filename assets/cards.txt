@@ -37,7 +37,7 @@
 #   *blood:absorb           how much more a blood magic shield absorbs (a companion of *blood:levels, never written alone)
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
-#   *parry:rear             a parry covers this many degrees behind you, past your shoulders (30); also -8% block stamina
+#   *parry:rear             a parry covers this many degrees behind you, past your shoulders (30)
 #   *eitr:regen             eitr regen, and with it casts cost 5% less eitr per 8% of regen
 #   *eitr:thrift            how much less eitr a cast costs (a companion of *eitr:regen)
 #   *eitr:lastcast          one cast on an empty bar, once per refill (value 1); also +10% eitr regen
@@ -54,6 +54,7 @@
 #   *rowspeed               rows faster, forward and back
 #   *kill:refund            the swing that kills gives its stamina back (value 1)
 #   *combo:hold             a weapon combo chains from a swing up to 0.6 s late instead of 0.2 s (value 1)
+#   *parry:riposte          a parry throws a quarter of the damage it blocked back at the attacker (value 1); also 30 degrees of parry behind you and -8% block stamina
 #
 # Rank 5 is meant to be the moment, so a capstone should be an unlock rather than a larger
 # number wherever the game gives us one: a row of inventory, a roll that cushions a landing, levels in
@@ -180,12 +181,13 @@ steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fi
 # ended where the game allows 0.2 s. It used to be +5% damage on every weapon, close to Keen edge.
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | *combo:hold               | 1    | Z
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
-turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:rear | 30 | X
+turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:riposte | 1 | X
 quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *damage:ranged            | 0.05 | Y
 quickchant  | Quick chant    | The chant is done before the staff is raised.| *attackspeed:magic | 0.03 | *unbroken          | 1    | T
 
 # Three stones took in the idea beside them (LHM-53), and none lost anything. Turned blade's
-# capstone is now the arc behind you and keeps its block stamina as a companion; Brimming's
+# capstone is now the riposte, a parry throwing a quarter of what it blocked back at the attacker
+# (LHM-44), and it carries the arc behind you and the block stamina LHM-53 gave it as companions; Brimming's
 # per-rank effect is a special so the eitr thrift can ride it, and its capstone, one cast on an
 # empty bar, keeps the extra regen; Answering blow's ranks drive melee stagger and its capstone
 # stands through a secondary attack. Companions are in Card.Companions.

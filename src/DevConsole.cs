@@ -333,6 +333,7 @@ namespace Rist
             term.AddString(Merges.Probe(player));
             term.AddString(LastBlow.Probe());
             term.AddString(ComboHold.Probe());
+            term.AddString(Riposte.Probe());
         }
 
         /// <summary>

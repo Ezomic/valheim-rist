@@ -148,6 +148,12 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   already about speed. It used to be +5% damage on every weapon, close to Keen edge's own effect, so melee damage no
   longer comes from this stone at all. Melee weapons only, and the axe counts as a tool, the same split the swing-speed
   cards use.
+- **Turned blade**: the capstone is now Riposte. A parry throws a quarter of the damage it blocked back at the attacker,
+  as the same damage types, so a fire hit is returned as fire. Melee attackers only, never a player and never a boss.
+  A parry that stamina or stagger broke through throws nothing. It is a hit of its own, so it does not spend an armed
+  answering blow, and a creature it kills is credited to you. The arc behind you and the -8% block stamina that LHM-53 folded into
+  this capstone stay as companions, so nobody who carved the stone loses either; if Riposte proves too strong with them
+  the companions are one line in `Card.Companions`. It used to be the 30 degrees behind you alone.
 <!-- LHM44 -->
 
 ### Fixed
