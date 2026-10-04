@@ -1,0 +1,38 @@
+# Rist: Sure hand's capstone, Whetted. Axes and pickaxes lose 40% less durability.
+#
+# A swing's wear cannot be staged: it comes off a tool that has struck something, and a scenario
+# swings nothing. What is asserted is the boundary, that Whetted is the fifth rank's and not the
+# fourth's and that the old +12% stamina regen is gone. The saving is read in play: carve Sure
+# hand to five, chop a tree with an axe at a known durability, and compare. Ten swings cost six
+# durability where they cost ten, and `rist show` keeps the total it put back.
+#
+# What `rist show` prints:
+#
+#   whetted: not carved | carved, 40% less wear on axes and picks, saved D durability here
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Sure hand at rank 0.
+
+clear
+god
+
+mod rist rank surehand 0
+wait 1
+mod rist show
+printed whetted: not carved yes
+
+mod rist rank surehand 4
+wait 1
+mod rist show
+printed whetted: not carved yes
+
+mod rist rank surehand 5
+wait 1
+mod rist show
+printed whetted: carved, 40% less wear on axes and picks yes
+
+mod rist rank surehand 0
+wait 1
+mod rist show
+printed whetted: not carved yes

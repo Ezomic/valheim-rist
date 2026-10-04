@@ -218,6 +218,10 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   spared; a ship that is upside down and the Ashlands still hurt it. The ship's physics run on whichever machine owns the ship, so
   the stone is read from the flag the helmsman publishes, and a passenger's stone does nothing. It used to be 20% rowing speed,
   a second kind of speed on the stone's own job. `*rowspeed` is still a supported special for a catalogue that names it.
+- **Sure hand**: the capstone is now Whetted. Axes and pickaxes lose 40% less durability, so a tool outlasts the vein. It used
+  to be +12% stamina regen, which is Long wind's job. What a swing wears off the tool is read around the attack and 40% of
+  it is put back, never more than was spent, so it cannot mend a tool. It is by skill, so an axe swung in a fight wears
+  less too, and the hammer and the hoe are not covered. The +3% tool swing speed a rank is unchanged.
 <!-- LHM44 -->
 
 ### Fixed

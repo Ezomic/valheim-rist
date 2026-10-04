@@ -460,6 +460,7 @@ namespace Rist
             { Lookahead.Key, "the map uncovers a second circle ahead of the way you travel" },
             { Gasp.Key, "drowning waits 6 s before its first tick, not 1" },
             { RidesTheWaves.Key, "slams into waves do no hull damage while you hold the helm" },
+            { Whetted.Key, "axes and picks lose 40% less durability" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -510,7 +511,7 @@ namespace Rist
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
             Shrug.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key,
             LoseThem.Key, SleepersSleepOn.Key, SteepGround.Key,
-            Lookahead.Key, Gasp.Key, RidesTheWaves.Key,
+            Lookahead.Key, Gasp.Key, RidesTheWaves.Key, Whetted.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -526,7 +527,7 @@ namespace Rist
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
             Shrug.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key, LoseThem.Key,
             SleepersSleepOn.Key, SteepGround.Key, Lookahead.Key,
-            Gasp.Key, RidesTheWaves.Key,
+            Gasp.Key, RidesTheWaves.Key, Whetted.Key,
         };
 
         /// <summary>

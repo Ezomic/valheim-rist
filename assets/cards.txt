@@ -37,6 +37,7 @@
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
 #   *draw:second            the next bow draw begun within 1.5 s of a shot starts 30% full (value 1)
+#   *tool:whetted           axes and pickaxes lose 40% less durability (value 1)
 #   *sail:waves             slams into waves do no hull damage while you hold the helm (value 1)
 #   *swim:gasp              after your stamina runs out in water, drowning waits 6 s before its first tick instead of 1 (value 1)
 #   *explore:ahead          the map also uncovers a second circle ahead of the way you travel (value 1)
@@ -336,7 +337,10 @@ tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedMo
 # Ashlands damage are other methods and are not touched. The ship's owner reads the stone from a flag
 # the helmsman publishes. *rowspeed is still a supported special.
 weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *sail:waves               | 1    | W
-surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | m_staminaRegenMultiplier  | 0.12 | J
+# Sure hand's capstone is the whetted edge: axes and pickaxes lose 40% less durability. It used to be
+# 12% stamina regen, which was Long wind's job. The axe counts as a tool, so an axe in a fight wears
+# less as well; the hammer and the hoe are not covered.
+surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | *tool:whetted             | 1    | J
 # Hall-raiser widens the radius a station covers for building and nothing else about it: the circle
 # that keeps enemies from spawning in a base is a separate thing and stays where it is, and the
 # distance you stand from a bench to craft at it is unchanged. The sigil is shared with Quiet wake,
