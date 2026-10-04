@@ -37,6 +37,7 @@
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
 #   *draw:second            the next bow draw begun within 1.5 s of a shot starts 30% full (value 1)
+#   *explore:ahead          the map also uncovers a second circle ahead of the way you travel (value 1)
 #   *slope:steep            you hold your footing on slopes up to 46 degrees instead of 38 (value 1)
 #   *noise:sleepers         a sleeping creature is woken by noise and never by you walking close (value 1)
 #   *stealth:losethem       a creature that has lost you gives up the hunt after 12 s instead of 30 (value 1)
@@ -320,7 +321,10 @@ quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifi
 # (nothing else used the special). Not a second speed source: the 10% cap and the one-source rule
 # below are untouched, because this is about whether you stay on your feet and not how fast you are.
 longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *slope:steep              | 1    | R
-farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *exploreradius            | 0.10 | F
+# Far sight's capstone is the lookahead: the map also uncovers a second circle, 60% of the radius,
+# centred one radius ahead of the way you walk, sail or ride. It used to be another 10% radius, the
+# stone's own stat. It is still a map stone, so it is the weakest differentiation in the round.
+farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *explore:ahead            | 1    | F
 tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O
 weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *rowspeed                 | 0.20 | W
 surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | m_staminaRegenMultiplier  | 0.12 | J

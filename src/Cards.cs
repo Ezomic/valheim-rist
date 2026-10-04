@@ -457,6 +457,7 @@ namespace Rist
             { LoseThem.Key, "a creature that has lost you gives up the hunt after 12 s, not 30" },
             { SleepersSleepOn.Key, "a sleeping creature is woken by noise, never by you walking close" },
             { SteepGround.Key, "you hold your footing on slopes up to 46 degrees, not 38" },
+            { Lookahead.Key, "the map uncovers a second circle ahead of the way you travel" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -507,6 +508,7 @@ namespace Rist
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
             Shrug.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key,
             LoseThem.Key, SleepersSleepOn.Key, SteepGround.Key,
+            Lookahead.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -521,7 +523,7 @@ namespace Rist
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
             Shrug.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key, LoseThem.Key,
-            SleepersSleepOn.Key, SteepGround.Key,
+            SleepersSleepOn.Key, SteepGround.Key, Lookahead.Key,
         };
 
         /// <summary>

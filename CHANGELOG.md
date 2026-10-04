@@ -204,6 +204,11 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   that measured a raised jump from the height a vanilla jump would have reached are removed**, since nothing else used
   them; the landing roll that shares the code is untouched. A catalogue line naming `*jumpheight` is skipped with the usual
   warning. Long stride's +2% movement speed a rank is unchanged. `rist show` no longer prints a jump height.
+- **Far sight**: the capstone is now Lookahead. Each time the map explores, it also uncovers a second circle ahead of the
+  way you walk, sail or ride: 60% of the explore radius, centred one radius ahead of you. Standing still uncovers nothing
+  extra. It used to be another 10% of radius, which is the stone's own stat, and it is still a map stone, so it is the
+  weakest differentiation of the round. What it buys is ground uncovered in the direction of travel rather than a wider
+  circle. The ranks' 5% radius a rank is unchanged and the two compose.
 <!-- LHM44 -->
 
 ### Fixed
