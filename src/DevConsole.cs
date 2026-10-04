@@ -334,6 +334,7 @@ namespace Rist
             term.AddString(LastBlow.Probe());
             term.AddString(ComboHold.Probe());
             term.AddString(Riposte.Probe());
+            term.AddString(SecondNock.Probe());
         }
 
         /// <summary>

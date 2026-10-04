@@ -450,6 +450,7 @@ namespace Rist
             { LastBlow.Key, "the swing that kills gives its stamina back" },
             { ComboHold.Key, "a weapon combo chains from a swing 0.6 s late" },
             { Riposte.Key, "a parry throws a quarter of what it blocked back at the attacker" },
+            { SecondNock.Key, "the next draw within 1.5 s of a shot starts 30% full" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -497,7 +498,7 @@ namespace Rist
             Engineer.Damage, Engineer.Calibrated,
             Merges.ParryRear, Merges.EitrRegen, Merges.EitrThrift, Merges.LastCast,
             Merges.StaggerDealt, Merges.StaggerSecondary,
-            LastBlow.Key, ComboHold.Key, Riposte.Key,
+            LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -510,7 +511,7 @@ namespace Rist
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
             BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free, Engineer.Calibrated,
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
-            LastBlow.Key, ComboHold.Key, Riposte.Key,
+            LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
         };
 
         /// <summary>

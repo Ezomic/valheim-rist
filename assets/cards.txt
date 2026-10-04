@@ -37,6 +37,7 @@
 #   *blood:absorb           how much more a blood magic shield absorbs (a companion of *blood:levels, never written alone)
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
+#   *draw:second            the next bow draw begun within 1.5 s of a shot starts 30% full (value 1)
 #   *parry:rear             a parry covers this many degrees behind you, past your shoulders (30)
 #   *eitr:regen             eitr regen, and with it casts cost 5% less eitr per 8% of regen
 #   *eitr:thrift            how much less eitr a cast costs (a companion of *eitr:regen)
@@ -161,8 +162,9 @@
 #
 # The same card reloads a crossbow sooner, because a bow's draw and a crossbow's reload are
 # the same wait to the person holding the weapon; Windlass was designed as its own card and
-# folded in here. Its capstone is damage from bows and crossbows only. It used to be
-# m_damageModifier, which Rist applies to every skill, so it was a second Keen edge.
+# folded in here. Its capstone was damage from bows and crossbows only, and before that
+# m_damageModifier, which Rist applies to every skill, so it was a second Keen edge. It is the
+# second nock now (LHM-44): a number on a stat the stone does not own became a behaviour.
 #
 # Quick chant's burst staffs have their burst clock sped with the animation, or a faster cast
 # ends before its last projectiles fire. A looping staff that pays eitr once per hold is left
@@ -182,7 +184,9 @@ steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fi
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | *combo:hold               | 1    | Z
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
 turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:riposte | 1 | X
-quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *damage:ranged            | 0.05 | Y
+# Quick draw's capstone is the second nock: the next bow draw begun within 1.5 s of a shot starts 30%
+# full. It used to be +5% bow and crossbow damage. *damage:ranged is still a supported special.
+quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *draw:second              | 1    | Y
 quickchant  | Quick chant    | The chant is done before the staff is raised.| *attackspeed:magic | 0.03 | *unbroken          | 1    | T
 
 # Three stones took in the idea beside them (LHM-53), and none lost anything. Turned blade's

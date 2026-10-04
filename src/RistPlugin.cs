@@ -122,6 +122,8 @@ namespace Rist
             Patch(typeof(LastBlow.Hit));
             Patch(typeof(ComboHold.Chain));
             Patch(typeof(Riposte.Parry));
+            Patch(typeof(SecondNock.Loose));
+            Patch(typeof(SecondNock.Draw));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -377,6 +379,7 @@ namespace Rist
                 EelSlick.Forget();
                 Engineer.Forget();
                 LastBlow.Forget();
+                SecondNock.Forget();
                 return;
             }
 
