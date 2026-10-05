@@ -7,7 +7,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "Ezomic"
 name = "Rist"
-versionNumber = "1.7.0"
+versionNumber = "1.7.1"
 description = "A character level beside the skills, carved into runestones you choose and deepen."
 websiteUrl = "https://github.com/Ezomic/valheim-rist"
 containsNsfwContent = false
@@ -35,3 +35,6 @@ target = "CHANGELOG.md"
 [publish]
 repository = "https://thunderstore.io"
 communities = [ "valheim" ]
+
+[publish.categories]
+valheim = [ "mods", "ai-generated" ]
