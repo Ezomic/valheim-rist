@@ -203,7 +203,7 @@ namespace Rist
                 private static void Pressed(Player __instance)
                 {
                     if (!RistConfig.Enabled.Value || !ReferenceEquals(__instance, Player.m_localPlayer)) return;
-                    if (Effects.Cached(LandingRoll) <= 0f || __instance.IsEncumbered()) return;
+                    if (Effects.TotalFor(LandingRoll) <= 0f || __instance.IsEncumbered()) return;
 
                     // The rest of what UpdateDodge asks before it starts a roll. Dodge queues for
                     // half a second whatever the state, and a press the game then refuses must not
@@ -249,7 +249,7 @@ namespace Rist
                 var fall = apex - y;
                 if (fall <= 4f) return;
 
-                var rolled = pressed >= 0f && Time.time - pressed <= RollWindow && Effects.Cached(LandingRoll) > 0f;
+                var rolled = pressed >= 0f && Time.time - pressed <= RollWindow && Effects.TotalFor(LandingRoll) > 0f;
                 if (rolled)
                 {
                     apex = y + Mathf.Max(0f, fall - RollMetres);
