@@ -3,15 +3,36 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
-## [Unreleased]
+## [1.7.1] - 2026-10-05
+
+### Changed
+
+- **Sure-footed no longer makes you immune to falling (LHM-59).** This takes something away from
+  anyone who carved it to rank five. The ranks stay and keep what they gave, -10% fall damage
+  each, so -50% at rank five. The capstone was a second -50%, which added up to -100% and turned
+  a fall from any height into nothing. It is now a landing roll: a dodge pressed in the last 0.3
+  seconds before you touch down makes the fall count 8 metres shorter, before the percentage is
+  taken. A fall of 20 metres, which kills in vanilla, counts as 12 and costs a quarter of your
+  health at rank five where it used to cost nothing. A fall from the top of a mountain still
+  hurts, roll or no roll.
+
+  The dodge has to be one you could make. It does not count with an empty stamina bar, over your
+  carry limit, or while you are attacking, staggered, rolling or dead, and it spends the stamina
+  a roll always does. A roll pressed earlier than that, or after you land, does nothing, and a
+  dodge cannot be saved for a later drop. Switching Rist off switches the roll off too. Nothing
+  is refunded, since the ranks keep what they gave. The capstone is a different thing at the same
+  rank. With Long stride, the roll is applied after its landing correction, so both hold.
+- New `*landing:roll` special for `cards.txt`. `rist fall <metres> [roll]` stages a landing for
+  testing and `rist show` prints the last one. The scenario `rist-landing-roll` runs it.
 
 ### Fixed
 
-- **The mouse could stick to the middle of the screen on the runestone page.** While the page is open Rist
-  keeps the cursor free, and it did that by writing the unlocked and visible state every frame. On
-  Windows that changes nothing, but on SteamOS a player's pointer stayed pinned to the centre on this page
-  and no other. The state is now written only when the cursor is not already free, which on the compendium
-  is almost never. Reported on Discord; not reproduced on Windows, so it is unconfirmed until the player tries it.
+- **The mouse could stick to the middle of the screen on the runestone page (LHM-64).** While the
+  page is open Rist keeps the cursor free, and it did that by writing the unlocked and visible
+  state every frame. On Windows that changes nothing, but on SteamOS a player's pointer stayed
+  pinned to the centre on this page and no other. The state is now written only when the cursor
+  is not already free, which on the compendium is almost never. Reported on Discord and not
+  reproduced on Windows, so it stays unconfirmed until that player tries it.
 
 ## [1.7.0] - 2026-09-24
 
