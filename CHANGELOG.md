@@ -3,6 +3,30 @@
 Notable changes to Rist. Format follows [Keep a Changelog](https://keepachangelog.com),
 and the mod uses [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+
+- **The mouse stuck to the middle of the screen on the runestone page, for real this time
+  (LHM-64).** The 1.7.1 fix was aimed at the wrong thing. The page hides the inventory, and with
+  the inventory gone the game locked the cursor every frame, which Rist then undid every frame.
+  On Windows that back and forth is invisible. On Linux a lock puts the pointer back in the
+  middle of the window, so on a Steam Deck it was re-centred sixty times a second and never got
+  anywhere. Rist now takes over that one check while the page is open and frees the cursor the
+  way the game's own windows do, so nothing is locked in the first place. It was the only page
+  doing it, which is why the mouse worked everywhere else. Not reproducible on Windows, so it
+  stays unconfirmed until it has run on a Deck.
+
+### Added
+
+- **The runestone page can be used with a controller.** The game has no cursor for a pad on PC,
+  it walks focus between its own buttons, and this page has none to walk, so on a Deck's stick
+  controls it was a page you could look at. The left stick now moves a pointer of the page's own,
+  A carves the stone under it and B closes the page. The mouse or a trackpad takes the page back
+  the moment it moves.
+- The first time the page opens in a session the log says which input device the game thinks is
+  active and what the cursor was doing, so a report like LHM-64 needs no follow-up. It says it on
+  every open with Verbose on.
 ## [1.7.1] - 2026-10-05
 
 ### Changed

@@ -64,6 +64,11 @@ no new pick until it passes level 12 again.
 The panel is a fifth tab on the compendium bar, beside the raven and the trophy. There is no
 keybind; the tab is the only way in.
 
+With a controller the panel has a pointer of its own, because the game's own windows are walked
+by focus and this one has none to walk. Push the left stick and a gold cross appears; A carves the
+stone under it and B closes the page. Moving the mouse or a trackpad hands the page straight back
+to the cursor.
+
 Each runestone carries its own outline, rock and runes, seeded off its id, so it looks the same
 in every session and on every machine. A rank cuts one more rune into the rim. The column beside
 the field follows the cursor and says what the stone is worth now, what the next rank would make

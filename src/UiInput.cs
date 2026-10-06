@@ -38,24 +38,31 @@ namespace Rist
         }
 
         /// <summary>
-        /// A postfix rather than a prefix, because the method must still do its normal work
-        /// for every other case - this only overrides the outcome while the window is up.
+        /// Takes over from the game while the page is up, instead of fixing up after it.
+        ///
+        /// The page hides the inventory, and the inventory is what kept the game's capture
+        /// check from firing: with it gone, the original locks and hides the cursor every
+        /// frame. Rist used to undo that in a postfix, so the cursor was locked and released
+        /// again sixty times a second. On Windows that is invisible. On Linux a lock puts the
+        /// pointer back in the middle of the window, so it was re-centred every frame and never
+        /// got anywhere: stuck to the middle on this page and no other (LHM-64). The 1.7.1 fix
+        /// wrote the cursor only when it differed, which changed nothing, because the game's
+        /// own write was what made it differ.
+        ///
+        /// So the original does not run. This is the branch it takes for any of the game's own
+        /// windows, the one that frees the cursor, written only when it changes anything.
+        /// ZCursor.Show rather than Cursor.visible, so the OS pointer stays hidden while a
+        /// gamepad is the active device and the page draws its own.
         /// </summary>
-        /// <summary>
-        /// Only written when the cursor is not already free. The compendium frees it by itself,
-        /// so on most frames there is nothing to do, and an assignment that changes nothing on
-        /// Windows is not harmless everywhere: a SteamOS player's pointer stuck to the middle of
-        /// the screen on this page and no other, which is the one place that wrote both values
-        /// sixty times a second. Reported 2026-10-01 (LHM-64) and not reproduced on Windows.
-        /// </summary>
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.UpdateMouseCapture))]
-        private static void FreeCursor()
+        private static bool FreeCursor()
         {
-            if (!RistPanel.IsOpen) return;
+            if (!RistPanel.IsOpen) return true;
 
-            if (Cursor.lockState != CursorLockMode.None) Cursor.lockState = CursorLockMode.None;
-            if (!Cursor.visible) Cursor.visible = true;
+            if (Cursor.lockState != CursorLockMode.None) ZCursor.LockState = CursorLockMode.None;
+            ZCursor.Show();
+            return false;
         }
 
         /// <summary>

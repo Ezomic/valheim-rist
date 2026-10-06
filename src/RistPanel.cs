@@ -132,6 +132,13 @@ namespace Rist
         private static float _cellWFull = 142f;
         private static float _cellWCompact = 112f;
 
+        private const float PadDeadzone = 0.2f;
+        private const float PadSpeed = 900f;
+
+        private static Vector2 _pad;
+        private static bool _usePad, _padClick, _loggedOpen;
+        private static int _openFrame;
+
         private static bool _built;
         private static bool _open;
         private static int _selected;
@@ -185,11 +192,93 @@ namespace Rist
         internal static void Open()
         {
             _open = true;
+            _openFrame = Time.frameCount;
+            _usePad = false;
+            _padClick = false;
+            _pad = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+
+            // Once a session unconditionally, the rest behind Verbose. The page sticking the
+            // pointer was reported from a Steam Deck with nothing to go on but a log, and the
+            // device the game thought was active is exactly what that log lacked.
+            if (!_loggedOpen || RistConfig.Verbose.Value)
+            {
+                _loggedOpen = true;
+                RistPlugin.Log.LogInfo("Rist panel opened: gamepad enabled " + ZInput.IsGamepadEnabled() +
+                                       ", gamepad active " + ZInput.IsGamepadActive() + ", mouse active " +
+                                       ZInput.IsMouseActive() + ", cursor lock " + Cursor.lockState +
+                                       ", visible " + Cursor.visible + ".");
+            }
         }
 
         internal static void Close()
         {
             _open = false;
+            _usePad = false;
+        }
+
+        /// <summary>
+        /// The pointer for a gamepad. The game has no virtual cursor on PC: with a pad active
+        /// it hides the OS pointer and walks focus between its own buttons, and an IMGUI page
+        /// has no focus to walk. So on a Steam Deck or any controller the page was a picture
+        /// with nothing to point at. The left stick moves a pointer of the page's own, A takes
+        /// the stone under it, B closes.
+        ///
+        /// Run from Update rather than OnGUI, which fires several times a frame. Whichever
+        /// device moved last drives the page, so a trackpad or mouse takes it straight back.
+        /// </summary>
+        internal static void Tick()
+        {
+            if (!IsOpen || !ZInput.IsGamepadEnabled()) return;
+
+            if (ZInput.GetMouseDelta() != Vector2.zero) _usePad = false;
+
+            // The press that opened the page is still this frame's, and would take a stone.
+            if (Time.frameCount - _openFrame < 2) return;
+
+            var stick = ZInput.GetJoyLeftStick();
+            var pressedA = ZInput.GetButtonDown("JoyButtonA");
+
+            if (stick.magnitude > PadDeadzone || pressedA) _usePad = true;
+
+            if (ZInput.GetButtonDown("JoyButtonB"))
+            {
+                Close();
+                return;
+            }
+
+            if (!_usePad) return;
+
+            if (stick.magnitude > PadDeadzone)
+            {
+                var speed = PadSpeed * Screen.height / 1080f * Time.unscaledDeltaTime;
+                _pad.x = Mathf.Clamp(_pad.x + stick.x * stick.magnitude * speed, 0f, Screen.width);
+                _pad.y = Mathf.Clamp(_pad.y - stick.y * stick.magnitude * speed, 0f, Screen.height);
+            }
+
+            if (pressedA) _padClick = true;
+        }
+
+        private static Vector2 Pointer()
+        {
+            return _usePad ? _pad : Event.current.mousePosition;
+        }
+
+        private static void DrawPadPointer()
+        {
+            if (!_usePad) return;
+
+            var previous = GUI.color;
+            var white = Texture2D.whiteTexture;
+
+            GUI.color = new Color(0f, 0f, 0f, 0.8f);
+            GUI.DrawTexture(new Rect(_pad.x - 11f, _pad.y - 3f, 22f, 6f), white);
+            GUI.DrawTexture(new Rect(_pad.x - 3f, _pad.y - 11f, 6f, 22f), white);
+
+            GUI.color = Gold;
+            GUI.DrawTexture(new Rect(_pad.x - 9f, _pad.y - 1f, 18f, 2f), white);
+            GUI.DrawTexture(new Rect(_pad.x - 1f, _pad.y - 9f, 2f, 18f), white);
+
+            GUI.color = previous;
         }
 
         internal static void Draw()
@@ -212,6 +301,10 @@ namespace Rist
             var fieldTop = y;
             DrawField(layout, x, fieldTop);
             DrawDetail(new Rect(x + layout.FieldW + DetailPad, fieldTop, DetailWidth, layout.ContentH));
+
+            DrawPadPointer();
+
+            if (Event.current.type == EventType.Repaint) _padClick = false;
         }
 
         /// <summary>
@@ -415,7 +508,7 @@ namespace Rist
 
             var s = (float)StoneSizes[size];
             var disc = new Rect(cell.x + (cell.width - s) * 0.5f, cell.y, s, s);
-            var hovered = disc.Contains(Event.current.mousePosition);
+            var hovered = disc.Contains(Pointer());
 
             // Hovering selects, so the detail column follows the cursor without a click, and a
             // click only ever spends a pick. Two gestures that never overlap.
@@ -462,10 +555,13 @@ namespace Rist
                           marks[m], _marks[size]);
             }
 
-            if (canTake && hovered && Event.current.type == EventType.MouseDown && Event.current.button == 0)
+            var clicked = Event.current.type == EventType.MouseDown && Event.current.button == 0 && !_usePad;
+            var pressed = _padClick && _usePad && Event.current.type == EventType.Repaint;
+
+            if (canTake && hovered && (clicked || pressed))
             {
                 Take(card.Id);
-                Event.current.Use();
+                if (clicked) Event.current.Use();
             }
 
             // The selected stone's name goes gold, so the stone the detail column is talking
@@ -571,13 +667,13 @@ namespace Rist
 
             GUI.Label(new Rect(rect.x, rect.yMax - 52f, w, 30f),
                       maxed ? "Fully carved"
-                            : ClientState.HasPick ? "Click the stone to carve it"
+                            : ClientState.HasPick ? (_usePad ? "Press A on the stone to carve it" : "Click the stone to carve it")
                                                   : "No rist to spend", _take);
 
             // Moved here from a footer row under the field. The field's height now changes
             // with the screen and the ættir, and a footer tracking it was a line that moved
             // every time; the foot of this column is always in the same place relative to it.
-            GUI.Label(new Rect(rect.x, rect.yMax - 18f, w, 18f), "Escape to close", _foot);
+            GUI.Label(new Rect(rect.x, rect.yMax - 18f, w, 18f), _usePad ? "B to close" : "Escape to close", _foot);
         }
 
         /// <summary>

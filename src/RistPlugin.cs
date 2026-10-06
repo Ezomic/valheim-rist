@@ -371,6 +371,9 @@ namespace Rist
             // is rebuilt. The extra rows and the backdrop behind them are Core's, because two
             // mods claiming rows must not each write the same private int.
             InfoTab.Update();
+
+            // The gamepad pointer for the rune page; does nothing while it is shut.
+            RistPanel.Tick();
         }
 
         private void OnGUI()
