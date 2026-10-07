@@ -1,0 +1,44 @@
+# Rist: Tide-borne's capstone, Gasp. After your stamina runs out in water, drowning damage waits 12 s
+# before its first tick instead of 1, and swimming costs 25% less stamina at rank five.
+#
+# A scenario cannot swim: it would need deep water under the character and an empty bar held for
+# thirteen seconds, and it would run in god mode, where the ticks do not show. What is asserted here is
+# the boundary, that Gasp is the fifth rank's and not the fourth's and that the swim stamina companion (25% less, read through the game's own SEMan sum) arrives with it and not before. The old
+# capstone is gone. The wait is read in play: carve Tide-borne to five, swim out into deep water,
+# run the bar dry and count. The first drowning tick lands about twelve seconds after the bar empties,
+# where vanilla's lands after one, and `rist show` keeps the seconds it held back.
+#
+# What `rist show` prints:
+#
+#   gasp: not carved | carved, drowning waits 12s, held back S s here
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Tide-borne at rank 0.
+
+clear
+god
+
+mod rist rank tideborne 0
+wait 1
+mod rist show
+printed gasp: not carved yes
+printed swim stamina x1.00 yes
+
+mod rist rank tideborne 4
+wait 1
+mod rist show
+printed gasp: not carved yes
+printed swim stamina x1.00 yes
+
+mod rist rank tideborne 5
+wait 1
+mod rist show
+printed gasp: carved, drowning waits 12s yes
+printed swim stamina x0.75 yes
+
+mod rist rank tideborne 0
+wait 1
+mod rist show
+printed gasp: not carved yes
+printed swim stamina x1.00 yes

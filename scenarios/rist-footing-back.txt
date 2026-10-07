@@ -1,0 +1,65 @@
+# Rist: Steady footing's capstone, Footing back. For 3 s after you recover from a stagger, nothing
+# staggers you again.
+#
+# `rist stagger` staggers the character the way a creature's blow does, through Character.Stagger and
+# so through the same RPC_Stagger the guard refuses. `rist show` prints
+#
+#   footing back: not carved | carved, guard armed Ns | guard not armed, refused N staggers
+#
+# THE TIMING IS THE ONE THING TO WATCH. The guard is armed when the stagger animation ends and
+# lasts 3 s from there, so how long the stagger lasts decides whether "guard armed" is still up
+# when it is read. The waits below assume a stagger of two seconds or less. If "guard armed" fails
+# with "guard not armed" printed, read the stagger's length off the log before suspecting the
+# guard: lengthen the first wait by a second and the second by none.
+#
+# The boundary comes first: rank four must not guard.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Steady footing at rank 0.
+
+clear
+god
+
+mod rist rank steadyfoot 0
+wait 1
+mod rist show
+printed footing back: not carved yes
+
+# ---- rank 4: no capstone, so a stagger runs and nothing is guarded afterwards.
+
+mod rist rank steadyfoot 4
+wait 1
+mod rist stagger
+wait 4
+mod rist show
+printed footing back: not carved yes
+
+# ---- rank 5: recover from a stagger, and the guard stands.
+
+mod rist rank steadyfoot 5
+wait 1
+mod rist show
+printed footing back: carved, guard not armed, refused 0 staggers yes
+
+mod rist stagger
+wait 2.5
+mod rist show
+printed guard armed yes
+
+# A second stagger inside the guard is refused, and counted.
+mod rist stagger
+wait 0.5
+mod rist show
+printed refused 1 staggers yes
+
+# ---- and the guard runs out: three seconds on, nothing is armed.
+
+wait 4
+mod rist show
+printed guard not armed yes
+
+mod rist rank steadyfoot 0
+wait 1
+mod rist show
+printed footing back: not carved yes

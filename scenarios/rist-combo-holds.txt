@@ -1,0 +1,41 @@
+# Rist: Keen hand's capstone, Combo holds. A weapon combo chains from a swing up to 0.6 s late.
+#
+# Vanilla drops a combo back to its first hit when the next swing starts more than 0.2 s after the
+# last one ended. The capstone reads that gap 0.4 s shorter. The old capstone, +5% damage on every
+# weapon, is gone, so this also reads that the damage did not come back.
+#
+# The boundary is what a scenario can assert; the chain itself is a timing a scenario cannot
+# press. In play: equip a sword, swing, wait about half a second, swing again. Without the capstone
+# the second swing is a first hit again. With it, it is the second hit of the combo, and `rist show`
+# counts it.
+#
+# What `rist show` prints:
+#
+#   combo hold: not carved | carved, 0.6s to chain, held N chains
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Keen hand at rank 0.
+
+clear
+god
+
+mod rist rank keenhand 0
+wait 1
+mod rist show
+printed combo hold: not carved yes
+
+mod rist rank keenhand 4
+wait 1
+mod rist show
+printed combo hold: not carved yes
+
+mod rist rank keenhand 5
+wait 1
+mod rist show
+printed combo hold: carved, 0.6s to chain yes
+
+mod rist rank keenhand 0
+wait 1
+mod rist show
+printed combo hold: not carved yes

@@ -1,0 +1,93 @@
+# Rist: Turned blade's capstone, Return blow. A good parry makes your next melee swing cost no stamina,
+# if you take it within 5 seconds.
+#
+# A creature swinging at a shield held inside the first quarter second cannot be staged, so the parry is
+# simulated: `rist parry` arms the free swing exactly as the postfix on Humanoid.BlockAttack does, and
+# everything after it is the game's own. `rist swing` then starts a real primary swing with the weapon in
+# hand (a bronze sword, given and equipped below), and `rist show` prints what that swing was priced at
+# the moment the animation took its stamina, and what it paid:
+#
+#   return blow: not carved | carved, armed 3.2 s|not armed, free swings given N[, last swing priced X paid Y]
+#
+# The real parry is read in play: carve Turned blade to five, hold a shield with a timed block bonus and
+# block a Greydwarf's swing just as it lands. The top left says "Next swing is free".
+#
+# Four swings, each followed by a wait for the animation to end:
+#   1. no parry: priced X, paid X (the control, so the numbers prove the swing costs something).
+#   2. parry, swing at once: priced X, paid 0.0.
+#   3. the next swing: priced X, paid X again, because one swing spends it.
+#   4. parry, wait out the 5 seconds, swing: priced X, paid X, because it expired.
+#
+# THE BOUNDARY MATTERS MOST: rank four must arm nothing, and the companions of LHM-53 are asserted too:
+# the 30 degrees of parry behind you comes with the capstone and not before.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client. Needs stamina, so it does not
+# run in a state where the bar is empty.
+#
+# It leaves Turned blade at rank 0.
+
+clear
+god
+
+give SwordBronze:1
+tool SwordBronze
+mod rist rank turnedblade 0
+wait 1
+mod rist show
+printed return blow: not carved yes
+
+# ---- rank 4: the parry arms nothing.
+
+mod rist rank turnedblade 4
+wait 1
+mod rist show
+printed return blow: not carved yes
+printed parry reaches 0 degrees behind you yes
+
+mod rist parry
+printed not carved yes
+
+# ---- rank 5: the capstone and both companions.
+
+mod rist rank turnedblade 5
+wait 1
+mod rist show
+printed return blow: carved, not armed yes
+printed parry reaches 30 degrees behind you (threshold 0.50) yes
+
+# 1. no parry: the swing costs what it costs.
+mod rist swing
+wait 2
+mod rist show
+printed paid 0.0 no
+
+# 2. a good parry, then the next swing is free.
+mod rist parry
+mod rist show
+printed return blow: carved, armed yes
+mod rist swing
+wait 2
+mod rist show
+printed paid 0.0 yes
+printed not armed yes
+
+# 3. the swing after it is paid for.
+mod rist swing
+wait 2
+mod rist show
+printed paid 0.0 no
+
+# 4. a parry that is let to expire.
+mod rist parry
+wait 6
+mod rist show
+printed not armed yes
+mod rist swing
+wait 2
+mod rist show
+printed paid 0.0 no
+
+mod rist rank turnedblade 0
+wait 1
+mod rist show
+printed return blow: not carved yes

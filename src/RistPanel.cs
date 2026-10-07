@@ -54,11 +54,12 @@ namespace Rist
         /// three rows, the carved-at track, and the take and close lines at its foot. A short
         /// field is stretched to this rather than the column being clipped.
         ///
-        /// 376 rather than 340 since the rows wrap: NEXT and CAPSTONE can both take a second
+        /// 432 rather than 340 since the rows wrap, and a stone with a companion line (Turned blade,
+        /// Tide-borne) adds one more to each: NEXT and CAPSTONE can both take a second
         /// line on the same stone, and each costs about 18px. Only a short field ever reaches
         /// this - five standing towers are twice as tall.
         /// </summary>
-        private const float DetailMinH = 376f;
+        private const float DetailMinH = 432f;
 
         /// <summary>
         /// The three stone sizes and what is cut into each. Snapped rather than any integer so
@@ -618,9 +619,9 @@ namespace Rist
             GUI.Label(new Rect(rect.x, y, w, flavourH), card.Flavour, _dflav);
             y += flavourH + 16f;
 
-            y = Row(rect.x, y, w, "NOW", rank > 0 ? card.Describe(rank) : "Not yet carved", _dnow);
+            y = Row(rect.x, y, w, "NOW", rank > 0 ? WithAlso(card.Describe(rank), card.DescribeAlso(rank)) : "Not yet carved", _dnow);
             y = Row(rect.x, y, w, "NEXT",
-                    maxed ? "Fully carved" : card.Describe(rank + 1) + " at rank " + (rank + 1), _dnext);
+                    maxed ? "Fully carved" : WithAlso(card.Describe(rank + 1), card.DescribeAlso(rank + 1)) + " at rank " + (rank + 1), _dnext);
 
             if (card.HasBonus)
             {
@@ -628,8 +629,8 @@ namespace Rist
                 var at = Mathf.Max(1, RistConfig.BonusEvery.Value) * (times + 1);
 
                 y = Row(rect.x, y, w, "CAPSTONE",
-                        times > 0 ? "★ " + card.DescribeBonus(times)
-                                  : "★ " + card.DescribeBonus(1) + " at rank " + at, _dcap);
+                        times > 0 ? "★ " + WithAlso(card.DescribeBonus(times), card.DescribeBonusAlso(times))
+                                  : "★ " + WithAlso(card.DescribeBonus(1), card.DescribeBonusAlso(1)) + " at rank " + at, _dcap);
             }
 
             GUI.Label(new Rect(rect.x, y, w, 18f), "CARVED AT", _label);
@@ -674,6 +675,11 @@ namespace Rist
             // with the screen and the ættir, and a footer tracking it was a line that moved
             // every time; the foot of this column is always in the same place relative to it.
             GUI.Label(new Rect(rect.x, rect.yMax - 18f, w, 18f), _usePad ? "B to close" : "Escape to close", _foot);
+        }
+
+        private static string WithAlso(string main, string also)
+        {
+            return also.Length == 0 ? main : main + "\n" + also;
         }
 
         /// <summary>

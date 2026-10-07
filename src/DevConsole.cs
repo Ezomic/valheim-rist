@@ -54,7 +54,7 @@ namespace Rist
             _registered = true;
 
             new Terminal.ConsoleCommand("rist",
-                "rist show | rist rank <card> <n> | rist fall <m> [roll] - this character's standing, and forcing a rank for a test",
+                "rist show | rist patches | rist rank <card> <n> | rist fall <m> [roll] | rist hurt <n> [enemy] [full] | rist parry | rist swing | rist momentum | rist run <s> | rist crouch <on|off> | rist noise | rist spyglass | rist stagger | rist spend <n> - this character's standing, and forcing a rank for a test",
                 OnCommand, isCheat: true);
 
             RistPlugin.Log.LogInfo("Console command 'rist' registered (needs devcommands, host or singleplayer).");
@@ -68,14 +68,36 @@ namespace Rist
             var what = args.Length > 1 ? args[1].ToLowerInvariant() : "";
 
             if (what == "show") { Show(term); return; }
+            if (what == "patches") { Patches(term); return; }
             if (what == "rank") { Rank(term, args); return; }
             if (what == "powers") { Powers(term); return; }
             if (what == "fall") { Say(term, Fall(args)); return; }
+            if (what == "hurt") { Say(term, Hurt(args)); return; }
+            if (what == "spend") { Say(term, Spend(args)); return; }
+            if (what == "stagger") { Say(term, Player.m_localPlayer == null ? "rist: no player." : FootingBack.Stagger(Player.m_localPlayer)); return; }
+            if (what == "parry") { Say(term, Player.m_localPlayer == null ? "rist: no player." : ReturnBlow.Simulate(Player.m_localPlayer)); return; }
+            if (what == "swing") { Say(term, Player.m_localPlayer == null ? "rist: no player." : ReturnBlow.Swing(Player.m_localPlayer)); return; }
+            if (what == "spyglass") { Say(term, Spyglass.Hold(args.Length < 3 || args[2].ToLowerInvariant() != "off")); return; }
+            if (what == "crouch") { Say(term, Player.m_localPlayer == null ? "rist: no player." : SilentStep.Crouch(Player.m_localPlayer, args.Length < 3 || args[2].ToLowerInvariant() != "off")); return; }
+            if (what == "noise") { Say(term, Player.m_localPlayer == null ? "rist: no player." : SilentStep.Make(Player.m_localPlayer)); return; }
+            if (what == "momentum") { Say(term, Player.m_localPlayer == null ? "rist: no player." : Momentum.Simulate(Player.m_localPlayer, Seconds(args, Player.m_localPlayer == null ? 0f : RistConfig.MomentumSeconds.Value + RistConfig.MomentumRamp.Value))); return; }
+            if (what == "run") { Say(term, Player.m_localPlayer == null ? "rist: no player." : Momentum.Run(Player.m_localPlayer, Seconds(args, 10f))); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
+            term.AddString("rist patches         - each patch class and whether Harmony applied it");
             term.AddString("rist rank <card> <n> - force a card to exactly that rank");
             term.AddString("rist powers          - each forsaken power against every stone carved, and what reaches zero");
             term.AddString("rist fall <m> [roll] - land from m metres up, with a dodge pressed as you land when roll is given");
+            term.AddString("rist hurt <n> [enemy] [full] - take n damage as a plain hit, or as a creature's hit with enemy; full tops up the health first");
+            term.AddString("rist spend <n>       - spend n stamina, as swinging or sprinting does; a big n empties the bar");
+            term.AddString("rist stagger         - stagger this character, as a blow from a creature would");
+            term.AddString("rist parry           - pretend a good parry just happened, as Return blow reads one");
+            term.AddString("rist swing           - start a primary swing with what is in hand, as the attack key does");
+            term.AddString("rist spyglass [off] - hold the spyglass as its key does (or let go), and read the zoom with rist show");
+            term.AddString("rist crouch [off]    - crouch (or stand up), as the key does");
+            term.AddString("rist noise           - make a noise of range 30, as a jump does, and read what the game recorded");
+            term.AddString("rist momentum [s]    - pretend the run has lasted s seconds and read the run speed factor with and without Momentum");
+            term.AddString("rist run [s]         - run straight ahead for s seconds in place of input, and keep the speeds before and after Momentum");
             term.AddString("card ids are the first field of cards.txt: thickhide, steadyfoot, longstride...");
         }
 
@@ -89,6 +111,70 @@ namespace Rist
                 return "rist: fall how many metres? rist fall 20 [roll]";
 
             return Sinews.Landing.Fall(player, metres, args.Length > 3 && args[3].ToLowerInvariant() == "roll");
+        }
+
+        /// <summary>
+        /// A hit with no creature behind it, for the capstones that judge what you are hit with.
+        /// Worked through ApplyDamage directly, so armour, blocking and dodging are not in the way and
+        /// the number printed is what the game took off the health bar. With `enemy` it is typed as a
+        /// creature's hit, which is what Bruise cap judges; without it the hit is the player's own and
+        /// nothing judges it.
+        /// </summary>
+        private static string Hurt(Terminal.ConsoleEventArgs args)
+        {
+            var player = Player.m_localPlayer;
+            if (player == null) return "rist: no player.";
+
+            float damage;
+            if (args.Length < 3 || !float.TryParse(args[2], NumberStyles.Float, CultureInfo.InvariantCulture, out damage) || damage <= 0f)
+                return "rist: hurt by how much? rist hurt 5 [enemy] [full]";
+
+            var enemy = HasWord(args, "enemy");
+            if (HasWord(args, "full")) player.SetHealth(player.GetMaxHealth());
+            var hit = new HitData
+            {
+                m_hitType = enemy ? HitData.HitType.EnemyHit : HitData.HitType.Self,
+                m_point = player.GetCenterPoint(),
+                m_dir = player.transform.forward,
+            };
+            hit.m_damage.m_blunt = damage;
+
+            var before = player.GetHealth();
+            player.ApplyDamage(hit, showDamageText: false, triggerEffects: false);
+
+            return "rist: hurt asked " + damage.ToString("0.0", CultureInfo.InvariantCulture)
+                   + ", took " + (before - player.GetHealth()).ToString("0.0", CultureInfo.InvariantCulture)
+                   + " (" + (before > 0f ? ((before - player.GetHealth()) / player.GetMaxHealth() * 100f).ToString("0", CultureInfo.InvariantCulture) : "0")
+                   + "% of max health " + player.GetMaxHealth().ToString("0.0", CultureInfo.InvariantCulture) + ")"
+                   + (enemy ? " as a creature's hit" : "");
+        }
+
+        private static float Seconds(Terminal.ConsoleEventArgs args, float fallback)
+        {
+            float seconds;
+            return args.Length > 2 && float.TryParse(args[2], NumberStyles.Float, CultureInfo.InvariantCulture, out seconds) && seconds >= 0f
+                ? seconds
+                : fallback;
+        }
+
+        private static bool HasWord(Terminal.ConsoleEventArgs args, string word)
+        {
+            for (var i = 3; i < args.Length; i++)
+                if (args[i].ToLowerInvariant() == word) return true;
+
+            return false;
+        }
+
+        private static string Spend(Terminal.ConsoleEventArgs args)
+        {
+            var player = Player.m_localPlayer;
+            if (player == null) return "rist: no player.";
+
+            float amount;
+            if (args.Length < 3 || !float.TryParse(args[2], NumberStyles.Float, CultureInfo.InvariantCulture, out amount) || amount <= 0f)
+                return "rist: spend how much? rist spend 999";
+
+            return SecondWind.Spend(player, amount);
         }
 
         // ---------------------------------------------------------------- powers
@@ -299,6 +385,12 @@ namespace Rist
 
         // ---------------------------------------------------------------- show
 
+        private static void Patches(Terminal term)
+        {
+            foreach (var entry in RistPlugin.Applied)
+                Say(term, "patch " + entry.Key + " " + (entry.Value ? "applied" : "FAILED"));
+        }
+
         private static void Show(Terminal term)
         {
             var player = Player.m_localPlayer;
@@ -320,6 +412,22 @@ namespace Rist
             term.AddString(Armour(player));
             term.AddString(Moving(player));
             term.AddString("falls: " + Sinews.Landing.Probe());
+            term.AddString(LastBlow.Probe());
+            term.AddString(ComboHold.Probe());
+            term.AddString(ReturnBlow.Probe());
+            term.AddString(SecondNock.Probe());
+            term.AddString(BruiseCap.Probe());
+            term.AddString(FootingBack.Probe());
+            term.AddString(PatchUp.Probe());
+            term.AddString(SecondWind.Probe(player));
+            term.AddString(LoseThem.Probe());
+            term.AddString(SilentStep.Probe());
+            term.AddString(Momentum.Probe());
+            term.AddString(Spyglass.Probe());
+            term.AddString(Gasp.Probe());
+            term.AddString(RidesTheWaves.Probe());
+            term.AddString(Whetted.Probe());
+            term.AddString(Carried.Probe(player));
         }
 
         /// <summary>
@@ -345,18 +453,10 @@ namespace Rist
             var running = 1f;
             if (seman != null) seman.ModifyRunStaminaDrain(1f, ref running, Vector3.zero, minZero: false);
 
-            var jumpBase = Sinews.VanillaJump(player);
-            var jumpRatio = jumpBase > 0f ? player.m_jumpForce / jumpBase : 1f;
-
-            // Height, not push: the rise goes with the square of the push, and height is what the
-            // card promises and what a player sees. Worked out from the game's own jump force
-            // rather than read back off the hand, so a card that wrote the wrong push shows here.
-            var heightRatio = jumpRatio * jumpRatio;
-
-            // A ratio and a difference rather than the two raw numbers, because both baselines
-            // are asset data on the Player prefab and neither is readable outside the running
-            // game. Asserting "jump 12.0" in a scenario would be asserting a value nobody here
-            // has measured; "jump height x1.15" is true whatever the prefab carries. The absolutes are
+            // A ratio and a difference rather than the two raw numbers, because the baselines
+            // are asset data on the Player prefab and not readable outside the running game.
+            // Asserting an absolute in a scenario would be asserting a value nobody here has
+            // measured; "overloaded x0.50" is true whatever the prefab carries. The absolutes are
             // printed after them for reading, which is the same split as armour above.
             //
             // The delay figure is what was actually taken off, not what the cards asked for, so
@@ -364,7 +464,7 @@ namespace Rist
             var delayOff = Sinews.VanillaDelay(player) - player.m_staminaRegenDelay;
 
             // Stagger through the game's own sum, which is what a hit is scaled by. The overload
-            // drain is a ratio for the same reason jump is: its baseline is prefab data.
+            // drain is a ratio for the same reason: its baseline is prefab data.
             var stagger = 1f;
             if (seman != null) seman.ModifyStagger(1f, ref stagger);
 
@@ -375,10 +475,7 @@ namespace Rist
                    + "  delay " + delayOff.ToString("0.00", CultureInfo.InvariantCulture)
                    + "s off (" + player.m_staminaRegenDelay.ToString("0.00", CultureInfo.InvariantCulture)
                    + "s of " + Sinews.VanillaDelay(player).ToString("0.00", CultureInfo.InvariantCulture)
-                   + "s)  jump height x" + heightRatio.ToString("0.00", CultureInfo.InvariantCulture)
-                   + " (push " + player.m_jumpForce.ToString("0.00", CultureInfo.InvariantCulture)
-                   + " of " + jumpBase.ToString("0.00", CultureInfo.InvariantCulture) + ")"
-                   + "  stagger x" + stagger.ToString("0.00", CultureInfo.InvariantCulture)
+                   + "s)  stagger x" + stagger.ToString("0.00", CultureInfo.InvariantCulture)
                    + "  overloaded x" + overload.ToString("0.00", CultureInfo.InvariantCulture);
         }
 

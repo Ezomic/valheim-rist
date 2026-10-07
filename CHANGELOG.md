@@ -15,6 +15,13 @@ and the mod uses [semantic versioning](https://semver.org).
   frees the cursor the way the game's own windows do, so nothing gets locked. Found by reading
   the code. It is not reproducible on Windows and has not been confirmed on a Deck.
 
+### Fixed
+
+- Brimming's eitr thrift (LHM-53) did nothing on Valheim 1.0.17: the game now has a private no-argument
+  `Attack.GetAttackEitr` beside the public one, so the patch named an ambiguous method and Harmony refused it.
+  It now names the two-argument overload. `rist patches` lists each patch class as applied or FAILED, and
+  `rist show` prints `thrift=applied`.
+
 ### Added
 
 - **The runestone page works with a controller.** The game has no cursor for a pad on PC, and
@@ -45,6 +52,154 @@ and the mod uses [semantic versioning](https://semver.org).
   rank. With Long stride, the roll is applied after its landing correction, so both hold.
 - New `*landing:roll` special for `cards.txt`. `rist fall <metres> [roll]` stages a landing for
   testing and `rist show` prints the last one. The scenario `rist-landing-roll` runs it.
+
+Fifteen capstones were replaced so that each is a new behaviour in its own stone's theme, and none is a bigger number
+on the stone's own stat or another stone's effect (LHM-44). **Ranks are untouched, so everything anyone has carved stays
+exactly as it was, and no pick is refunded: anyone who carved a stone to rank five has the new capstone from this
+version, and loses the old one.** Stone ids, ledgers and the per-rank effects are unchanged. Brimming's Last spark
+was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LHM-59, so neither is touched here.
+
+- **Steady arm**: the capstone is now Last blow. The swing that kills gives half its stamina back (it was all of it in the first draft; `LastBlowShare` in the cfg). It used to be +20%
+  parry bonus, which the stone has nothing to do with. The price is read where the game works it out, after every
+  discount, and the kill is read from the creature's health a moment after the hit rather than from its death, so it
+  works the same when another player's machine owns the creature. One refund per swing: a sweep that kills three
+  gives it back once. A weapon that charges nothing for the shot refunds nothing.
+
+- **Keen hand**: the capstone is now Combo holds. A weapon combo chains from a swing up to 0.6 seconds late, where the
+  game drops it back to the first hit after 0.2. It forgives your rhythm instead of adding speed to a stone that is
+  already about speed. It used to be +5% damage on every weapon, close to Keen edge's own effect, so melee damage no
+  longer comes from this stone at all. Melee weapons only, and the axe counts as a tool, the same split the swing-speed
+  cards use.
+- **Turned blade**: the capstone is now Return blow. A good parry, a block in the first quarter second with a shield or
+  weapon that has a timed block bonus, makes your next melee swing cost no stamina, if you take it within five seconds
+  (`ReturnBlowSeconds`). One swing spends it, and a swing the game refuses keeps it. It works at an empty bar, since the
+  price is read as nothing from the moment the swing starts. Melee only: swords, knives, clubs, polearms, spears, fists and
+  axes; pickaxes and the other tools, bows and staffs do not count. A block that stamina or stagger broke through is not a
+  good parry and arms nothing. It replaces Riposte, the first draft, which threw a quarter of the blocked damage back at the
+  attacker; that code is gone. The arc behind you and the -8% block stamina that LHM-53 folded into this capstone stay
+  exactly as built, as companions, so nobody who carved the stone loses either.
+- `rist parry` pretends a good parry just happened and `rist swing` starts a swing with what is in hand, so Return blow has a
+  scenario. `rist show` prints what the last swing was priced and what it paid.
+- **Quick draw**: the capstone is now Second nock. Loose a shot and the next draw you begin within a second and a half
+  starts 15% full, so the follow-up arrow comes quicker and a lone shot is drawn as it always was. It used to be +5%
+  damage from bows and crossbows, a number on a stat the stone does not own. It is still a draw-speed effect on a
+  draw-speed stone, so it is the closest of these capstones to its stone's own stat; what is new is that it rewards
+  the second arrow and not the first. Bows only; the crossbow keeps the reload speed from the ranks. The head start is
+  15% of the bow's real draw time at your skill and composes with the ranks' faster draw. It started at 30% in the first draft and the capstone review cut it to 15%; the share is `SecondNockShare` in the cfg.
+- **Thick-hided**: the capstone is now Bruise cap. No single hit can take more than half of your maximum health, so a
+  character at full health cannot be killed by one blow, and a boss still wears you down over a fight. It replaces Shrug
+  (a hit under 4% of your health does nothing), the first draft of this capstone, and it used to be another 5% armour before
+  that. The cap is applied to the final damage of one hit, after armour, resistances and the world's damage-taken setting,
+  and the whole hit is scaled down, so its stagger shrinks with it. Damage over time is not capped: burning, poison, smoke,
+  cold, drowning, lava and ocean heat tick as hits of their own types and are left alone, as are the edge of the world and
+  your own health costs. A fall is capped, as any other single hit: the fall system only decides how much damage there is, so
+  nothing breaks, and a drop that would have killed a full-health character now leaves them at half. The share is
+  `BruiseCapShare` in the cfg (0.50). Thick-hided's armour from the ranks is unchanged.
+- `rist hurt <n> [enemy] [full]` takes a plain hit through the game's own damage path and prints what it took off the health
+  bar and as a share of maximum health, as a creature's hit with `enemy`, after topping the health up with `full`. It exists
+  so Bruise cap and the other health-reading capstones have a scenario.
+- **Steady footing**: the capstone is now Footing back. For three seconds after you recover from a stagger, nothing staggers
+  you again, so a stagger can no longer be chained into the next and the next. It used to be another 5% armour, which is
+  Thick-hided's stat. The first stagger is exactly as dangerous as before; the guard only ends the chain behind it.
+  **This is the alternative offered for Rooted, on purpose.** Rooted as proposed, no knockback from a creature's hits, is
+  too strong a capstone: a Troll or a Lox that cannot shove you is a lot more than a stagger bar, it would have made the stone
+  the obvious pick, and knockback is how a fight is escaped as well as how it is lost. Steady footing's ranks are unchanged.
+- `rist stagger` staggers the character the way a creature's blow does, for the scenarios that need one.
+- **Swift-mending**: the capstone is now Patch-up. Ten seconds after your last swing or hit taken, you recover a quarter of
+  the health you lost in that fight, over five seconds. It is regen that arrives when the fight ends, so it saves
+  potions and not lives, and it does nothing to soften a death in the middle of one. It used to be +2 flat armour, which is
+  another stone's job. What was lost is counted from your health falling and shrinks by any other healing, so a mead drunk
+  mid-fight does not get healed a second time, and a hit or a swing while it is mending cancels the rest. The 8% health regen
+  from the ranks is unchanged.
+- **Long wind**: the capstone is now Second wind. The first time your stamina runs out, a quarter of the bar comes back at
+  once, and it cannot happen again for 90 seconds. It is the gasp that buys one more roll or swing, and it is not regen
+  speed, so it no longer doubles the stone's own stat. It used to be another 10% stamina regen on top of 8% a rank. Running dry on a sprint triggers it as well. Long wind and Brimming's Last spark now
+  share a shape, an emergency button that comes back with time; the 90 seconds is the knob if that is too much.
+- `rist spend <n>` spends stamina the way swinging does, and a large number empties the bar. For the Second wind scenario.
+- **Soft step**: the capstone is now Lose them. A creature that has lost you gives up the hunt after 12 seconds instead of 30,
+  where "lost" means it has neither seen nor heard you for that long. Bosses and creatures that hunt players are left
+  alone. It used to be -10% noise, which is exactly Quiet wake's effect, so the two stones were each other's capstones.
+  A creature's AI runs on whichever machine owns the creature and that machine holds only its own player's stones, so the
+  stone is published as a flag on your character that every client reads; that flag is the shared plumbing for Soft step,
+  Weatherly, and it is written only when it changes. Soft step's ranks, -8% detection each, are unchanged.
+- **Quiet wake**: the capstone is now Silent step. Crouched and moving no faster than a crouch-walk, or standing still, you
+  make no noise at all. The stone's ranks already make every noise 8% smaller each (the game's own noise modifier); this
+  drops the noise before it is recorded. The exact rule: the local character is crouching, and its flat speed is at most
+  the crouch-walk speed with ten percent of slack; then the game's two noise entry points, `Character.AddNoise` for your own
+  sounds and `Character.RPC_AddNoise` for the ones another machine reports for you (a tree you hit), are skipped. A
+  vanilla crouch-walk is already silent on foot, so what this removes is everything else a creeper does at that pace: a
+  swing, a plank, a rock struck, a roll. Standing up or moving faster than a creep leaves the game's own noise, ranks
+  included. A bow drawn from a crouch stands you up for the animation, so a shot is not silenced; Low draw is that stone's
+  job. `SilentStep` in the cfg switches the capstone off. It replaces Sleepers sleep on, the first draft, which kept
+  sleeping creatures asleep and mattered only where creatures sleep; that code and its flag are gone, and the shared flag
+  Soft step and Weatherly use no longer carries a Quiet wake bit. It used to be -10% detection, Soft step's own effect.
+  Quiet wake's -8% noise a rank is unchanged.
+- `rist crouch [off]` crouches or stands the character and `rist noise` makes a noise of range 30 from a cleared slate
+  and prints what the game recorded, so Silent step has a scenario.
+- **Long stride**: the capstone is now Momentum. After five seconds of running in a straight line you run 5% faster, until
+  you stop or turn sharply. The bonus grows in over one second so it does not pop. Running means the stamina-draining sprint,
+  so sneaking never counts; swimming, a ship's helm, a ship's deck, riding and rolling do not count either, and the speed
+  must stay above walking pace, so running into a wall ends it. A jump does not end it. A sharp turn does, which means the
+  direction you travel comes 40 degrees away from the line you were on, and a gradual curve does not. It replaces Steep
+  ground, the first draft, which raised the slide angle from 38 to 46 degrees; that patch is gone. **The removal of the
+  stone's old 15% jump height (`*jumpheight` and the landing guard that measured a raised jump) stays as it was built**,
+  since nothing else used them; the landing roll that shares the code is untouched. A catalogue line naming `*jumpheight` is
+  skipped with the usual warning. **Momentum is a second speed source, on purpose.** Long stride's ranks are +2% a rank and
+  stay the cap's 10%, and Momentum is 5% on top of that while the streak lasts, so a full run at rank five is 15% over a
+  jog. The reason the cap exists, a bonus that is always on and never noticed, does not apply to a bonus that is earned and
+  lost; the numbers are `MomentumSeconds`, `MomentumBonus` and `MomentumRamp` in the cfg. `rist show` no longer prints a jump
+  height or a slide angle.
+- `rist momentum [s]` pretends the run has lasted that long and reads the game's own run speed factor with and without
+  Momentum, and `rist run [s]` runs straight ahead in place of input and keeps the speeds before and after the streak.
+- **Far sight**: the capstone is now Spyglass, and the stone's own radius is 10% a rank instead of 5%. Hold a key (Z by
+  default, `SpyglassKey` in the cfg) and the view zooms far ahead like binoculars: the field of view eases down to a quarter
+  of its normal value (`SpyglassZoom`, 0.25) and eases back when you let go. The mouse look slows by the same factor while
+  you are zoomed so the view can still be aimed (`SpyglassSlowTurn`). It works in first and third person, on foot, on a ship or
+  on a mount, and not while chat, the console, a text field or any window is up, not while you are placing a building piece,
+  and not in a cutscene. The key, the zoom and the slow turn are your own settings even on a server, and Z was checked
+  against the vanilla bindings and every other mod here. It composes with the game's own field of view changes instead of
+  replacing them. It replaces Lookahead, the first draft, which uncovered a second map circle ahead of you; that code is gone,
+  and so is the radius-prefix guard it needed. **The ranks are now +10% explore radius each, 50% at rank five** (it was 5% a
+  rank, 25%), and the stone's line reads "Each rank: the map reveals 10% further." Anyone with ranks keeps them and gets the
+  larger circle.
+- `rist spyglass [off]` holds the spyglass as its key does, and `rist show` prints the zoom, the target field of view and the
+  camera's own.
+- **Tide-borne**: the capstone is now Gasp. After your stamina runs out in water, drowning damage waits twelve seconds before
+  its first tick instead of one, which is time to reach a boat or the shore. The ticks after the first are the game's own.
+  The capstone review doubled the wait from six seconds to twelve (`GaspSeconds`) and added a second bite: swimming costs
+  25% less stamina at rank five (`GaspSwimStamina`), so a swimmer also lasts longer. The +6% swim speed a rank is unchanged.
+- **Weatherly**: the capstone is now Rides the waves. Slams into waves do no hull damage while you hold the helm, and collisions with rocks, ice and the shore cost the hull half as much (`RidesTheWavesCollision`, added by the capstone review), which is
+  the other half of staying afloat in weather: the ranks bend the sail to windward and this keeps the hull. Only the water impact is
+  spared; a ship that is upside down and the Ashlands still hurt it. The ship's physics run on whichever machine owns the ship, so
+  the stone is read from the flag the helmsman publishes, and a passenger's stone does nothing. It used to be 20% rowing speed,
+  a second kind of speed on the stone's own job. `*rowspeed` is still a supported special for a catalogue that names it.
+- **Sure hand**: the capstone is now Whetted. Axes and pickaxes lose 40% less durability, so a tool outlasts the vein. It used
+  to be +12% stamina regen, which is Long wind's job. What a swing wears off the tool is read around the attack and 40% of
+  it is put back, never more than was spent, so it cannot mend a tool. It is by skill, so an axe swung in a fight wears
+  less too, and the hammer and the hoe are not covered. The tool swing speed is now +5% a rank, 25% at rank five, up from +3% (the capstone review).
+**Balance note for the capstones (LHM-44), written before anyone has played them.** Judged against the capstones that
+were already behaviours (Quick chant, Answering blow, Unseen blow, about a 3 out of 5), and meant to leave no capstone the obvious
+pick. None of this has been tested in play.
+
+- **The ones to watch, after the review.** Thick-hided's Bruise cap is the new strongest: half of the maximum health as a ceiling
+  on one hit makes a full-health character unkillable by any single blow, which is most of what a boss fight is, and the
+  share is `BruiseCapShare` if it proves too much (0.6 or 0.7 still stops a one-shot from a bad trade). Long stride's
+  Momentum is the first second speed source, past the 10% cap by 5 points while a run lasts; `MomentumBonus` is the
+  knob, and the cap's note in cards.txt says why this one is allowed. Turned blade's Return blow is a parry build's, and
+  the stone still carries the 240 degree parry and the block stamina from LHM-53; dropping those two companions is one
+  line in `Card.Companions`. Tide-borne's Gasp is stronger than its first draft, a 12 second wait and 25% cheaper
+  swimming, and Rides the waves now also halves rock and ice damage to the hull.
+- **Level, around a 3.** Footing back (it ends stagger chains, and nothing else about a stagger), Second wind, Lose them,
+  Second nock (halved to a 15% head start). Second wind and Brimming's Last spark are both an emergency button that comes back with time, so
+  they share a shape; the 90 seconds is `SecondWind.Cooldown`.
+- **Around a 2.** Last blow (halved to a 50% refund), Combo holds, Patch-up (it saves potions and not lives), Whetted (with
+  Sure hand's swing speed now 5% a rank), Silent step.
+- **The weakest, on purpose and by nature.** Spyglass is a view, not power, and the radius of the stone is now 10% a rank, so it
+  is the only Utility capstone that is felt every time the key is held. The Utility stones were already the weakest picks and
+  still are. Raising them was not attempted: a capstone that is only ever felt in one place is the right size for a stone that
+  is felt in one place.
+- **Two were not built.** Brimming's Last spark was already built as its capstone in LHM-53 and is left alone, and
+  Rooted for Steady footing was replaced by its alternative, Footing back, as set out above.
 
 ### Fixed
 

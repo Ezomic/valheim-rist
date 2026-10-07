@@ -81,6 +81,62 @@ namespace Rist
         }
 
         /// <summary>
+        /// The second thing a stone gives for the same carving, keyed by the effect that brings it.
+        /// The value is the companion's share of the effect's amount.
+        ///
+        /// Effects adds the companions to the totals beside the effect itself, which means every
+        /// consumer reads each as a plain effect of its own. The panel prints them under the main
+        /// line in the detail column and leaves the tile alone, because a tile that named both
+        /// would widen every cell on the field.
+        /// </summary>
+        internal static readonly Dictionary<string, KeyValuePair<string, float>[]> Companions =
+            new Dictionary<string, KeyValuePair<string, float>[]>
+            {
+                // Turned blade's capstone is the return blow, and keeps the -8% block stamina it always gave.
+                {
+                    ReturnBlow.Key, new[]
+                    {
+                        new KeyValuePair<string, float>("m_blockStaminaUseModifier", -0.08f),
+                    }
+                },
+            };
+
+        /// <summary>
+        /// The companions of an effect, or null. Tide-borne's swim stamina is read from the cfg here, so a host rule
+        /// that arrives after the static table was built still counts.
+        /// </summary>
+        internal static KeyValuePair<string, float>[] CompanionsOf(string effect)
+        {
+            if (effect == Gasp.Key)
+                return new[] { new KeyValuePair<string, float>("m_swimStaminaUseModifier", -Mathf.Clamp(RistConfig.GaspSwimStamina.Value, 0f, 0.5f)) };
+
+            return Companions.TryGetValue(effect, out var also) ? also : null;
+        }
+
+        /// <summary>The companions of the effect at <paramref name="rank"/>, one per line, or nothing.</summary>
+        internal string DescribeAlso(int rank)
+        {
+            return Also(Effect, PerRank * Mathf.Max(1, rank));
+        }
+
+        internal string DescribeBonusAlso(int times)
+        {
+            return Also(BonusEffect, BonusPerRank * Mathf.Max(1, times));
+        }
+
+        private static string Also(string effect, float total)
+        {
+            if (string.IsNullOrEmpty(effect)) return "";
+
+            var also = CompanionsOf(effect);
+            if (also == null) return "";
+
+            var lines = new List<string>();
+            foreach (var pair in also) lines.Add(Format(pair.Key, total * pair.Value));
+            return string.Join("\n", lines.ToArray());
+        }
+
+        /// <summary>
         /// Effects stored as a positive amount of benefit but read by a player as something
         /// shrinking. Weatherly's value is how much of the dead zone is taken away, and
         /// "+6% dead zone" would say the zone grows. Shown with the sign turned, so the tile
@@ -344,9 +400,24 @@ namespace Rist
             // Read as the wait it removes, not as the delay it leaves. "0.6s less before
             // stamina returns" is the thing a player feels the moment they stop running.
             { Sinews.StaminaDelay, "s less before stamina returns" },
-            { Sinews.JumpHeight, "jump height" },
             { Sinews.Overloaded, "stamina walking overloaded" },
             { Sinews.LandingRoll, "a dodge as you land makes the fall 8 m shorter" },
+            // The capstones of LHM-44, each a thing you can now do rather than a number.
+            { LastBlow.Key, "the swing that kills gives half its stamina back" },
+            { ComboHold.Key, "a weapon combo chains from a swing 0.6 s late" },
+            { ReturnBlow.Key, "a good parry makes your next melee swing cost no stamina, for 5 s" },
+            { SecondNock.Key, "the next draw within 1.5 s of a shot starts 15% full" },
+            { BruiseCap.Key, "no single hit can take more than half of your maximum health" },
+            { FootingBack.Key, "nothing staggers you for 3 s after you recover from a stagger" },
+            { PatchUp.Key, "10 s after a fight, a quarter of the health you lost comes back" },
+            { SecondWind.Key, "when stamina runs out, a quarter of the bar comes back, once in 90 s" },
+            { LoseThem.Key, "a creature that has lost you gives up the hunt after 12 s, not 30" },
+            { SilentStep.Key, "crouched and creeping or still, you make no noise at all" },
+            { Momentum.Key, "after 5 s of running in a straight line you run 5% faster until you stop or turn" },
+            { Spyglass.Key, "hold a key to zoom the view far ahead, like binoculars" },
+            { Gasp.Key, "drowning waits 12 s before its first tick, not 1" },
+            { RidesTheWaves.Key, "no hull damage from wave slams, and half from rocks and ice, while you hold the helm" },
+            { Whetted.Key, "axes and picks lose 40% less durability" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -370,7 +441,7 @@ namespace Rist
             // map sight" where they meant +5%. WarnAboutMissingLabels checks for both at load.
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.JumpHeight, Sinews.Overloaded,
+            Sinews.Overloaded,
         };
 
         /// <summary>
@@ -386,7 +457,11 @@ namespace Rist
             UnseenBlow.Bonus, UnseenBlow.Stagger, DeepDraught.Duration, DeepDraught.FullCask,
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded, Sinews.LandingRoll,
+            Sinews.StaminaDelay, Sinews.Overloaded, Sinews.LandingRoll,
+            LastBlow.Key, ComboHold.Key, ReturnBlow.Key, SecondNock.Key,
+            BruiseCap.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key,
+            LoseThem.Key, SilentStep.Key, Momentum.Key,
+            Spyglass.Key, Gasp.Key, RidesTheWaves.Key, Whetted.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -398,6 +473,10 @@ namespace Rist
         {
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
             Sinews.LandingRoll,
+            LastBlow.Key, ComboHold.Key, ReturnBlow.Key, SecondNock.Key,
+            BruiseCap.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key, LoseThem.Key,
+            SilentStep.Key, Momentum.Key, Spyglass.Key,
+            Gasp.Key, RidesTheWaves.Key, Whetted.Key,
         };
 
         /// <summary>

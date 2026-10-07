@@ -1,0 +1,42 @@
+# Rist: Soft step's capstone, Lose them. A creature that has lost you gives up the hunt after 12 s
+# instead of 30.
+#
+# Three stones put a flag on the player's ZDO for creature and ship owners to read (Soft step, Quiet
+# wake and Weatherly), and `rist show` prints what a client would read off this character:
+#
+#   carried: lose them yes|no, rides the waves yes|no
+#
+# That is the half a scenario can assert, and it is the half that decides whether the capstone works
+# on a creature another player's machine owns: the flag is read off the ZDO, not off this process.
+# The give-up itself is a hunt that has to be broken off, so it is read in play: be seen by a
+# Greydwarf, break line of sight and stay out of earshot, and count. It stops hunting after about
+# 12 seconds, not 30. A boss and a creature that hunts players keep going.
+#
+# THE BOUNDARY MATTERS MOST: rank four must publish nothing.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Soft step at rank 0.
+
+clear
+god
+
+mod rist rank softstep 0
+wait 1
+mod rist show
+printed carried: lose them no yes
+
+mod rist rank softstep 4
+wait 2
+mod rist show
+printed carried: lose them no yes
+
+mod rist rank softstep 5
+wait 2
+mod rist show
+printed carried: lose them yes yes
+
+mod rist rank softstep 0
+wait 2
+mod rist show
+printed carried: lose them no yes

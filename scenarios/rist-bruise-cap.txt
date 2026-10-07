@@ -1,0 +1,77 @@
+# Rist: Thick-hided's capstone, Bruise cap. No single hit can take more than half of your maximum
+# health.
+#
+# `rist hurt <n> [enemy] [full]` takes a hit through the game's own ApplyDamage and prints what came off
+# the health bar and what share of the maximum that was: "hurt asked 1000.0, took 12.5 (50% of max
+# health 25.0)". `full` tops the health up first, so every step starts from a full bar and the readings do
+# not depend on the one before. With `enemy` the hit is typed as a creature's; without it the hit is typed
+# Self, which the cap skips by design (a health cost is a price and not a blow), and that is the control.
+#
+# GOD MODE keeps a big hit from killing and floors the health at 1, so an uncapped big hit reads as almost
+# the whole bar and not as the hit's size. That is what the rank 4 steps rely on: a 1000 hit with no cap
+# takes the bar down to 1, which is 96% of a 25 point bar and is never 50%.
+#
+# A small hit is asked for as 2, which is under half of any maximum health a character can have, so it
+# must land in full at every rank. The cap is half of the maximum whatever the maximum is, so the big
+# hit is asserted as a share, not as a number: "(50% of max health".
+#
+# THE BOUNDARY MATTERS MOST: rank four must not cap. A capstone paid before it is earned passes any test
+# that only ever looks at rank five.
+#
+# Not asserted, because an engine cannot reach them: damage over time and the fall. Burning and poison
+# arrive through ApplyDamage typed Burning and Poisoned and are skipped by type; a fall is one hit typed
+# Fall and is capped. Read both in play (see the changelog).
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Thick-hided at rank 0.
+
+clear
+god
+
+mod rist rank thickhide 0
+wait 1
+mod rist show
+printed bruise cap: not carved yes
+
+# ---- no capstone: the big hit takes the bar down to the floor and the small one lands in full.
+
+mod rist hurt 1000 enemy full
+printed (50% of max health no
+
+mod rist hurt 2 enemy full
+printed took 2.0 yes
+
+# ---- rank 4: still no capstone.
+
+mod rist rank thickhide 4
+wait 1
+mod rist hurt 1000 enemy full
+printed (50% of max health no
+
+mod rist show
+printed bruise cap: not carved yes
+
+# ---- rank 5: the big creature hit is cut to half of the maximum, the small one is untouched, and a
+# ---- hit typed Self (the control) is not capped.
+
+mod rist rank thickhide 5
+wait 1
+mod rist show
+printed bruise cap: carved, no hit takes more than 50% of max health yes
+
+mod rist hurt 1000 enemy full
+printed took yes
+printed (50% of max health yes
+
+mod rist hurt 2 enemy full
+printed took 2.0 yes
+
+mod rist hurt 1000 full
+printed (50% of max health no
+
+
+mod rist rank thickhide 0
+wait 1
+mod rist show
+printed bruise cap: not carved yes

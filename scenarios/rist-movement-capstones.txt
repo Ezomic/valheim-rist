@@ -3,7 +3,9 @@
 # Tireless, Long wind and Long stride all used to finish on m_runStaminaDrainModifier, which is
 # what let a hand of three cards push one stat six times and reach the clamp. They name
 # something else now, and this is the regression guard for that as much as it is a test of the
-# three new capstones: every assertion below reads "running x0.75" alongside the thing it is
+# three capstones. Long wind's is the second wind (LHM-44) and Long stride's Momentum (LHM-44), and the
+# jump height this file used to read is gone with the special that carried it, so Long stride's
+# part is whether Momentum is carved, read from `rist show` (its speed is checked in rist-momentum): every assertion below reads "running x0.75" alongside the thing it is
 # actually checking, and 0.75 is Tireless's five ranks and nothing else. A capstone creeping
 # back onto running shows up here whichever card it was added to.
 #
@@ -38,7 +40,7 @@ mod rist show
 printed delay 0.00s off yes
 
 mod rist show
-printed jump height x1.00 yes
+printed momentum: not carved yes
 
 # ---- Tireless: the pause before stamina comes back.
 
@@ -59,19 +61,20 @@ printed delay 0.60s off yes
 mod rist show
 printed running x0.75 yes
 
-# ---- Long stride: jump height, 15% at rank 5.
+# ---- Long stride: Momentum, carved at rank 5 and not before.
 
 mod rist rank longstride 4
 wait 1
 mod rist show
-printed jump height x1.00 yes
+printed momentum: not carved yes
 
 mod rist rank longstride 5
 wait 1
 mod rist show
-printed jump height x1.15 yes
+printed momentum: carved yes
 
-# Long stride's capstone used to be -0.06 running. If it still were, this would read x0.69.
+# Long stride's capstone used to be -0.06 running, and before that steep ground and 15% jump height. If it
+# were running still, this would read x0.69.
 mod rist show
 printed running x0.75 yes
 
@@ -90,17 +93,17 @@ mod rist show
 printed delay 0.60s off yes
 
 mod rist show
-printed jump height x1.15 yes
+printed momentum: carved yes
 
 mod rist rank tireless 0
 mod rist rank longwind 0
 mod rist rank longstride 0
 wait 1
 
-# Back to bare, which proves the two written straight onto the player are restored and not
-# merely stopped - a capstone that only ever added would leave the jump at x1.15 here.
+# Back to bare, which proves the stamina delay written straight onto the player is restored and
+# not merely stopped, and that Momentum falls back with the stone.
 mod rist show
-printed jump height x1.00 yes
+printed momentum: not carved yes
 
 mod rist show
 printed delay 0.00s off yes

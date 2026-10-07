@@ -1,0 +1,39 @@
+# Rist: Quick draw's capstone, Second nock. The next bow draw within 1.5 s of a shot starts 15% full.
+#
+# The boundary is what a scenario can assert: Second nock is the fifth rank's and not the fourth's.
+# The old capstone, +5% damage from bows and crossbows, is gone. The head start itself needs a bow
+# drawn, loosed and drawn again inside a second and a half, which is a pair of held mouse buttons a
+# scenario cannot press, so it is read in play: carve Quick draw to five, loose an arrow and pull the
+# string again at once. The second draw reaches full power visibly sooner than the first, and
+# `rist show` counts it.
+#
+# What `rist show` prints:
+#
+#   second nock: not carved | carved, 15% head start, given N times
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Quick draw at rank 0.
+
+clear
+god
+
+mod rist rank quickdraw 0
+wait 1
+mod rist show
+printed second nock: not carved yes
+
+mod rist rank quickdraw 4
+wait 1
+mod rist show
+printed second nock: not carved yes
+
+mod rist rank quickdraw 5
+wait 1
+mod rist show
+printed second nock: carved, 15% head start yes
+
+mod rist rank quickdraw 0
+wait 1
+mod rist show
+printed second nock: not carved yes

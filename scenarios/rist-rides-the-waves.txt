@@ -1,0 +1,43 @@
+# Rist: Weatherly's capstone, Rides the waves. Slams into waves do no hull damage while you hold the
+# helm, and collisions with rocks, ice and the shore cost the hull half as much.
+#
+# The same flag word as Lose them: `rist show` prints what a client would read off this character,
+#
+#   carried: lose them yes|no, rides the waves yes|no
+#
+# and that flag is the half that decides whether the stone works on a ship another player's machine
+# owns, since the owner reads the helmsman's flag off the ZDO. The slam itself needs a boat in rough
+# water: in play, carve Weatherly to five, take the helm in a storm and let the bow fall onto a
+# wave. The hull's health does not move. Take the helm off and it does.
+#
+# THE BOUNDARY MATTERS MOST: rank four must publish nothing.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Weatherly at rank 0.
+
+clear
+god
+
+mod rist rank weatherly 0
+wait 1
+mod rist show
+printed rides the waves no yes
+
+mod rist rank weatherly 4
+wait 2
+mod rist show
+printed rides the waves no yes
+
+mod rist rank weatherly 5
+wait 2
+mod rist show
+printed rides the waves yes yes
+
+mod rist show
+printed rides the waves: carved, hull slams do nothing while you hold the helm, collisions cost 50% of the damage yes
+
+mod rist rank weatherly 0
+wait 2
+mod rist show
+printed rides the waves no yes
