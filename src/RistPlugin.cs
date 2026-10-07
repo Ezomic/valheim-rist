@@ -132,7 +132,8 @@ namespace Rist
             Patch(typeof(SecondWind.Spent));
             Patch(typeof(LoseThem.Drop));
             Patch(typeof(SleepersSleepOn.Sleep));
-            Patch(typeof(SteepGround.Slide));
+            Patch(typeof(Momentum.Speed));
+            Patch(typeof(Momentum.Drive));
             Patch(typeof(Lookahead.Ahead));
             Patch(typeof(Gasp.Swimming));
             Patch(typeof(RidesTheWaves.Slam));
@@ -394,6 +395,7 @@ namespace Rist
                 Engineer.Forget();
                 LastBlow.Forget();
                 ReturnBlow.Forget();
+                Momentum.Forget();
                 SecondNock.Forget();
                 FootingBack.Forget();
                 SecondWind.Forget();
@@ -417,6 +419,7 @@ namespace Rist
             Carried.Publish(player);
             Merges.Last.Tick(player);
             LastBlow.Tick(player);
+            Momentum.Tick(player, Time.deltaTime);
             FootingBack.Tick(player);
             PatchUp.Tick(player);
 

@@ -41,7 +41,7 @@
 #   *sail:waves             slams into waves do no hull damage, and collisions with rocks, ice and shore cost the hull half, while you hold the helm (value 1)
 #   *swim:gasp              after your stamina runs out in water, drowning waits 12 s before its first tick instead of 1, and swimming costs 25% less stamina (value 1)
 #   *explore:ahead          the map also uncovers a second circle ahead of the way you travel (value 1)
-#   *slope:steep            you hold your footing on slopes up to 46 degrees instead of 38 (value 1)
+#   *run:momentum          after 5 s of running in a straight line you run 5% faster until you stop or turn sharply (value 1)
 #   *noise:sleepers         a sleeping creature is woken by noise and never by you walking close (value 1)
 #   *stealth:losethem       a creature that has lost you gives up the hunt after 12 s instead of 30 (value 1)
 #   *stamina:secondwind     the first time your stamina runs out, a quarter of the bar comes back at once, once in 90 s (value 1)
@@ -82,7 +82,7 @@
 # row back as a card of its own: as its own card it was the strongest pick in the catalogue
 # and taken first every time, which is not a choice.
 #
-# MOVE SPEED IS CAPPED AT 10% AND COMES FROM ONE CARD ONLY. Long stride is the only source;
+# MOVE SPEED IS CAPPED AT 10% AND COMES FROM ONE CARD ONLY, with one exception: Long stride's capstone, Momentum, adds 5% while a straight run lasts. Long stride is the only source;
 # Tireless used to add 8% on top, and the two together reached 23%. Speed is the one stat a
 # player carries out of this world: it is always on, never noticed while you have it, and its
 # absence is what gets felt - a player told us Rist had made his other, unmodded playthroughs
@@ -319,11 +319,12 @@ quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifi
 
 == Utility
 
-# Long stride's capstone is steep ground: you hold your footing on slopes up to 46 degrees where the
-# game starts a slide at 38. It used to be 15% jump height, which is gone with its landing guard
-# (nothing else used the special). Not a second speed source: the 10% cap and the one-source rule
-# below are untouched, because this is about whether you stay on your feet and not how fast you are.
-longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *slope:steep              | 1    | R
+# Long stride's capstone is momentum: after 5 s of running in a straight line you run 5% faster until you
+# stop or turn sharply (MomentumSeconds, MomentumBonus, MomentumRamp). It used to be steep ground, a higher
+# slide angle, and before that 15% jump height, which is gone with its landing guard. It is a second
+# speed source on purpose: the 10% cap below covers the stone's ranks, and Momentum is earned by a run and
+# lost when it ends, which the cap's reasoning (always on, never noticed) does not reach.
+longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *run:momentum             | 1    | R
 # Far sight's capstone is the lookahead: the map also uncovers a second circle, 60% of the radius,
 # centred one radius ahead of the way you walk, sail or ride. It used to be another 10% radius, the
 # stone's own stat. It is still a map stone, so it is the weakest differentiation in the round.

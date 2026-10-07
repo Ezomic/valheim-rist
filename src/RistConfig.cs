@@ -36,6 +36,9 @@ namespace Rist
         internal static ConfigEntry<float> RidesTheWavesCollision;
         internal static ConfigEntry<float> BruiseCapShare;
         internal static ConfigEntry<float> ReturnBlowSeconds;
+        internal static ConfigEntry<float> MomentumSeconds;
+        internal static ConfigEntry<float> MomentumBonus;
+        internal static ConfigEntry<float> MomentumRamp;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -412,6 +415,18 @@ namespace Rist
             ReturnBlowSeconds = cfg.Bind("Capstones", "ReturnBlowSeconds", 5f,
                 "Turned blade's capstone: how long after a good parry (a block in the first quarter second, with a shield or weapon " +
                 "that has a timed block bonus) the next melee swing is free. One swing spends it. A hard rule for the host on a server.");
+
+            MomentumSeconds = cfg.Bind("Capstones", "MomentumSeconds", 5f,
+                "Long stride's capstone: how many seconds of running in a straight line it takes before the speed bonus starts. " +
+                "Stopping, slowing below walking pace, swimming, sailing, riding or turning sharply (40 degrees from the line you were on) starts the count again.");
+
+            MomentumBonus = cfg.Bind("Capstones", "MomentumBonus", 0.05f,
+                "Long stride's capstone: the extra running speed Momentum gives once the streak is earned, as a share. 0.05 is 5%. " +
+                "It is on top of the stone's own +2% a rank, so it takes the stone past the 10% cap its ranks keep to, and that is the exception on purpose: " +
+                "it is only there while you run in a line.");
+
+            MomentumRamp = cfg.Bind("Capstones", "MomentumRamp", 1f,
+                "Long stride's capstone: the seconds Momentum takes to grow from nothing to the full bonus once the streak is earned, so it does not pop.");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

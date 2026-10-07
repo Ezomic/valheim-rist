@@ -79,6 +79,8 @@ namespace Rist
             if (what == "perfect") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.HitInWindow(Player.m_localPlayer)); return; }
             if (what == "parry") { Say(term, Player.m_localPlayer == null ? "rist: no player." : ReturnBlow.Simulate(Player.m_localPlayer)); return; }
             if (what == "swing") { Say(term, Player.m_localPlayer == null ? "rist: no player." : ReturnBlow.Swing(Player.m_localPlayer)); return; }
+            if (what == "momentum") { Say(term, Player.m_localPlayer == null ? "rist: no player." : Momentum.Simulate(Player.m_localPlayer, Seconds(args, Player.m_localPlayer == null ? 0f : RistConfig.MomentumSeconds.Value + RistConfig.MomentumRamp.Value))); return; }
+            if (what == "run") { Say(term, Player.m_localPlayer == null ? "rist: no player." : Momentum.Run(Player.m_localPlayer, Seconds(args, 10f))); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
             term.AddString("rist rank <card> <n> - force a card to exactly that rank");
@@ -92,6 +94,8 @@ namespace Rist
             term.AddString("rist perfect         - send a hit into the roll in progress, which the game counts as a perfect roll");
             term.AddString("rist parry           - pretend a good parry just happened, as Return blow reads one");
             term.AddString("rist swing           - start a primary swing with what is in hand, as the attack key does");
+            term.AddString("rist momentum [s]    - pretend the run has lasted s seconds and read the run speed factor with and without Momentum");
+            term.AddString("rist run [s]         - run straight ahead for s seconds in place of input, and keep the speeds before and after Momentum");
             term.AddString("card ids are the first field of cards.txt: thickhide, steadyfoot, longstride...");
         }
 
@@ -141,6 +145,14 @@ namespace Rist
                    + " (" + (before > 0f ? ((before - player.GetHealth()) / player.GetMaxHealth() * 100f).ToString("0", CultureInfo.InvariantCulture) : "0")
                    + "% of max health " + player.GetMaxHealth().ToString("0.0", CultureInfo.InvariantCulture) + ")"
                    + (enemy ? " as a creature's hit" : "");
+        }
+
+        private static float Seconds(Terminal.ConsoleEventArgs args, float fallback)
+        {
+            float seconds;
+            return args.Length > 2 && float.TryParse(args[2], NumberStyles.Float, CultureInfo.InvariantCulture, out seconds) && seconds >= 0f
+                ? seconds
+                : fallback;
         }
 
         private static bool HasWord(Terminal.ConsoleEventArgs args, string word)
@@ -407,7 +419,7 @@ namespace Rist
             term.AddString(SecondWind.Probe(player));
             term.AddString(LoseThem.Probe());
             term.AddString(SleepersSleepOn.Probe());
-            term.AddString(SteepGround.Probe(player));
+            term.AddString(Momentum.Probe());
             term.AddString(Lookahead.Probe());
             term.AddString(Gasp.Probe());
             term.AddString(RidesTheWaves.Probe());

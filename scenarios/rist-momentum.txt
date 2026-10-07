@@ -1,0 +1,70 @@
+# Rist: Long stride's capstone, Momentum. After 5 seconds of running in a straight line you run 5% faster,
+# until you stop or turn sharply.
+#
+# `rist momentum <s>` pretends the run has lasted s seconds and reads the game's own run speed factor
+# (Player.GetRunSpeedFactor, which the game multiplies a runner's speed by) with Momentum and with it
+# switched off for the one call, so the ratio is Momentum alone and everything else the character wears
+# cancels out. It prints:
+#
+#   rist: after S s of running the game's run speed factor is A against B without Momentum, xR
+#
+# Before the 5 seconds R is 1.000, a second later it is 1.050, and half way up the ramp it is 1.025. The
+# ramp is MomentumRamp (1 s), the bonus is MomentumBonus (0.05), the delay is MomentumSeconds (5).
+#
+# `rist run <s>` runs straight ahead for s seconds in place of input, through the real streak counter, and
+# `rist show` then prints the speed it saw before and after the bonus, "x1.050" within a few thousandths on
+# flat open ground. It needs open flat ground and a clear 80 metres ahead, which the staged ground is not
+# guaranteed to give, so it is a readout and not an assertion here. Stopping, turning 40 degrees, swimming
+# and sailing end the streak and are read in play.
+#
+# THE BOUNDARY MATTERS MOST: rank four must gain nothing.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Long stride at rank 0.
+
+clear
+god
+
+mod rist rank longstride 0
+wait 1
+mod rist show
+printed momentum: not carved yes
+
+mod rist rank longstride 4
+wait 1
+mod rist show
+printed momentum: not carved yes
+
+mod rist momentum 6
+printed not carved yes
+
+# ---- rank 5: nothing before the five seconds, half the bonus half way up the ramp, all of it after.
+
+mod rist rank longstride 5
+wait 1
+mod rist show
+printed momentum: carved yes
+
+mod rist momentum 4.9
+printed x1.000 yes
+
+mod rist momentum 5.5
+printed x1.025 yes
+
+mod rist momentum 6
+printed x1.050 yes
+
+mod rist momentum 30
+printed x1.050 yes
+
+# ---- a real run, for the readout.
+
+mod rist run 9
+wait 10
+mod rist show
+
+mod rist rank longstride 0
+wait 1
+mod rist show
+printed momentum: not carved yes

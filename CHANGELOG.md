@@ -206,13 +206,21 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   players wakes as usual. This is the weakest capstone of the round, since it only matters where creatures sleep, and which
   of them do is prefab data nobody has read yet. Quiet wake's -8% noise a rank is unchanged. The stone is published on your
   character for the creature's owner to read, with the flag Soft step added.
-- **Long stride**: the capstone is now Steep ground. You hold your footing on slopes up to 46 degrees, where the game
-  starts a slide at 38, so mountainsides that dump a walking player into a slide can be walked. It is not a second speed
-  source, so the 10% cap and the one-source rule on movement speed are untouched: this is whether you stay on your feet,
-  not how fast you are. It replaces the 15% jump height, and with it **the `*jumpheight` special and the landing guard
-  that measured a raised jump from the height a vanilla jump would have reached are removed**, since nothing else used
-  them; the landing roll that shares the code is untouched. A catalogue line naming `*jumpheight` is skipped with the usual
-  warning. Long stride's +2% movement speed a rank is unchanged. `rist show` no longer prints a jump height.
+- **Long stride**: the capstone is now Momentum. After five seconds of running in a straight line you run 5% faster, until
+  you stop or turn sharply. The bonus grows in over one second so it does not pop. Running means the stamina-draining sprint,
+  so sneaking never counts; swimming, a ship's helm, a ship's deck, riding and rolling do not count either, and the speed
+  must stay above walking pace, so running into a wall ends it. A jump does not end it. A sharp turn does, which means the
+  direction you travel comes 40 degrees away from the line you were on, and a gradual curve does not. It replaces Steep
+  ground, the first draft, which raised the slide angle from 38 to 46 degrees; that patch is gone. **The removal of the
+  stone's old 15% jump height (`*jumpheight` and the landing guard that measured a raised jump) stays as it was built**,
+  since nothing else used them; the landing roll that shares the code is untouched. A catalogue line naming `*jumpheight` is
+  skipped with the usual warning. **Momentum is a second speed source, on purpose.** Long stride's ranks are +2% a rank and
+  stay the cap's 10%, and Momentum is 5% on top of that while the streak lasts, so a full run at rank five is 15% over a
+  jog. The reason the cap exists, a bonus that is always on and never noticed, does not apply to a bonus that is earned and
+  lost; the numbers are `MomentumSeconds`, `MomentumBonus` and `MomentumRamp` in the cfg. `rist show` no longer prints a jump
+  height or a slide angle.
+- `rist momentum [s]` pretends the run has lasted that long and reads the game's own run speed factor with and without
+  Momentum, and `rist run [s]` runs straight ahead in place of input and keeps the speeds before and after the streak.
 - **Far sight**: the capstone is now Lookahead. Each time the map explores, it also uncovers a second circle ahead of the
   way you walk, sail or ride: 60% of the explore radius, centred one radius ahead of you. Standing still uncovers nothing
   extra. It used to be another 10% of radius, which is the stone's own stat, and it is still a map stone, so it is the
