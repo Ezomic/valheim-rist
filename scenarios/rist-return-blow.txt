@@ -18,8 +18,12 @@
 #   3. the next swing: priced X, paid X again, because one swing spends it.
 #   4. parry, wait out the 5 seconds, swing: priced X, paid X, because it expired.
 #
-# THE BOUNDARY MATTERS MOST: rank four must arm nothing, and the companions of LHM-53 are asserted too:
-# the 30 degrees of parry behind you comes with the capstone and not before.
+# THE BOUNDARY MATTERS MOST: rank four must arm nothing.
+#
+# THIS COPY IS FOR THE 2.4.0 RELEASE BUILD (Rist 1.8.0), which ships Turned blade WITHOUT the 30 degree
+# parry arc: that half of LHM-53 is held for 2.5.0. So where the main copy asserts the line 'parry reaches
+# ... degrees behind you', this one asserts it is ABSENT at both ranks. The -8% block stamina the stone keeps
+# as a companion (Card.Companions) has no probe in 'rist show', so it is not asserted here.
 #
 # SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client. Needs stamina, so it does not
 # run in a state where the bar is empty.
@@ -42,18 +46,18 @@ mod rist rank turnedblade 4
 wait 1
 mod rist show
 printed return blow: not carved yes
-printed parry reaches 0 degrees behind you yes
+printed parry reaches no
 
 mod rist parry
 printed not carved yes
 
-# ---- rank 5: the capstone and both companions.
+# ---- rank 5: the capstone.
 
 mod rist rank turnedblade 5
 wait 1
 mod rist show
 printed return blow: carved, not armed yes
-printed parry reaches 30 degrees behind you (threshold 0.50) yes
+printed parry reaches no
 
 # 1. no parry: the swing costs what it costs.
 mod rist swing
