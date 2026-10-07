@@ -36,7 +36,7 @@
 #   *blood:absorb           how much more a blood magic shield absorbs (a companion of *blood:levels, never written alone)
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
-#   *draw:second            the next bow draw begun within 1.5 s of a shot starts 30% full (value 1)
+#   *draw:second            the next bow draw begun within 1.5 s of a shot starts 15% full (value 1)
 #   *tool:whetted           axes and pickaxes lose 40% less durability (value 1)
 #   *sail:waves             slams into waves do no hull damage while you hold the helm (value 1)
 #   *swim:gasp              after your stamina runs out in water, drowning waits 6 s before its first tick instead of 1 (value 1)
@@ -193,7 +193,7 @@ steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fi
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | *combo:hold               | 1    | Z
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
 turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:riposte | 1 | X
-# Quick draw's capstone is the second nock: the next bow draw begun within 1.5 s of a shot starts 30%
+# Quick draw's capstone is the second nock: the next bow draw begun within 1.5 s of a shot starts 15%
 # full. It used to be +5% bow and crossbow damage. *damage:ranged is still a supported special.
 quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *draw:second              | 1    | Y
 quickchant  | Quick chant    | The chant is done before the staff is raised.| *attackspeed:magic | 0.03 | *unbroken          | 1    | T

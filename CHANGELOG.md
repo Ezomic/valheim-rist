@@ -155,11 +155,11 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   this capstone stay as companions, so nobody who carved the stone loses either; if Riposte proves too strong with them
   the companions are one line in `Card.Companions`. It used to be the 30 degrees behind you alone.
 - **Quick draw**: the capstone is now Second nock. Loose a shot and the next draw you begin within a second and a half
-  starts 30% full, so the follow-up arrow comes quicker and a lone shot is drawn as it always was. It used to be +5%
+  starts 15% full, so the follow-up arrow comes quicker and a lone shot is drawn as it always was. It used to be +5%
   damage from bows and crossbows, a number on a stat the stone does not own. It is still a draw-speed effect on a
   draw-speed stone, so it is the closest of these capstones to its stone's own stat; what is new is that it rewards
   the second arrow and not the first. Bows only; the crossbow keeps the reload speed from the ranks. The head start is
-  30% of the bow's real draw time at your skill and composes with the ranks' faster draw.
+  15% of the bow's real draw time at your skill and composes with the ranks' faster draw. It started at 30% in the first draft and the capstone review cut it to 15%; the share is `SecondNockShare` in the cfg.
 - **Thick-hided**: the capstone is now Shrug. A creature's hit worth under 4% of your maximum health does nothing, which
   is the swarm case (Deathsquitos, ticks, Seekers) that a percentage of armour cannot touch, while armour keeps its own
   job. It used to be another 5% armour, the stone's own stat again. It is judged after armour and resistances, so

@@ -449,7 +449,7 @@ namespace Rist
             { LastBlow.Key, "the swing that kills gives its stamina back" },
             { ComboHold.Key, "a weapon combo chains from a swing 0.6 s late" },
             { Riposte.Key, "a parry throws a quarter of what it blocked back at the attacker" },
-            { SecondNock.Key, "the next draw within 1.5 s of a shot starts 30% full" },
+            { SecondNock.Key, "the next draw within 1.5 s of a shot starts 15% full" },
             { Shrug.Key, "creature hits under 4% of your health do nothing" },
             { FootingBack.Key, "nothing staggers you for 3 s after you recover from a stagger" },
             { PatchUp.Key, "10 s after a fight, a quarter of the health you lost comes back" },

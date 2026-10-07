@@ -29,6 +29,7 @@ namespace Rist
         internal static ConfigEntry<float> AttackSpeedMax;
         internal static ConfigEntry<float> MinRunStaminaCost;
         internal static ConfigEntry<float> PanelBottomInset;
+        internal static ConfigEntry<float> SecondNockShare;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -372,6 +373,11 @@ namespace Rist
                 "standing and then lying, at 100px stones and then 78; then tiles without their " +
                 "value line - so a larger inset trades size for being fully visible.\n" +
                 "Your own setting even on a server: it is about your window, not a rule.");
+
+            SecondNockShare = cfg.Bind("Capstones", "SecondNockShare", 0.15f,
+                "Quick draw's capstone: how full the follow-up bow draw starts, as a share of the draw time, " +
+                "when it is begun within 1.5 s of a shot. 0.15 is 15%. It was 0.30 until the capstone pass " +
+                "weakened it (LHM-44).");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

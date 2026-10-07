@@ -6,7 +6,7 @@ namespace Rist
 {
     /// <summary>
     /// Quick draw's capstone: loose a shot and the next draw you begin within a second and a half
-    /// starts 30% full.
+    /// starts 15% full.
     ///
     /// "The string is back before you are" is the follow-up shot, and the bonus only exists inside a
     /// rhythm of shots, so a lone arrow is drawn exactly as before. It replaces +5% damage from bows and
@@ -17,9 +17,9 @@ namespace Rist
     /// Two seams. Attack.Start runs when the arrow is released, so a postfix on it notes the moment of
     /// a bow shot. Attack.StartDraw runs once when the string is first pulled, while the draw timer
     /// Player.UpdateAttackBowDraw counts is still zero, and adds Time.fixedDeltaTime to it right after,
-    /// so a postfix there sets the timer to 30% of the bow's own draw time and the game carries on from
+    /// so a postfix there sets the timer to a share (15% by default, SecondNockShare) of the bow's own draw time and the game carries on from
     /// it. That duration is worked out the way Humanoid.GetAttackDrawPercentage does, from the bow's
-    /// m_drawDurationMin and the Bows skill, so the head start is 30% of what this player's draw
+    /// m_drawDurationMin and the Bows skill, so the head start is 15% of what this player's draw
     /// really takes. Quick draw's own ranks scale the percentage where it is read and compose with it.
     ///
     /// Bows only. A crossbow's wait is a reload on another path and is not touched. A head start is
@@ -30,8 +30,6 @@ namespace Rist
         internal const string Key = "*draw:second";
 
         private const float Window = 1.5f;
-        private const float Share = 0.3f;
-
         private static float _shot = -100f;
         private static int _nocked;
 
@@ -95,7 +93,7 @@ namespace Rist
                 var duration = Mathf.Lerp(attack.m_drawDurationMin, attack.m_drawDurationMin * 0.2f, skill);
                 if (duration <= 0f) return;
 
-                _drawTime(character) += duration * Share;
+                _drawTime(character) += duration * Mathf.Clamp01(RistConfig.SecondNockShare.Value);
                 _nocked++;
             }
         }
@@ -108,7 +106,7 @@ namespace Rist
         internal static string Probe()
         {
             return Effects.Cached(Key) > 0f
-                ? "second nock: carved, " + (Share * 100f).ToString("0", CultureInfo.InvariantCulture)
+                ? "second nock: carved, " + (Mathf.Clamp01(RistConfig.SecondNockShare.Value) * 100f).ToString("0", CultureInfo.InvariantCulture)
                   + "% head start, given " + _nocked + " times"
                 : "second nock: not carved";
         }
