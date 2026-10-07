@@ -49,25 +49,31 @@ mod rist hurt 1 full
 wait 12
 mod rist show
 printed patch-up: carved yes
-note mends mended (\d+) times
+note mends mended\s(\d+)\stimes
 note owed lost\s([\d.]+),
+note back \(([\d.]+)\shealth\)
+note mid mending\s([\d.]+),
 
-mod rist hurt 8
+mod rist hurt 70
 wait 1
 mod rist show
 went owed lost\s([\d.]+), up
 
-# Ten seconds after the hit the mend begins and the tally is spent into the mend.
-wait 10
+# Ten seconds after the hit the mend begins and the tally is spent into the mend. The hit is 70, not 8:
+# food regen repays a small hit inside the quiet ten seconds and leaves nothing to mend.
+# The read is about twelve seconds after the hit, so the five-second payout is still running.
+wait 11
 mod rist show
 went owed lost\s([\d.]+), down
+went mid mending\s([\d.]+), up
 went mends mended\s(\d+)\stimes +1
 
-# And five seconds later it has been paid out: a quarter of what was lost is health returned.
-wait 6
+# And five seconds later it has been paid out, and a quarter of what was lost is health returned.
+wait 5
 mod rist show
 printed mending 0.0 yes
 went mends mended\s(\d+)\stimes same
+went back \(([\d.]+)\shealth\) up
 
 mod rist rank swiftmend 0
 wait 1
