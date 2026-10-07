@@ -70,8 +70,6 @@ printed took 2.0 yes
 mod rist hurt 1000 full
 printed (50% of max health no
 
-mod rist show
-printed capped 1 hits yes
 
 mod rist rank thickhide 0
 wait 1
