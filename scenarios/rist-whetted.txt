@@ -21,18 +21,22 @@ mod rist rank surehand 0
 wait 1
 mod rist show
 printed whetted: not carved yes
+printed tool swing speed +0% yes
 
 mod rist rank surehand 4
 wait 1
 mod rist show
 printed whetted: not carved yes
+printed tool swing speed +20% yes
 
 mod rist rank surehand 5
 wait 1
 mod rist show
 printed whetted: carved, 40% less wear on axes and picks yes
+printed tool swing speed +25% yes
 
 mod rist rank surehand 0
 wait 1
 mod rist show
 printed whetted: not carved yes
+printed tool swing speed +0% yes

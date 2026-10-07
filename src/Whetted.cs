@@ -100,11 +100,12 @@ namespace Rist
 
         internal static string Probe()
         {
+            var speed = ", tool swing speed +" + ((int)System.Math.Round(Effects.Cached(AttackSpeed.Tools) * 100f)).ToString(CultureInfo.InvariantCulture) + "%";
             return Effects.Cached(Key) > 0f
                 ? "whetted: carved, " + ((int)(Share * 100f)).ToString(CultureInfo.InvariantCulture)
                   + "% less wear on axes and picks, saved " + _saved.ToString("0.0", CultureInfo.InvariantCulture)
-                  + " durability here"
-                : "whetted: not carved";
+                  + " durability here" + speed
+                : "whetted: not carved" + speed;
         }
     }
 }

@@ -340,7 +340,8 @@ weatherly   | Weatherly      | She points nearer the wind.       | *windcone    
 # Sure hand's capstone is the whetted edge: axes and pickaxes lose 40% less durability. It used to be
 # 12% stamina regen, which was Long wind's job. The axe counts as a tool, so an axe in a fight wears
 # less as well; the hammer and the hoe are not covered.
-surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | *tool:whetted             | 1    | J
+# The stone's own swing speed is 5% a rank, 25% at rank five (it was 3% a rank before the capstone review).
+surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.05  | *tool:whetted             | 1    | J
 # Hall-raiser widens the radius a station covers for building and nothing else about it: the circle
 # that keeps enemies from spawning in a base is a separate thing and stays where it is, and the
 # distance you stand from a bench to craft at it is unchanged. The sigil is shared with Quiet wake,

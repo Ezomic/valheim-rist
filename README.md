@@ -186,7 +186,7 @@ Specials are effects with no `SE_Stats` field behind them, handled in code:
 | `*stamina:move` | Run, jump, dodge, swim and sneak all cost less |
 | `*stamina:fight` | Attacking and blocking both cost less |
 | `*attackspeed:melee` | Faster swings with a weapon |
-| `*attackspeed:tools` | Faster swings with a pickaxe, axe, hammer, hoe or cultivator |
+| `*attackspeed:tools` | Faster swings with a pickaxe, axe, hammer, hoe or cultivator (Sure hand writes 0.05 a rank, so 25% at rank five) |
 | `*attackspeed:ranged` | A bow reaches full draw sooner, a crossbow reloads sooner, and both fire faster |
 | `*attackspeed:magic` | A staff casts faster. A staff firing several projectiles per cast has its burst timing sped to match; a looping staff that pays eitr once per hold stays at vanilla speed |
 | `*damage:ranged` | More damage from bows and crossbows only. A fraction: `0.05` is 5% |

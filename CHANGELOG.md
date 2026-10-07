@@ -221,7 +221,7 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
 - **Sure hand**: the capstone is now Whetted. Axes and pickaxes lose 40% less durability, so a tool outlasts the vein. It used
   to be +12% stamina regen, which is Long wind's job. What a swing wears off the tool is read around the attack and 40% of
   it is put back, never more than was spent, so it cannot mend a tool. It is by skill, so an axe swung in a fight wears
-  less too, and the hammer and the hoe are not covered. The +3% tool swing speed a rank is unchanged.
+  less too, and the hammer and the hoe are not covered. The tool swing speed is now +5% a rank, 25% at rank five, up from +3% (the capstone review).
 **Balance note for the capstones (LHM-44), written before anyone has played them.** Judged against the capstones that
 were already behaviours (Quick chant, Answering blow, Unseen blow, about a 3 out of 5), and meant to leave no capstone the obvious
 pick. None of this has been tested in play.
