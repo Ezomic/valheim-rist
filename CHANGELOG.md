@@ -259,24 +259,23 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
 were already behaviours (Quick chant, Answering blow, Unseen blow, about a 3 out of 5), and meant to leave no capstone the obvious
 pick. None of this has been tested in play.
 
-- **The three to watch, strongest first.** Thick-hided's Shrug is the one most likely to be too good late: the line is 4% of
-  maximum health after armour, so a well-fed player in heavy armour ignores a great many hits that were never small, and
-  nothing in it scales down. If it is too much, a flat ceiling on the line is the fix, and `Shrug.Share` is the number. Long
-  stride's Steep ground is always on, and on a mountain it removes the thing that makes slopes a hazard, so it is the
-  one a mountain player takes first; eight degrees is `SteepGround.Extra`. Turned blade's Riposte is only a
-  parry build's, and a quarter of a parried hit is modest by itself, but the stone now also carries the 240 degree
-  parry and the block stamina from LHM-53, so it is the heaviest capstone in the list; dropping those two companions
-  is one line in `Card.Companions` and leaves the others untouched.
+- **The ones to watch, after the review.** Thick-hided's Bruise cap is the new strongest: half of the maximum health as a ceiling
+  on one hit makes a full-health character unkillable by any single blow, which is most of what a boss fight is, and the
+  share is `BruiseCapShare` if it proves too much (0.6 or 0.7 still stops a one-shot from a bad trade). Long stride's
+  Momentum is the first second speed source, past the 10% cap by 5 points while a run lasts; `MomentumBonus` is the
+  knob, and the cap's note in cards.txt says why this one is allowed. Turned blade's Return blow is a parry build's, and
+  the stone still carries the 240 degree parry and the block stamina from LHM-53; dropping those two companions is one
+  line in `Card.Companions`. Tide-borne's Gasp is stronger than its first draft, a 12 second wait and 25% cheaper
+  swimming, and Rides the waves now also halves rock and ice damage to the hull.
 - **Level, around a 3.** Footing back (it ends stagger chains, and nothing else about a stagger), Second wind, Lose them,
-  Second nock. Second wind and Brimming's Last spark are both an emergency button that comes back with time, so
+  Second nock (halved to a 15% head start). Second wind and Brimming's Last spark are both an emergency button that comes back with time, so
   they share a shape; the 90 seconds is `SecondWind.Cooldown`.
-- **Around a 2.** Last blow, Combo holds, Patch-up (it saves potions and not lives), Gasp (it rescues a swimmer and
-  never extends range), Rides the waves (storm sailing only), Whetted.
-- **The weakest, on purpose and by nature.** Sleepers sleep on only matters where creatures sleep, and which prefabs do
-  is prefab data nobody has read yet, so it may be near nothing until a Devkit rip says. Lookahead is still a map stone and
-  uncovers ground in the direction of travel, no more. The Utility stones were already the weakest picks and still are.
-  Raising them was not attempted: a capstone that is only ever felt in one place is the right size for a stone that is felt
-  in one place.
+- **Around a 2.** Last blow (halved to a 50% refund), Combo holds, Patch-up (it saves potions and not lives), Whetted (with
+  Sure hand's swing speed now 5% a rank), Silent step.
+- **The weakest, on purpose and by nature.** Spyglass is a view, not power, and the radius of the stone is now 10% a rank, so it
+  is the only Utility capstone that is felt every time the key is held. The Utility stones were already the weakest picks and
+  still are. Raising them was not attempted: a capstone that is only ever felt in one place is the right size for a stone that
+  is felt in one place.
 - **Two were not built.** Brimming's Last spark was already built as its capstone in LHM-53 and is left alone, and
   Rooted for Steady footing was replaced by its alternative, Footing back, as set out above.
 

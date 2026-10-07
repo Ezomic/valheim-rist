@@ -199,7 +199,7 @@ quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:
 quickchant  | Quick chant    | The chant is done before the staff is raised.| *attackspeed:magic | 0.03 | *unbroken          | 1    | T
 
 # Three stones took in the idea beside them (LHM-53), and none lost anything. Turned blade's
-# capstone is now the riposte, a parry throwing a quarter of what it blocked back at the attacker
+# capstone is now the return blow, a good parry making the next melee swing free
 # (LHM-44), and it carries the arc behind you and the block stamina LHM-53 gave it as companions; Brimming's
 # per-rank effect is a special so the eitr thrift can ride it, and its capstone, one cast on an
 # empty bar, keeps the extra regen; Answering blow's ranks drive melee stagger and its capstone
