@@ -135,7 +135,7 @@ namespace Rist
         /// <summary>Holds the spyglass as the key does, for `rist spyglass on|off`.</summary>
         internal static string Hold(bool on)
         {
-            _forced = on;
+            if (!on || Carved) _forced = on;
             return Carved
                 ? "rist: spyglass " + (on ? "held" : "let go") + ", give the zoom a second."
                 : "rist: Far sight is not carved, so there is no spyglass to hold.";

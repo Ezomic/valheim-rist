@@ -7,7 +7,7 @@
 #
 # What `rist show` prints:
 #
-#   last blow: not carved | carved, refunded N times[, last X stamina]
+#   last blow: not carved | carved, refunds P%, refunded N times[, last X stamina]
 #
 # In play, after the first kill, N is 1 and X is the price of the swing that did it, which at
 # Steady arm 5 and no skill is the weapon's stamina less 25%.

@@ -35,6 +35,7 @@ namespace Rist
 
         private static Player _for;
         private static float _previous = -1f;
+        private static float _previousMax;
         private static float _lost;
         private static float _lastActive;
         private static float _left;
@@ -85,10 +86,17 @@ namespace Rist
 
             var now = Time.time;
             var health = player.GetHealth();
+            var max = player.GetMaxHealth();
 
             if (_previous >= 0f)
             {
                 var change = health - _previous;
+
+                // Food fading shrinks the maximum in small steps, and a full bar is clamped down
+                // with it. That is not a hit taken, and counting it as one restarted the quiet
+                // ten seconds every time, so a fed character at full health was never mended.
+                if (change < -0.01f && max < _previousMax - 0.001f && health >= max - 0.01f) change = 0f;
+
                 if (change < -0.01f)
                 {
                     _lost -= change;
@@ -129,6 +137,7 @@ namespace Rist
             }
 
             _previous = player.GetHealth();
+            _previousMax = max;
         }
 
         private static void Clear()

@@ -147,7 +147,8 @@ namespace Rist
         {
             if (Effects.Cached(Key) <= 0f) return "last blow: not carved";
 
-            return "last blow: carved, refunded " + _refunds + (_refunds == 0
+            return "last blow: carved, refunds " + (Mathf.Clamp01(RistConfig.LastBlowShare.Value) * 100f).ToString("0", CultureInfo.InvariantCulture)
+                   + "%, refunded " + _refunds + (_refunds == 0
                 ? " times"
                 : " times, last " + _lastRefund.ToString("0.0", CultureInfo.InvariantCulture) + " stamina");
         }
