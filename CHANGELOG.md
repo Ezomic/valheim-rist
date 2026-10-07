@@ -213,7 +213,7 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   its first tick instead of one, which is time to reach a boat or the shore. The ticks after the first are the game's own.
   The capstone review doubled the wait from six seconds to twelve (`GaspSeconds`) and added a second bite: swimming costs
   25% less stamina at rank five (`GaspSwimStamina`), so a swimmer also lasts longer. The +6% swim speed a rank is unchanged.
-- **Weatherly**: the capstone is now Rides the waves. Slams into waves do no hull damage while you hold the helm, which is
+- **Weatherly**: the capstone is now Rides the waves. Slams into waves do no hull damage while you hold the helm, and collisions with rocks, ice and the shore cost the hull half as much (`RidesTheWavesCollision`, added by the capstone review), which is
   the other half of staying afloat in weather: the ranks bend the sail to windward and this keeps the hull. Only the water impact is
   spared; a ship that is upside down and the Ashlands still hurt it. The ship's physics run on whichever machine owns the ship, so
   the stone is read from the flag the helmsman publishes, and a passenger's stone does nothing. It used to be 20% rowing speed,

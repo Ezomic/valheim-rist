@@ -1,5 +1,5 @@
 # Rist: Weatherly's capstone, Rides the waves. Slams into waves do no hull damage while you hold the
-# helm.
+# helm, and collisions with rocks, ice and the shore cost the hull half as much.
 #
 # The same flag word as Lose them: `rist show` prints what a client would read off this character,
 #
@@ -35,7 +35,7 @@ mod rist show
 printed rides the waves yes yes
 
 mod rist show
-printed rides the waves: carved yes
+printed rides the waves: carved, hull slams do nothing while you hold the helm, collisions cost 50% of the damage yes
 
 mod rist rank weatherly 0
 wait 2

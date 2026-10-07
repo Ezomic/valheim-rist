@@ -33,6 +33,7 @@ namespace Rist
         internal static ConfigEntry<float> LastBlowShare;
         internal static ConfigEntry<float> GaspSeconds;
         internal static ConfigEntry<float> GaspSwimStamina;
+        internal static ConfigEntry<float> RidesTheWavesCollision;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -394,6 +395,11 @@ namespace Rist
                 "Tide-borne's capstone, second half: how much less stamina swimming costs at rank 5, as a share. 0.25 is 25% lower. " +
                 "Added by the capstone review on top of the longer wait, so Gasp lets a swimmer last longer as well as rescuing one. " +
                 "Clamped to 0.5 so a typo cannot make swimming free.");
+
+            RidesTheWavesCollision = cfg.Bind("Capstones", "RidesTheWavesCollision", 0.5f,
+                "Weatherly's capstone, second half: how much less damage the hull takes from collisions with rocks, ice and the shore " +
+                "while the helmsman carries the stone, as a share. 0.5 is half. Wave slams do no damage at all regardless. " +
+                "Added by the capstone review (LHM-44).");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

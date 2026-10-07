@@ -474,7 +474,7 @@ namespace Rist
             { SteepGround.Key, "you hold your footing on slopes up to 46 degrees, not 38" },
             { Lookahead.Key, "the map uncovers a second circle ahead of the way you travel" },
             { Gasp.Key, "drowning waits 12 s before its first tick, not 1" },
-            { RidesTheWaves.Key, "slams into waves do no hull damage while you hold the helm" },
+            { RidesTheWaves.Key, "no hull damage from wave slams, and half from rocks and ice, while you hold the helm" },
             { Whetted.Key, "axes and picks lose 40% less durability" },
         };
 
