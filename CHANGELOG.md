@@ -5,6 +5,13 @@ and the mod uses [semantic versioning](https://semver.org).
 
 ## [Unreleased]
 
+### Fixed
+
+- Brimming's eitr thrift (LHM-53) did nothing on Valheim 1.0.17: the game now has a private no-argument
+  `Attack.GetAttackEitr` beside the public one, so the patch named an ambiguous method and Harmony refused it.
+  It now names the two-argument overload. `rist patches` lists each patch class as applied or FAILED, and
+  `rist show` prints `thrift=applied`.
+
 ### Added
 
 - **Other players' runestones** (LHM-65). When anyone else is on the server, a row of tabs sits above the rists

@@ -99,12 +99,15 @@ namespace Rist
         /// payment all go through it, so one postfix moves all of them together. A staff's drain per
         /// second while a hold is kept up is a different field and is not changed, which the README says.
         /// A cap of one half keeps a typo from making a cast free.
+        /// The argument types on the patch are not optional: 1.0.17 has a private no-argument overload
+        /// beside this one, and a patch naming only the method throws AmbiguousMatchException and takes
+        /// the class with it. That overload just calls this one, so nothing is applied twice.
         /// </summary>
         internal static class Thrift
         {
             private const float Cap = 0.5f;
 
-            [HarmonyPatch(typeof(Attack), nameof(Attack.GetAttackEitr))]
+            [HarmonyPatch(typeof(Attack), nameof(Attack.GetAttackEitr), typeof(Character), typeof(ItemDrop.ItemData))]
             [HarmonyPostfix]
             private static void Cheaper(Character character, ref float __result)
             {
@@ -325,6 +328,7 @@ namespace Rist
             line += "  melee stagger x" + Reeling.Factor().ToString("0.00", CultureInfo.InvariantCulture)
                     + "  secondary attack guard " + (Secondary.Active ? "on" : "off");
 
+            line += "  thrift=" + (RistPlugin.Applied.TryGetValue("Merges.Thrift", out var thrift) && thrift ? "applied" : "missing");
             line += "  last cast " + (Effects.Cached(LastCast) > 0f ? (Last.Ready ? "ready" : "spent") : "not carved");
 
             ItemDrop.ItemData staff = null;

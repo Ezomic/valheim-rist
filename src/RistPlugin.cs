@@ -206,12 +206,22 @@ namespace Rist
             try
             {
                 _harmony.PatchAll(type);
+                Applied[PatchName(type)] = true;
             }
             catch (System.Exception e)
             {
+                Applied[PatchName(type)] = false;
                 Log.LogError("Rist could not patch " + type.Name + " - that part of the mod is "
                     + "off for this session, the rest continues. " + e);
             }
+        }
+
+        /// <summary>Each class handed to Patch and whether Harmony took it, for `rist patches` and `rist show`.</summary>
+        internal static readonly SortedDictionary<string, bool> Applied = new SortedDictionary<string, bool>();
+
+        private static string PatchName(System.Type type)
+        {
+            return (type.FullName ?? type.Name).Replace("Rist.", "").Replace('+', '.');
         }
 
         /// <summary>Every patch class handed to Patch, or deliberately skipped.</summary>

@@ -54,7 +54,7 @@ namespace Rist
             _registered = true;
 
             new Terminal.ConsoleCommand("rist",
-                "rist show | rist rank <card> <n> | rist powers | rist others [ask] | rist roll | rist perfect | rist fall <m> [roll] | rist hurt <n> [enemy] [full] | rist parry | rist swing | rist momentum | rist run <s> | rist crouch <on|off> | rist noise | rist spyglass | rist stagger | rist spend <n> - this character's standing, and forcing a rank for a test",
+                "rist show | rist patches | rist rank <card> <n> | rist powers | rist others [ask] | rist roll | rist perfect | rist fall <m> [roll] | rist hurt <n> [enemy] [full] | rist parry | rist swing | rist momentum | rist run <s> | rist crouch <on|off> | rist noise | rist spyglass | rist stagger | rist spend <n> - this character's standing, and forcing a rank for a test",
                 OnCommand, isCheat: true);
 
             RistPlugin.Log.LogInfo("Console command 'rist' registered (needs devcommands, host or singleplayer).");
@@ -68,6 +68,7 @@ namespace Rist
             var what = args.Length > 1 ? args[1].ToLowerInvariant() : "";
 
             if (what == "show") { Show(term); return; }
+            if (what == "patches") { Patches(term); return; }
             if (what == "rank") { Rank(term, args); return; }
             if (what == "powers") { Powers(term); return; }
             if (what == "others") { OthersList(term, args.Length > 2 && args[2].ToLowerInvariant() == "ask"); return; }
@@ -86,6 +87,7 @@ namespace Rist
             if (what == "run") { Say(term, Player.m_localPlayer == null ? "rist: no player." : Momentum.Run(Player.m_localPlayer, Seconds(args, 10f))); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
+            term.AddString("rist patches         - each patch class and whether Harmony applied it");
             term.AddString("rist rank <card> <n> - force a card to exactly that rank");
             term.AddString("rist powers          - each forsaken power against every stone carved, and what reaches zero");
             term.AddString("rist others [ask]    - the other characters the page lists; ask sends the request first");
@@ -388,6 +390,12 @@ namespace Rist
         }
 
         // ---------------------------------------------------------------- show
+
+        private static void Patches(Terminal term)
+        {
+            foreach (var entry in RistPlugin.Applied)
+                Say(term, "patch " + entry.Key + " " + (entry.Value ? "applied" : "FAILED"));
+        }
 
         private static void Show(Terminal term)
         {

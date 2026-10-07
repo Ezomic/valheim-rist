@@ -38,6 +38,9 @@ mod rist rank answeringblow 0
 wait 1
 
 mod rist show
+printed thrift=applied yes
+
+mod rist show
 printed parry reaches 0 degrees behind you (threshold 0.00) yes
 
 mod rist show
