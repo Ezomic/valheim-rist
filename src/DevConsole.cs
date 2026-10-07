@@ -84,7 +84,7 @@ namespace Rist
             term.AddString("rist others [ask]    - the other characters the page lists; ask sends the request first");
             term.AddString("rist roll            - start a dodge roll, as the key does");
             term.AddString("rist fall <m> [roll] - land from m metres up, with a dodge pressed as you land when roll is given");
-            term.AddString("rist hurt <n> [enemy] - take n damage as a plain hit, or as a creature's hit with enemy");
+            term.AddString("rist hurt <n> [enemy] [full] - take n damage as a plain hit, or as a creature's hit with enemy; full tops up the health first");
             term.AddString("rist spend <n>       - spend n stamina, as swinging or sprinting does; a big n empties the bar");
             term.AddString("rist stagger         - stagger this character, as a blow from a creature would");
             term.AddString("rist perfect         - send a hit into the roll in progress, which the game counts as a perfect roll");
@@ -107,7 +107,7 @@ namespace Rist
         /// A hit with no creature behind it, for the capstones that judge what you are hit with.
         /// Worked through ApplyDamage directly, so armour, blocking and dodging are not in the way and
         /// the number printed is what the game took off the health bar. With `enemy` it is typed as a
-        /// creature's hit, which is what Shrug looks at; without it the hit is the player's own and
+        /// creature's hit, which is what Bruise cap judges; without it the hit is the player's own and
         /// nothing judges it.
         /// </summary>
         private static string Hurt(Terminal.ConsoleEventArgs args)
@@ -117,9 +117,10 @@ namespace Rist
 
             float damage;
             if (args.Length < 3 || !float.TryParse(args[2], NumberStyles.Float, CultureInfo.InvariantCulture, out damage) || damage <= 0f)
-                return "rist: hurt by how much? rist hurt 5 [enemy]";
+                return "rist: hurt by how much? rist hurt 5 [enemy] [full]";
 
-            var enemy = args.Length > 3 && args[3].ToLowerInvariant() == "enemy";
+            var enemy = HasWord(args, "enemy");
+            if (HasWord(args, "full")) player.SetHealth(player.GetMaxHealth());
             var hit = new HitData
             {
                 m_hitType = enemy ? HitData.HitType.EnemyHit : HitData.HitType.Self,
@@ -133,7 +134,17 @@ namespace Rist
 
             return "rist: hurt asked " + damage.ToString("0.0", CultureInfo.InvariantCulture)
                    + ", took " + (before - player.GetHealth()).ToString("0.0", CultureInfo.InvariantCulture)
-                   + (enemy ? " (as a creature's hit)" : "");
+                   + " (" + (before > 0f ? ((before - player.GetHealth()) / player.GetMaxHealth() * 100f).ToString("0", CultureInfo.InvariantCulture) : "0")
+                   + "% of max health " + player.GetMaxHealth().ToString("0.0", CultureInfo.InvariantCulture) + ")"
+                   + (enemy ? " as a creature's hit" : "");
+        }
+
+        private static bool HasWord(Terminal.ConsoleEventArgs args, string word)
+        {
+            for (var i = 3; i < args.Length; i++)
+                if (args[i].ToLowerInvariant() == word) return true;
+
+            return false;
         }
 
         private static string Spend(Terminal.ConsoleEventArgs args)
@@ -386,7 +397,7 @@ namespace Rist
             term.AddString(ComboHold.Probe());
             term.AddString(Riposte.Probe());
             term.AddString(SecondNock.Probe());
-            term.AddString(Shrug.Probe());
+            term.AddString(BruiseCap.Probe());
             term.AddString(FootingBack.Probe());
             term.AddString(PatchUp.Probe());
             term.AddString(SecondWind.Probe(player));

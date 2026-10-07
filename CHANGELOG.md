@@ -160,13 +160,18 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   draw-speed stone, so it is the closest of these capstones to its stone's own stat; what is new is that it rewards
   the second arrow and not the first. Bows only; the crossbow keeps the reload speed from the ranks. The head start is
   15% of the bow's real draw time at your skill and composes with the ranks' faster draw. It started at 30% in the first draft and the capstone review cut it to 15%; the share is `SecondNockShare` in the cfg.
-- **Thick-hided**: the capstone is now Shrug. A creature's hit worth under 4% of your maximum health does nothing, which
-  is the swarm case (Deathsquitos, ticks, Seekers) that a percentage of armour cannot touch, while armour keeps its own
-  job. It used to be another 5% armour, the stone's own stat again. It is judged after armour and resistances, so
-  the line rises with food and armour; a Troll is not shrugged and a swarm is. Creature hits only: falls, fire, poison and
-  drowning are untouched, and so is damage over time. Thick-hided's armour from the ranks is unchanged.
-- `rist hurt <n> [enemy]` takes a plain hit through the game's own damage path and prints what it took off the health
-  bar, as a creature's hit with `enemy`. It exists so Shrug and the other health-reading capstones have a scenario.
+- **Thick-hided**: the capstone is now Bruise cap. No single hit can take more than half of your maximum health, so a
+  character at full health cannot be killed by one blow, and a boss still wears you down over a fight. It replaces Shrug
+  (a hit under 4% of your health does nothing), the first draft of this capstone, and it used to be another 5% armour before
+  that. The cap is applied to the final damage of one hit, after armour, resistances and the world's damage-taken setting,
+  and the whole hit is scaled down, so its stagger shrinks with it. Damage over time is not capped: burning, poison, smoke,
+  cold, drowning, lava and ocean heat tick as hits of their own types and are left alone, as are the edge of the world and
+  your own health costs. A fall is capped, as any other single hit: the fall system only decides how much damage there is, so
+  nothing breaks, and a drop that would have killed a full-health character now leaves them at half. The share is
+  `BruiseCapShare` in the cfg (0.50). Thick-hided's armour from the ranks is unchanged.
+- `rist hurt <n> [enemy] [full]` takes a plain hit through the game's own damage path and prints what it took off the health
+  bar and as a share of maximum health, as a creature's hit with `enemy`, after topping the health up with `full`. It exists
+  so Bruise cap and the other health-reading capstones have a scenario.
 - **Steady footing**: the capstone is now Footing back. For three seconds after you recover from a stagger, nothing staggers
   you again, so a stagger can no longer be chained into the next and the next. It used to be another 5% armour, which is
   Thick-hided's stat. The first stagger is exactly as dangerous as before; the guard only ends the chain behind it.

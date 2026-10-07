@@ -34,6 +34,7 @@ namespace Rist
         internal static ConfigEntry<float> GaspSeconds;
         internal static ConfigEntry<float> GaspSwimStamina;
         internal static ConfigEntry<float> RidesTheWavesCollision;
+        internal static ConfigEntry<float> BruiseCapShare;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -400,6 +401,12 @@ namespace Rist
                 "Weatherly's capstone, second half: how much less damage the hull takes from collisions with rocks, ice and the shore " +
                 "while the helmsman carries the stone, as a share. 0.5 is half. Wave slams do no damage at all regardless. " +
                 "Added by the capstone review (LHM-44).");
+
+            BruiseCapShare = cfg.Bind("Capstones", "BruiseCapShare", 0.5f,
+                "Thick-hided's capstone: the most one hit can take, as a share of your maximum health. 0.5 is half, so a full-health " +
+                "character cannot be killed by a single blow. Judged on the final damage after armour and resistances and the world's " +
+                "damage-taken setting; damage over time, drowning, the edge of the world and your own health costs are not capped. " +
+                "Clamped to 0.05..1. A hard rule for the host on a server.");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

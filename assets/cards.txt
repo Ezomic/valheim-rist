@@ -47,7 +47,7 @@
 #   *stamina:secondwind     the first time your stamina runs out, a quarter of the bar comes back at once, once in 90 s (value 1)
 #   *mend:patchup           10 s after your last swing or hit taken, a quarter of the health you lost comes back over 5 s (value 1)
 #   *stagger:guard          nothing staggers you for 3 s after you recover from a stagger (value 1)
-#   *shrug                  creature hits under 4% of your maximum health do nothing (value 1)
+#   *hit:cap                no single hit can take more than half of your maximum health (value 1)
 #   *parry:rear             a parry covers this many degrees behind you, past your shoulders (30)
 #   *eitr:regen             eitr regen, and with it casts cost 5% less eitr per 8% of regen
 #   *eitr:thrift            how much less eitr a cast costs (a companion of *eitr:regen)
@@ -221,10 +221,10 @@ bloodsworn  | Blood-sworn    | The blood keeps what it was promised. | *blood:le
 
 == Survival
 
-# Thick-hided's capstone is the shrug: a creature's hit worth under 4% of your maximum health does
-# nothing. It used to be another 5% of armour, the stone's own stat again. Judged after armour,
-# so what is small grows with both food and armour; the swarm case is what it is for.
-thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | *shrug                    | 1    | H
+# Thick-hided's capstone is the bruise cap: no single hit can take more than half of your maximum health
+# (BruiseCapShare), judged on the final damage after armour. It used to be another 5% of armour, the stone's
+# own stat again, and for one draft a shrug of hits under 4%. Damage over time is not capped.
+thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | *hit:cap                  | 1    | H
 # Steady footing's capstone is the footing back: for 3 s after you recover from a stagger, nothing
 # staggers you again, which ends the chain. It used to be another 5% armour. Rooted, no knockback
 # from a creature's hit, was the first idea and was too much: it would have made the stone the obvious

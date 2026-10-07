@@ -124,7 +124,7 @@ namespace Rist
             Patch(typeof(Riposte.Parry));
             Patch(typeof(SecondNock.Loose));
             Patch(typeof(SecondNock.Draw));
-            Patch(typeof(Shrug.Small));
+            Patch(typeof(BruiseCap.Cap));
             Patch(typeof(FootingBack.Refuse));
             Patch(typeof(SecondWind.Spent));
             Patch(typeof(LoseThem.Drop));
