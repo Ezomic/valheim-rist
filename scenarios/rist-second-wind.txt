@@ -1,0 +1,59 @@
+# Rist: Long wind's capstone, Second wind. The first time your stamina runs out, a quarter of the bar
+# comes back at once, and not again for 90 s.
+#
+# `rist spend <n>` spends stamina through Player.UseStamina, the call swinging and sprinting go
+# through, so a big number runs the bar dry the way a long sprint does. `rist show` prints
+#
+#   second wind: carved, ready | ready in Ns, used N times, stamina P%
+#
+# P is the bar as a share of its maximum, read straight after the spend. The bar starts to refill
+# one second after a spend, so the reads below come first and take well under it.
+#
+# THE BOUNDARY MATTERS MOST: rank four must read 0% after the bar is emptied, and a capstone paid
+# before it is earned passes any test that only ever looks at rank five.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Long wind at rank 0.
+
+clear
+god
+
+mod rist rank longwind 0
+wait 1
+mod rist show
+printed second wind: not carved yes
+
+# ---- rank 4: empty is empty.
+
+mod rist rank longwind 4
+wait 1
+mod rist spend 9999
+wait 0.2
+mod rist show
+printed stamina 0% yes
+
+# ---- rank 5: the bar comes back by a quarter the first time it runs dry.
+
+mod rist rank longwind 5
+wait 6
+mod rist spend 9999
+wait 0.2
+mod rist show
+printed stamina 25% yes
+
+mod rist show
+printed used 1 times yes
+
+# ---- and not again inside 90 s: emptied a second time it stays empty.
+
+wait 3
+mod rist spend 9999
+wait 0.2
+mod rist show
+printed stamina 0% yes
+
+mod rist rank longwind 0
+wait 1
+mod rist show
+printed second wind: not carved yes

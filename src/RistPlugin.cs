@@ -118,6 +118,30 @@ namespace Rist
             Patch(typeof(Merges.Last));
             Patch(typeof(Merges.Reeling));
             Patch(typeof(Merges.Secondary));
+            Patch(typeof(LastBlow.Cost));
+            Patch(typeof(LastBlow.Hit));
+            Patch(typeof(ComboHold.Chain));
+            Patch(typeof(ReturnBlow.Parry));
+            Patch(typeof(ReturnBlow.Begin));
+            Patch(typeof(ReturnBlow.Price));
+            Patch(typeof(ReturnBlow.Paying));
+            Patch(typeof(SecondNock.Loose));
+            Patch(typeof(SecondNock.Draw));
+            Patch(typeof(BruiseCap.Cap));
+            Patch(typeof(FootingBack.Refuse));
+            Patch(typeof(SecondWind.Spent));
+            Patch(typeof(LoseThem.Drop));
+            Patch(typeof(SilentStep.Made));
+            Patch(typeof(SilentStep.Reported));
+            Patch(typeof(Momentum.Speed));
+            Patch(typeof(Momentum.Drive));
+            Patch(typeof(Spyglass.Look));
+            Patch(typeof(Spyglass.Turn));
+            Patch(typeof(Gasp.Swimming));
+            Patch(typeof(RidesTheWaves.Slam));
+            Patch(typeof(RidesTheWaves.Collide));
+            Patch(typeof(RidesTheWaves.Soften));
+            Patch(typeof(Whetted.Swing));
 
             // Three classes rather than one, so a game update that moves EnemyHud's private
             // UpdateHuds costs the plate's gate and not the death stamp beside it.
@@ -141,12 +165,11 @@ namespace Rist
             // Not a card - a floor under all of them together. See RunStamina.
             Patch(typeof(RunStamina));
 
-            // Long stride's landing guard, confirmed with Harmony rather than assumed. The jump
-            // bonus is withheld until it is, because a higher jump measured from its full height
-            // hurts on landing - see Sinews.Landing.
+            // Sure-footed's landing roll, confirmed with Harmony rather than assumed: PatchAll returning
+            // is not proof that both ends of the roll are attached - see Sinews.Landing.
             Patch(typeof(Sinews.Landing));
             Patch(typeof(Sinews.Landing.Press));
-            Sinews.Landing.ConfirmGuard(PluginGuid);
+            Sinews.Landing.Confirm(PluginGuid);
 
             // The console command registers itself from Terminal's own init, so this one line
             // is the difference between `rist` existing and every scenario failing on step one.
@@ -183,12 +206,22 @@ namespace Rist
             try
             {
                 _harmony.PatchAll(type);
+                Applied[PatchName(type)] = true;
             }
             catch (System.Exception e)
             {
+                Applied[PatchName(type)] = false;
                 Log.LogError("Rist could not patch " + type.Name + " - that part of the mod is "
                     + "off for this session, the rest continues. " + e);
             }
+        }
+
+        /// <summary>Each class handed to Patch and whether Harmony took it, for `rist patches` and `rist show`.</summary>
+        internal static readonly SortedDictionary<string, bool> Applied = new SortedDictionary<string, bool>();
+
+        private static string PatchName(System.Type type)
+        {
+            return (type.FullName ?? type.Name).Replace("Rist.", "").Replace('+', '.');
         }
 
         /// <summary>Every patch class handed to Patch, or deliberately skipped.</summary>
@@ -325,7 +358,7 @@ namespace Rist
             // the server's 0 replaces a player's 48 for the whole session and puts it back on
             // every edit - the trap Vaettir's grid angle fell into. Nothing can desync over it:
             // the host has no panel, and two players' screens have nothing to agree about.
-            Suite.Local(RistConfig.PanelBottomInset);
+            Suite.Local(RistConfig.PanelBottomInset, RistConfig.SpyglassKey, RistConfig.SpyglassZoom, RistConfig.SpyglassSlowTurn);
 
             // WeightGeneration is deliberately not in that list. It is not a shared rule about
             // what things are worth, it is a server-side instruction to re-price the ledger
@@ -372,6 +405,15 @@ namespace Rist
                 HallRaiser.Forget();
                 EelSlick.Forget();
                 Engineer.Forget();
+                LastBlow.Forget();
+                ReturnBlow.Forget();
+                Momentum.Forget();
+                Spyglass.Forget();
+                SecondNock.Forget();
+                FootingBack.Forget();
+                SecondWind.Forget();
+                Carried.Forget();
+                Gasp.Forget();
                 return;
             }
 
@@ -387,7 +429,12 @@ namespace Rist
             // silent until the server has said what the level is.
             Nameplate.Publish(player);
             BloodSworn.Publish(player);
+            Carried.Publish(player);
             Merges.Last.Tick(player);
+            LastBlow.Tick(player);
+            Momentum.Tick(player, Time.deltaTime);
+            FootingBack.Tick(player);
+            PatchUp.Tick(player);
 
             // A shared forsaken-power minute that arrived a moment before its effect.
             Oathbound.Tick();

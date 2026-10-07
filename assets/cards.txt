@@ -30,14 +30,25 @@
 #   *power:cooldown         the forsaken power's cooldown, negative is shorter
 #   *power:duration         seconds added to the forsaken power for everyone it reaches, when you cast it
 #   *staminadelay           seconds off the pause before stamina starts coming back
-#   *jumpheight             jumps higher, as a share of how high you jump: 0.15 is 15% higher
 #   *overloaded             stamina walking costs while over your carry limit: -0.50 is half
 #   *landing:roll           a dodge pressed in the last 0.3 s before touchdown makes the fall count 8 m shorter (value 1)
 #   *blood:levels           blood magic levels, and with them a blood shield that absorbs 10% more per 3 levels
 #   *blood:absorb           how much more a blood magic shield absorbs (a companion of *blood:levels, never written alone)
 #   *blood:summon           one more summon than the staff allows (value 1)
 #   *blood:refill           recasting a blood magic shield refills it (a companion of *blood:summon)
-#   *parry:rear             a parry covers this many degrees behind you, past your shoulders (30); also -8% block stamina
+#   *draw:second            the next bow draw begun within 1.5 s of a shot starts 15% full (value 1)
+#   *tool:whetted           axes and pickaxes lose 40% less durability (value 1)
+#   *sail:waves             slams into waves do no hull damage, and collisions with rocks, ice and shore cost the hull half, while you hold the helm (value 1)
+#   *swim:gasp              after your stamina runs out in water, drowning waits 12 s before its first tick instead of 1, and swimming costs 25% less stamina (value 1)
+#   *sight:spyglass         hold a key to zoom the view far ahead, like binoculars (value 1)
+#   *run:momentum          after 5 s of running in a straight line you run 5% faster until you stop or turn sharply (value 1)
+#   *noise:silent           crouched and creeping or still, you make no noise at all (value 1)
+#   *stealth:losethem       a creature that has lost you gives up the hunt after 12 s instead of 30 (value 1)
+#   *stamina:secondwind     the first time your stamina runs out, a quarter of the bar comes back at once, once in 90 s (value 1)
+#   *mend:patchup           10 s after your last swing or hit taken, a quarter of the health you lost comes back over 5 s (value 1)
+#   *stagger:guard          nothing staggers you for 3 s after you recover from a stagger (value 1)
+#   *hit:cap                no single hit can take more than half of your maximum health (value 1)
+#   *parry:rear             a parry covers this many degrees behind you, past your shoulders (30)
 #   *eitr:regen             eitr regen, and with it casts cost 5% less eitr per 8% of regen
 #   *eitr:thrift            how much less eitr a cast costs (a companion of *eitr:regen)
 #   *eitr:lastcast          one cast on an empty bar, once per refill (value 1); also +10% eitr regen
@@ -52,6 +63,9 @@
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
+#   *kill:refund            the swing that kills gives half its stamina back (value 1)
+#   *combo:hold             a weapon combo chains from a swing up to 0.6 s late instead of 0.2 s (value 1)
+#   *parry:returnblow       a good parry makes your next melee swing cost no stamina, within 5 s (value 1); also 30 degrees of parry behind you and -8% block stamina
 #
 # Rank 5 is meant to be the moment, so a capstone should be an unlock rather than a larger
 # number wherever the game gives us one: a row of inventory, a roll that cushions a landing, levels in
@@ -68,7 +82,7 @@
 # row back as a card of its own: as its own card it was the strongest pick in the catalogue
 # and taken first every time, which is not a choice.
 #
-# MOVE SPEED IS CAPPED AT 10% AND COMES FROM ONE CARD ONLY. Long stride is the only source;
+# MOVE SPEED IS CAPPED AT 10% AND COMES FROM ONE CARD ONLY, with one exception: Long stride's capstone, Momentum, adds 5% while a straight run lasts. Long stride is the only source;
 # Tireless used to add 8% on top, and the two together reached 23%. Speed is the one stat a
 # player carries out of this world: it is always on, never noticed while you have it, and its
 # absence is what gets felt - a player told us Rist had made his other, unmodded playthroughs
@@ -84,8 +98,7 @@
 # ideas board and the formula agrees with him.
 #
 # NOTHING GRANTS FLAT ARMOUR ANY MORE. Steady footing's capstone went the same way, +5% rather
-# than +2, which keeps the two stones mirrors of each other: Steady footing's capstone has
-# always been a dose of whatever Thick-hided does per rank. The case flat armour was kept for is
+# than +2, and has since stopped being armour at all, as Swift-mending's +2 has (LHM-44). The case flat armour was kept for is
 # the other branch of the curve, a hit bigger than twice your armour, where the game subtracts
 # rather than divides - and there +2 saves exactly 2 damage while +5% saves 5% of your armour,
 # so the flat number only wins below 40 armour. That is leather and troll hide, and it is a
@@ -158,8 +171,9 @@
 #
 # The same card reloads a crossbow sooner, because a bow's draw and a crossbow's reload are
 # the same wait to the person holding the weapon; Windlass was designed as its own card and
-# folded in here. Its capstone is damage from bows and crossbows only. It used to be
-# m_damageModifier, which Rist applies to every skill, so it was a second Keen edge.
+# folded in here. Its capstone was damage from bows and crossbows only, and before that
+# m_damageModifier, which Rist applies to every skill, so it was a second Keen edge. It is the
+# second nock now (LHM-44): a number on a stat the stone does not own became a behaviour.
 #
 # Quick chant's burst staffs have their burst clock sped with the animation, or a faster cast
 # ends before its last projectiles fire. A looping staff that pays eitr once per hold is left
@@ -170,15 +184,23 @@
 
 == Combat
 
-steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | m_timedBlockBonus         | 0.20 | P
-keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | m_damageModifier          | 0.05 | Z
+# Steady arm's capstone is the last blow: the swing that kills is paid back by half. It used to be
+# +20% parry bonus, a number on a stat the stone has nothing to do with. Read from the target's
+# health after the hit, so it holds when another client owns the creature.
+steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | *kill:refund              | 1    | P
+# Keen hand's capstone forgives a late swing: a combo chains from a swing 0.6 s after the last one
+# ended where the game allows 0.2 s. It used to be +5% damage on every weapon, close to Keen edge.
+keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | *combo:hold               | 1    | Z
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
-turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:rear | 30 | X
-quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *damage:ranged            | 0.05 | Y
+turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:returnblow | 1 | X
+# Quick draw's capstone is the second nock: the next bow draw begun within 1.5 s of a shot starts 15%
+# full. It used to be +5% bow and crossbow damage. *damage:ranged is still a supported special.
+quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *draw:second              | 1    | Y
 quickchant  | Quick chant    | The chant is done before the staff is raised.| *attackspeed:magic | 0.03 | *unbroken          | 1    | T
 
 # Three stones took in the idea beside them (LHM-53), and none lost anything. Turned blade's
-# capstone is now the arc behind you and keeps its block stamina as a companion; Brimming's
+# capstone is now the return blow, a good parry making the next melee swing free
+# (LHM-44), and it carries the arc behind you and the block stamina LHM-53 gave it as companions; Brimming's
 # per-rank effect is a special so the eitr thrift can ride it, and its capstone, one cast on an
 # empty bar, keeps the extra regen; Answering blow's ranks drive melee stagger and its capstone
 # stands through a secondary attack. Companions are in Card.Companions.
@@ -199,9 +221,19 @@ bloodsworn  | Blood-sworn    | The blood keeps what it was promised. | *blood:le
 
 == Survival
 
-thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | m_armorMultiplier         | 0.05 | H
-steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.05 | m_armorMultiplier         | 0.05 | E
-swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | m_addArmor                | 2 | D
+# Thick-hided's capstone is the bruise cap: no single hit can take more than half of your maximum health
+# (BruiseCapShare), judged on the final damage after armour. It used to be another 5% of armour, the stone's
+# own stat again, and for one draft a shrug of hits under 4%. Damage over time is not capped.
+thickhide   | Thick-hided    | Blows land shallower.             | m_armorMultiplier        | 0.03  | *hit:cap                  | 1    | H
+# Steady footing's capstone is the footing back: for 3 s after you recover from a stagger, nothing
+# staggers you again, which ends the chain. It used to be another 5% armour. Rooted, no knockback
+# from a creature's hit, was the first idea and was too much: it would have made the stone the obvious
+# pick, and knockback is how a fight is escaped as well as how it is lost.
+steadyfoot  | Steady footing | Harder to knock out of stance.    | m_staggerModifier        | -0.05 | *stagger:guard            | 1    | E
+# Swift-mending's capstone is the patch-up: ten seconds after your last swing or hit taken, a quarter
+# of the health you lost in that fight comes back over five seconds. It used to be +2 flat armour.
+# Regen that arrives when the fight ends, so it saves potions and not lives.
+swiftmend   | Swift-mending  | Flesh knits without asking.       | m_healthRegenMultiplier  | 0.08  | *mend:patchup             | 1    | D
 # Sure-footed's ranks are -10% fall damage each, -50% at rank five, and that is all they buy. The
 # capstone used to be a second -50%, which made rank five immune to falling and left nothing to
 # do about a drop from a mountain top. It is a landing roll now: a dodge pressed in the last 0.3 s
@@ -227,7 +259,9 @@ eelslick    | Eel-slick      | The blow finds only the place you were. | *roll:w
 
 oxback      | Ox-backed      | The load sits easy on you.        | m_addMaxCarryWeight      | 30    | *overloaded               | -0.50 | U
 tireless    | Tireless       | The day does not wear on you.     | *stamina:move            | -0.05 | *staminadelay             | 0.6  | A
-longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | m_staminaRegenMultiplier  | 0.10 | L
+# Long wind's capstone is the second wind: the first time your stamina runs out, a quarter of the bar
+# comes back at once, and not again for 90 s. It used to be another 10% regen, the same number twice.
+longwind    | Long wind      | Breath comes back quicker.        | m_staminaRegenMultiplier | 0.08  | *stamina:secondwind       | 1    | L
 brimming    | Brimming       | It returns before you need it, and lends one more. | *eitr:regen | 0.08  | *eitr:lastcast | 1 | Q
 
 # A buff mead is decided from the item, not a name list: a consumable, not food, an SE_Stats
@@ -252,14 +286,20 @@ deepdraught | Deep draught   | A long pull lasts a long way.     | *mead:duratio
 # helps a weapon that has one.
 lowdraw     | Low draw       | The deer never hears the string.  | *lowdraw                 | 1     | *lowdraw:silent           | 1 | G
 unseenblow  | Unseen blow    | The first cut lands before they know.| *sneakattack          | 0.10  | *sneakattack:stagger      | 1 | B
-softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | -0.08 | m_noiseModifier           | -0.10 | I
-quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifier          | -0.08 | m_stealthModifier         | -0.10 | N
+# Soft step's capstone is losing them: a creature that has lost you gives up the hunt after 12 s
+# instead of 30, bosses and creatures that hunt players excepted. It used to be -10% noise, which was
+# Quiet wake's own effect. The creature's owner reads the stone from a flag the carver publishes.
+softstep    | Soft step      | The woods do not notice you.      | m_stealthModifier        | -0.08 | *stealth:losethem         | 1    | I
+# Quiet wake's capstone is the silent step: crouched and moving no faster than a crouch-walk, or standing,
+# you make no noise at all (SilentStep switches it). It used to be -10% detection, which was Soft step's own
+# effect, and for one draft a sleeper left asleep. The ranks' own -8% noise applies the rest of the time.
+quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifier          | -0.08 | *noise:silent             | 1    | N
 
 # Two cards that widen what the world gives back rather than what you do to it, and neither
 # can follow you out of this world the way move speed did. Far sight is felt only on ground
 # you have not walked; Weatherly only at sea.
 #
-# Far sight multiplies Minimap.m_exploreRadius, which is 100 in vanilla - so rank 5 is 125.
+# Far sight multiplies Minimap.m_exploreRadius, which is 100 in vanilla - so rank 5 is 150 (10% a rank, it was 5% until the capstone review).
 #
 # Weatherly is the sailing model, which is seven lines in Ship.GetWindAngleFactor: sailing
 # across the wind gives 1.0, dead up or downwind gives 0.7, and a hard cone from dot 0.75 to
@@ -271,18 +311,38 @@ quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifi
 # At rank 5 the best windward heading moves from 52 degrees off the wind to about 36, roughly
 # 71% faster upwind. Dead upwind stays fully dead at every rank, so tacking survives.
 #
-# The capstone rows faster, not sails faster. Rowing is a separate force from the sail
-# (m_backwardForce, used only at Slow and Back), and it is what you are left doing when you
-# still cannot point high enough. It used to be a tacking bonus on the sail, which only made
-# the card's own job more so; rowing answers the same annoyance from the other end.
+# The capstone used to row faster, and before that sail faster. Rowing is a separate force from
+# the sail (m_backwardForce, used only at Slow and Back), and rowing answered the same annoyance
+# from the other end. It is the hull now (LHM-44): a second kind of speed on the stone's own job
+# was the thing to avoid, so the capstone keeps the ship afloat in the weather the sail is in.
 
 == Utility
 
-longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *jumpheight               | 0.15 | R
-farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *exploreradius            | 0.10 | F
-tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | m_swimStaminaUseModifier  | -0.10 | O
-weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *rowspeed                 | 0.20 | W
-surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.03  | m_staminaRegenMultiplier  | 0.12 | J
+# Long stride's capstone is momentum: after 5 s of running in a straight line you run 5% faster until you
+# stop or turn sharply (MomentumSeconds, MomentumBonus, MomentumRamp). It used to be steep ground, a higher
+# slide angle, and before that 15% jump height, which is gone with its landing guard. It is a second
+# speed source on purpose: the 10% cap below covers the stone's ranks, and Momentum is earned by a run and
+# lost when it ends, which the cap's reasoning (always on, never noticed) does not reach.
+longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *run:momentum             | 1    | R
+# Far sight's capstone is the spyglass: hold a key (Z) and the view zooms to a quarter of its field of view
+# (SpyglassKey, SpyglassZoom, SpyglassSlowTurn), like binoculars. It used to be the lookahead, a second map circle
+# ahead of the way you travel, and before that another 10% radius. The stone's own radius is 10% a rank since the
+# capstone review, 50% at rank five.
+farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.10  | *sight:spyglass           | 1    | F
+# Tide-borne's capstone is the gasp: after your stamina runs out in water, drowning damage waits 12 s
+# before its first tick instead of 1 (GaspSeconds), and swimming costs 25% less stamina (GaspSwimStamina). The
+# swim stamina bite is the old capstone back, as a companion in code, after the capstone review.
+tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | *swim:gasp                | 1    | O
+# Weatherly's capstone is riding the waves: slams into waves do no hull damage, and collisions with rocks, ice and
+# the shore cost the hull half, while you hold the helm (the second half is from the capstone review). It used to be 20% rowing speed, a second kind of speed on the stone's own job. Upside-down and
+# Ashlands damage are other methods and are not touched. The ship's owner reads the stone from a flag
+# the helmsman publishes. *rowspeed is still a supported special.
+weatherly   | Weatherly      | She points nearer the wind.       | *windcone                | 0.06  | *sail:waves               | 1    | W
+# Sure hand's capstone is the whetted edge: axes and pickaxes lose 40% less durability. It used to be
+# 12% stamina regen, which was Long wind's job. The axe counts as a tool, so an axe in a fight wears
+# less as well; the hammer and the hoe are not covered.
+# The stone's own swing speed is 5% a rank, 25% at rank five (it was 3% a rank before the capstone review).
+surehand    | Sure hand      | Axe and pick bite without waiting.| *attackspeed:tools       | 0.05  | *tool:whetted             | 1    | J
 # Hall-raiser widens the radius a station covers for building and nothing else about it: the circle
 # that keeps enemies from spawning in a base is a separate thing and stays where it is, and the
 # distance you stand from a bench to craft at it is unchanged. The sigil is shared with Quiet wake,

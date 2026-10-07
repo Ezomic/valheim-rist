@@ -1,0 +1,81 @@
+# Rist: Swift-mending's capstone, Patch-up. Ten seconds after your last swing or hit taken, a quarter
+# of the health you lost comes back over five seconds.
+#
+# `rist hurt <n>` takes a plain hit through the game's own ApplyDamage, which is a hit taken as far as
+# the capstone can tell, and `rist show` prints
+#
+#   patch-up: not carved | carved, lost L, mending M, mended N times (H health)
+#
+# L is what has fallen off the health bar since the last mend and is owed a quarter of, M is what is
+# still being paid out, N and H count mends and the health they gave back.
+#
+# Food regen heals a little between steps and a fading meal trims the maximum health, so a fed character
+# reads a smaller "lost" than was dealt. The checks are therefore movements (the tally rises, is spent,
+# one mend is paid), never exact figures. Health below full is needed to be healed at all.
+#
+# THE BOUNDARY MATTERS MOST: rank four must owe nothing. A capstone paid before it is earned passes
+# any test that only ever looks at rank five.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client. About 35 seconds.
+#
+# It leaves Swift-mending at rank 0.
+
+clear
+god
+
+mod rist rank swiftmend 0
+wait 1
+mod rist show
+printed patch-up: not carved yes
+
+# ---- rank 4: hurt, wait, and nothing is owed or paid.
+
+mod rist rank swiftmend 4
+wait 1
+mod rist hurt 8
+wait 1
+mod rist show
+printed patch-up: not carved yes
+
+# ---- rank 5: the loss is counted, and ten quiet seconds start the mend.
+#
+# The character is fed and its health pool is large, so no figure is asserted to the decimal: food
+# regen heals a little between steps and a fading meal trims the maximum, and a scenario that
+# demands "lost 8.0" fails on a healthy capstone. What is asserted is the movement: the tally rises
+# on a hit, is spent when the mend begins, and exactly one mend is paid.
+
+mod rist rank swiftmend 5
+mod rist hurt 1 full
+wait 12
+mod rist show
+printed patch-up: carved yes
+note mends mended\s(\d+)\stimes
+note owed lost\s([\d.]+),
+note back \(([\d.]+)\shealth\)
+note mid mending\s([\d.]+),
+
+mod rist hurt 70
+wait 1
+mod rist show
+went owed lost\s([\d.]+), up
+
+# Ten seconds after the hit the mend begins and the tally is spent into the mend. The hit is 70, not 8:
+# food regen repays a small hit inside the quiet ten seconds and leaves nothing to mend.
+# The read is about twelve seconds after the hit, so the five-second payout is still running.
+wait 11
+mod rist show
+went owed lost\s([\d.]+), down
+went mid mending\s([\d.]+), up
+went mends mended\s(\d+)\stimes +1
+
+# And five seconds later it has been paid out, and a quarter of what was lost is health returned.
+wait 5
+mod rist show
+printed mending 0.0 yes
+went mends mended\s(\d+)\stimes same
+went back \(([\d.]+)\shealth\) up
+
+mod rist rank swiftmend 0
+wait 1
+mod rist show
+printed patch-up: not carved yes

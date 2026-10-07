@@ -1,18 +1,14 @@
-# Rist: Steady footing's capstone is +5% armour, and it arrives at the fifth rank and not before.
+# Rist: Steady footing pays no armour at any rank, and its capstone arrives at the fifth rank and not before.
 #
-# The other half of the 1.6.0 change. Thick-hided's percentage is covered by
-# rist-armour-scales; this one is about the boundary, which is the part a capstone gets wrong:
-# a bonus that leaks into the early ranks passes any test that only ever looks at rank 5.
+# Written in 1.6.0 to prove an armour capstone. LHM-44 replaced that with Footing back (three seconds
+# without a stagger after you recover from one), so what this reads now is the regression guard that
+# no armour is paid at any rank, and the boundary: the capstone is the fifth rank's and not the
+# fourth's. A capstone paid before it is earned passes any test that only ever looks at rank 5.
 #
-# Rank 4 has to be x1.00. Steady footing gives stagger every rank and armour only at five, so
-# four ranks of it must not move armour at all - and stagger is not what this reads, on
-# purpose, because a card that quietly wrote its capstone into every rank would still answer
-# correctly about stagger.
-#
-# The last pair is both stones at once: 15% from Thick-hided's ranks, 5% from its capstone and
-# 5% from this one is 25%. It is here because the two cards now name the same field, and
-# "they add up" is exactly what stops being true if one of them ever writes the field instead
-# of contributing to it.
+# Thick-hided's percentage is covered by rist-armour-scales. The last pair here is both stones
+# at once: Thick-hided's 15% from its ranks and nothing from this one, because the two used to
+# name the same field and "they add up" is exactly what stops being true if one of them ever
+# writes the field instead of contributing to it.
 #
 # SINGLEPLAYER, same as the other one: ranks live on the server.
 #
@@ -38,22 +34,29 @@ printed game x1.00 yes
 mod rist rank steadyfoot 4
 wait 1
 
-# Four ranks of stagger and no armour. If this reads x1.04, the capstone is being paid per
-# rank; if it reads x1.05, it is being paid before it is earned.
+# Four ranks of stagger and no armour, and no capstone yet.
 mod rist show
 printed game x1.00 yes
 
+mod rist show
+printed footing back: not carved yes
+
 mod rist rank steadyfoot 5
 wait 1
-mod rist show
-printed game x1.05 yes
 
-# ---- both stones, adding rather than overwriting.
+# The fifth rank no longer pays armour: x1.05 here would be the old capstone back.
+mod rist show
+printed game x1.00 yes
+
+mod rist show
+printed footing back: carved yes
+
+# ---- both stones: Thick-hided's 15% from its ranks and nothing from this one.
 
 mod rist rank thickhide 5
 wait 1
 mod rist show
-printed game x1.25 yes
+printed game x1.15 yes
 
 mod rist rank thickhide 0
 mod rist rank steadyfoot 0

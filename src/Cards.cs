@@ -105,12 +105,13 @@ namespace Rist
                         new KeyValuePair<string, float>(BloodSworn.Refill, 1f),
                     }
                 },
-                // Turned blade's capstone keeps the block stamina it always gave: 30 degrees of arc
-                // and -8% in one carving.
+                // Turned blade's capstone is the return blow, and keeps what LHM-53 folded into it: the arc
+                // behind you and the -8% block stamina it always gave, all in one carving.
                 {
-                    Merges.ParryRear, new[]
+                    ReturnBlow.Key, new[]
                     {
-                        new KeyValuePair<string, float>("m_blockStaminaUseModifier", -0.08f / 30f),
+                        new KeyValuePair<string, float>(Merges.ParryRear, 30f),
+                        new KeyValuePair<string, float>("m_blockStaminaUseModifier", -0.08f),
                     }
                 },
                 // Brimming: 8% regen a rank brings 5% off a cast, and the capstone keeps its extra 10% regen.
@@ -142,6 +143,18 @@ namespace Rist
                 },
             };
 
+        /// <summary>
+        /// The companions of an effect, or null. Tide-borne's swim stamina is read from the cfg here, so a host rule
+        /// that arrives after the static table was built still counts.
+        /// </summary>
+        internal static KeyValuePair<string, float>[] CompanionsOf(string effect)
+        {
+            if (effect == Gasp.Key)
+                return new[] { new KeyValuePair<string, float>("m_swimStaminaUseModifier", -Mathf.Clamp(RistConfig.GaspSwimStamina.Value, 0f, 0.5f)) };
+
+            return Companions.TryGetValue(effect, out var also) ? also : null;
+        }
+
         /// <summary>The companions of the effect at <paramref name="rank"/>, one per line, or nothing.</summary>
         internal string DescribeAlso(int rank)
         {
@@ -155,7 +168,10 @@ namespace Rist
 
         private static string Also(string effect, float total)
         {
-            if (string.IsNullOrEmpty(effect) || !Companions.TryGetValue(effect, out var also)) return "";
+            if (string.IsNullOrEmpty(effect)) return "";
+
+            var also = CompanionsOf(effect);
+            if (also == null) return "";
 
             var lines = new List<string>();
             foreach (var pair in also) lines.Add(Format(pair.Key, total * pair.Value));
@@ -426,7 +442,6 @@ namespace Rist
             // Read as the wait it removes, not as the delay it leaves. "0.6s less before
             // stamina returns" is the thing a player feels the moment they stop running.
             { Sinews.StaminaDelay, "s less before stamina returns" },
-            { Sinews.JumpHeight, "jump height" },
             { Sinews.Overloaded, "stamina walking overloaded" },
             { Sinews.LandingRoll, "a dodge as you land makes the fall 8 m shorter" },
             { BloodSworn.Levels, "blood magic levels" },
@@ -445,6 +460,22 @@ namespace Rist
             { Merges.LastCast, "one cast on an empty bar, once per refill" },
             { Merges.StaggerDealt, "melee stagger" },
             { Merges.StaggerSecondary, "nothing staggers you during a secondary attack" },
+            // The capstones of LHM-44, each a thing you can now do rather than a number.
+            { LastBlow.Key, "the swing that kills gives half its stamina back" },
+            { ComboHold.Key, "a weapon combo chains from a swing 0.6 s late" },
+            { ReturnBlow.Key, "a good parry makes your next melee swing cost no stamina, for 5 s" },
+            { SecondNock.Key, "the next draw within 1.5 s of a shot starts 15% full" },
+            { BruiseCap.Key, "no single hit can take more than half of your maximum health" },
+            { FootingBack.Key, "nothing staggers you for 3 s after you recover from a stagger" },
+            { PatchUp.Key, "10 s after a fight, a quarter of the health you lost comes back" },
+            { SecondWind.Key, "when stamina runs out, a quarter of the bar comes back, once in 90 s" },
+            { LoseThem.Key, "a creature that has lost you gives up the hunt after 12 s, not 30" },
+            { SilentStep.Key, "crouched and creeping or still, you make no noise at all" },
+            { Momentum.Key, "after 5 s of running in a straight line you run 5% faster until you stop or turn" },
+            { Spyglass.Key, "hold a key to zoom the view far ahead, like binoculars" },
+            { Gasp.Key, "drowning waits 12 s before its first tick, not 1" },
+            { RidesTheWaves.Key, "no hull damage from wave slams, and half from rocks and ice, while you hold the helm" },
+            { Whetted.Key, "axes and picks lose 40% less durability" },
         };
 
         private static readonly HashSet<string> Percent = new HashSet<string>
@@ -468,7 +499,7 @@ namespace Rist
             // map sight" where they meant +5%. WarnAboutMissingLabels checks for both at load.
             "m_runStaminaDrainModifier",
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.JumpHeight, Sinews.Overloaded,
+            Sinews.Overloaded,
             BloodSworn.Absorb, EelSlick.Window, HallRaiser.Station, HallRaiser.Hammer,
             Engineer.Damage, Merges.EitrRegen, Merges.EitrThrift, Merges.StaggerDealt,
         };
@@ -486,12 +517,16 @@ namespace Rist
             UnseenBlow.Bonus, UnseenBlow.Stagger, DeepDraught.Duration, DeepDraught.FullCask,
             Oathbound.Cooldown, Oathbound.Duration,
             Horizon.ExploreRadius, Horizon.WindCone, Horizon.RowSpeed,
-            Sinews.StaminaDelay, Sinews.JumpHeight, Sinews.Overloaded, Sinews.LandingRoll,
+            Sinews.StaminaDelay, Sinews.Overloaded, Sinews.LandingRoll,
             BloodSworn.Levels, BloodSworn.Absorb, BloodSworn.Summon, BloodSworn.Refill,
             EelSlick.Window, EelSlick.Free, HallRaiser.Station, HallRaiser.Hammer,
             Engineer.Damage, Engineer.Calibrated,
             Merges.ParryRear, Merges.EitrRegen, Merges.EitrThrift, Merges.LastCast,
             Merges.StaggerDealt, Merges.StaggerSecondary,
+            LastBlow.Key, ComboHold.Key, ReturnBlow.Key, SecondNock.Key,
+            BruiseCap.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key,
+            LoseThem.Key, SilentStep.Key, Momentum.Key,
+            Spyglass.Key, Gasp.Key, RidesTheWaves.Key, Whetted.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -504,6 +539,10 @@ namespace Rist
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
             BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free, Engineer.Calibrated,
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
+            LastBlow.Key, ComboHold.Key, ReturnBlow.Key, SecondNock.Key,
+            BruiseCap.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key, LoseThem.Key,
+            SilentStep.Key, Momentum.Key, Spyglass.Key,
+            Gasp.Key, RidesTheWaves.Key, Whetted.Key,
         };
 
         /// <summary>

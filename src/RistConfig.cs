@@ -29,6 +29,20 @@ namespace Rist
         internal static ConfigEntry<float> AttackSpeedMax;
         internal static ConfigEntry<float> MinRunStaminaCost;
         internal static ConfigEntry<float> PanelBottomInset;
+        internal static ConfigEntry<float> SecondNockShare;
+        internal static ConfigEntry<float> LastBlowShare;
+        internal static ConfigEntry<float> GaspSeconds;
+        internal static ConfigEntry<float> GaspSwimStamina;
+        internal static ConfigEntry<float> RidesTheWavesCollision;
+        internal static ConfigEntry<float> BruiseCapShare;
+        internal static ConfigEntry<float> ReturnBlowSeconds;
+        internal static ConfigEntry<float> MomentumSeconds;
+        internal static ConfigEntry<float> MomentumBonus;
+        internal static ConfigEntry<float> MomentumRamp;
+        internal static ConfigEntry<bool> SilentStep;
+        internal static ConfigEntry<KeyCode> SpyglassKey;
+        internal static ConfigEntry<float> SpyglassZoom;
+        internal static ConfigEntry<bool> SpyglassSlowTurn;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -372,6 +386,67 @@ namespace Rist
                 "standing and then lying, at 100px stones and then 78; then tiles without their " +
                 "value line - so a larger inset trades size for being fully visible.\n" +
                 "Your own setting even on a server: it is about your window, not a rule.");
+
+            SecondNockShare = cfg.Bind("Capstones", "SecondNockShare", 0.15f,
+                "Quick draw's capstone: how full the follow-up bow draw starts, as a share of the draw time, " +
+                "when it is begun within 1.5 s of a shot. 0.15 is 15%. It was 0.30 until the capstone pass " +
+                "weakened it (LHM-44).");
+
+            LastBlowShare = cfg.Bind("Capstones", "LastBlowShare", 0.5f,
+                "Steady arm's capstone: how much of the killing swing's stamina comes back, as a share of the price. " +
+                "0.5 is half. It was all of it (1.0) until the capstone review cut it (LHM-44).");
+
+            GaspSeconds = cfg.Bind("Capstones", "GaspSeconds", 12f,
+                "Tide-borne's capstone: how many seconds drowning waits after your stamina runs out in water, before its first tick. " +
+                "Vanilla waits 1. It was 6 until the capstone review doubled it (LHM-44).");
+
+            GaspSwimStamina = cfg.Bind("Capstones", "GaspSwimStamina", 0.25f,
+                "Tide-borne's capstone, second half: how much less stamina swimming costs at rank 5, as a share. 0.25 is 25% lower. " +
+                "Added by the capstone review on top of the longer wait, so Gasp lets a swimmer last longer as well as rescuing one. " +
+                "Clamped to 0.5 so a typo cannot make swimming free.");
+
+            RidesTheWavesCollision = cfg.Bind("Capstones", "RidesTheWavesCollision", 0.5f,
+                "Weatherly's capstone, second half: how much less damage the hull takes from collisions with rocks, ice and the shore " +
+                "while the helmsman carries the stone, as a share. 0.5 is half. Wave slams do no damage at all regardless. " +
+                "Added by the capstone review (LHM-44).");
+
+            BruiseCapShare = cfg.Bind("Capstones", "BruiseCapShare", 0.5f,
+                "Thick-hided's capstone: the most one hit can take, as a share of your maximum health. 0.5 is half, so a full-health " +
+                "character cannot be killed by a single blow. Judged on the final damage after armour and resistances and the world's " +
+                "damage-taken setting; damage over time, drowning, the edge of the world and your own health costs are not capped. " +
+                "Clamped to 0.05..1. A hard rule for the host on a server.");
+
+            ReturnBlowSeconds = cfg.Bind("Capstones", "ReturnBlowSeconds", 5f,
+                "Turned blade's capstone: how long after a good parry (a block in the first quarter second, with a shield or weapon " +
+                "that has a timed block bonus) the next melee swing is free. One swing spends it. A hard rule for the host on a server.");
+
+            MomentumSeconds = cfg.Bind("Capstones", "MomentumSeconds", 5f,
+                "Long stride's capstone: how many seconds of running in a straight line it takes before the speed bonus starts. " +
+                "Stopping, slowing below walking pace, swimming, sailing, riding or turning sharply (40 degrees from the line you were on) starts the count again.");
+
+            MomentumBonus = cfg.Bind("Capstones", "MomentumBonus", 0.05f,
+                "Long stride's capstone: the extra running speed Momentum gives once the streak is earned, as a share. 0.05 is 5%. " +
+                "It is on top of the stone's own +2% a rank, so it takes the stone past the 10% cap its ranks keep to, and that is the exception on purpose: " +
+                "it is only there while you run in a line.");
+
+            MomentumRamp = cfg.Bind("Capstones", "MomentumRamp", 1f,
+                "Long stride's capstone: the seconds Momentum takes to grow from nothing to the full bonus once the streak is earned, so it does not pop.");
+
+            SilentStep = cfg.Bind("Capstones", "SilentStep", true,
+                "Quiet wake's capstone: while crouched and moving no faster than a crouch-walk (or standing), you make no noise at all. " +
+                "Off gives the stone back its ranks only, 8% less noise each. A hard rule for the host on a server.");
+
+            SpyglassKey = cfg.Bind("Spyglass", "SpyglassKey", KeyCode.Z,
+                "Far sight's capstone: hold this key to zoom the view far ahead, like binoculars. Z is free in vanilla and in every other mod here. " +
+                "None turns the zoom off. Your own setting even on a server: it is about your hand, not a rule.");
+
+            SpyglassZoom = cfg.Bind("Spyglass", "SpyglassZoom", 0.25f,
+                "Far sight's capstone: how far the zoom goes, as a share of the normal field of view. 0.25 shows a quarter of the angle, " +
+                "so everything looks four times closer. Clamped to 0.05..1. Your own setting even on a server.");
+
+            SpyglassSlowTurn = cfg.Bind("Spyglass", "SpyglassSlowTurn", true,
+                "While zoomed, slow the mouse look by the same factor, so a quarter of the view does not swing four times as far. " +
+                "Your own setting even on a server.");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +
