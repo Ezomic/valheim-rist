@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Rist
 {
     /// <summary>
-    /// Steady arm's capstone: the swing that kills gives its stamina back.
+    /// Steady arm's capstone: the swing that kills gives half its stamina back (LastBlowShare, 50% by default).
     ///
     /// The stone is about nothing you swing costing what it did, and the swing you most want free is
     /// the one that ends the fight. It replaces a +20% parry bonus, a number on a stat the stone has
@@ -126,9 +126,10 @@ namespace Rist
             {
                 if (target != null && !target.IsDead() && target.GetHealth() > 0f) continue;
 
-                player.AddStamina(_cost);
+                var back = _cost * Mathf.Clamp01(RistConfig.LastBlowShare.Value);
+                player.AddStamina(back);
                 _refunds++;
-                _lastRefund = _cost;
+                _lastRefund = back;
                 _cost = 0f;
                 _targets.Clear();
                 return;

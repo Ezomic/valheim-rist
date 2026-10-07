@@ -1,4 +1,4 @@
-# Rist: Steady arm's capstone, Last blow. The swing that kills gives its stamina back.
+# Rist: Steady arm's capstone, Last blow. The swing that kills gives half its stamina back.
 #
 # What can be asserted here is the boundary, which is the part a capstone gets wrong: Last blow is
 # the fifth rank's and not the fourth's, and the old capstone (a +20% parry bonus) is gone. The kill
@@ -32,7 +32,7 @@ printed last blow: not carved yes
 mod rist rank steadyarm 5
 wait 1
 mod rist show
-printed last blow: carved yes
+printed last blow: carved, refunds 50% yes
 
 mod rist rank steadyarm 0
 wait 1

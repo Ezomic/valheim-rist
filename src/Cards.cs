@@ -446,7 +446,7 @@ namespace Rist
             { Merges.StaggerDealt, "melee stagger" },
             { Merges.StaggerSecondary, "nothing staggers you during a secondary attack" },
             // The capstones of LHM-44, each a thing you can now do rather than a number.
-            { LastBlow.Key, "the swing that kills gives its stamina back" },
+            { LastBlow.Key, "the swing that kills gives half its stamina back" },
             { ComboHold.Key, "a weapon combo chains from a swing 0.6 s late" },
             { Riposte.Key, "a parry throws a quarter of what it blocked back at the attacker" },
             { SecondNock.Key, "the next draw within 1.5 s of a shot starts 15% full" },

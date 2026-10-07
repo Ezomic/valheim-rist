@@ -63,7 +63,7 @@
 #   *exploreradius          the map uncovers further as you walk
 #   *windcone               sail closer to the wind before the sail dies
 #   *rowspeed               rows faster, forward and back
-#   *kill:refund            the swing that kills gives its stamina back (value 1)
+#   *kill:refund            the swing that kills gives half its stamina back (value 1)
 #   *combo:hold             a weapon combo chains from a swing up to 0.6 s late instead of 0.2 s (value 1)
 #   *parry:riposte          a parry throws a quarter of the damage it blocked back at the attacker (value 1); also 30 degrees of parry behind you and -8% block stamina
 #
@@ -184,7 +184,7 @@
 
 == Combat
 
-# Steady arm's capstone is the last blow: the swing that kills is paid back in full. It used to be
+# Steady arm's capstone is the last blow: the swing that kills is paid back by half. It used to be
 # +20% parry bonus, a number on a stat the stone has nothing to do with. Read from the target's
 # health after the hit, so it holds when another client owns the creature.
 steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fight         | -0.05 | *kill:refund              | 1    | P

@@ -30,6 +30,7 @@ namespace Rist
         internal static ConfigEntry<float> MinRunStaminaCost;
         internal static ConfigEntry<float> PanelBottomInset;
         internal static ConfigEntry<float> SecondNockShare;
+        internal static ConfigEntry<float> LastBlowShare;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -378,6 +379,10 @@ namespace Rist
                 "Quick draw's capstone: how full the follow-up bow draw starts, as a share of the draw time, " +
                 "when it is begun within 1.5 s of a shot. 0.15 is 15%. It was 0.30 until the capstone pass " +
                 "weakened it (LHM-44).");
+
+            LastBlowShare = cfg.Bind("Capstones", "LastBlowShare", 0.5f,
+                "Steady arm's capstone: how much of the killing swing's stamina comes back, as a share of the price. " +
+                "0.5 is half. It was all of it (1.0) until the capstone review cut it (LHM-44).");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

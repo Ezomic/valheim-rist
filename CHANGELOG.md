@@ -137,7 +137,7 @@ exactly as it was, and no pick is refunded: anyone who carved a stone to rank fi
 version, and loses the old one.** Stone ids, ledgers and the per-rank effects are unchanged. Brimming's Last spark
 was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LHM-59, so neither is touched here.
 
-- **Steady arm**: the capstone is now Last blow. The swing that kills gives its stamina back in full. It used to be +20%
+- **Steady arm**: the capstone is now Last blow. The swing that kills gives half its stamina back (it was all of it in the first draft; `LastBlowShare` in the cfg). It used to be +20%
   parry bonus, which the stone has nothing to do with. The price is read where the game works it out, after every
   discount, and the kill is read from the creature's health a moment after the hit rather than from its death, so it
   works the same when another player's machine owns the creature. One refund per swing: a sweep that kills three
