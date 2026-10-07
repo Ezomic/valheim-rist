@@ -54,7 +54,7 @@ namespace Rist
             _registered = true;
 
             new Terminal.ConsoleCommand("rist",
-                "rist show | rist rank <card> <n> | rist powers | rist others [ask] | rist roll | rist perfect | rist fall <m> [roll] | rist hurt <n> [enemy] | rist stagger | rist spend <n> - this character's standing, and forcing a rank for a test",
+                "rist show | rist rank <card> <n> | rist powers | rist others [ask] | rist roll | rist perfect | rist fall <m> [roll] | rist hurt <n> [enemy] [full] | rist parry | rist swing | rist momentum | rist run <s> | rist crouch <on|off> | rist noise | rist spyglass | rist stagger | rist spend <n> - this character's standing, and forcing a rank for a test",
                 OnCommand, isCheat: true);
 
             RistPlugin.Log.LogInfo("Console command 'rist' registered (needs devcommands, host or singleplayer).");
@@ -77,6 +77,8 @@ namespace Rist
             if (what == "spend") { Say(term, Spend(args)); return; }
             if (what == "stagger") { Say(term, Player.m_localPlayer == null ? "rist: no player." : FootingBack.Stagger(Player.m_localPlayer)); return; }
             if (what == "perfect") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.HitInWindow(Player.m_localPlayer)); return; }
+            if (what == "parry") { Say(term, Player.m_localPlayer == null ? "rist: no player." : ReturnBlow.Simulate(Player.m_localPlayer)); return; }
+            if (what == "swing") { Say(term, Player.m_localPlayer == null ? "rist: no player." : ReturnBlow.Swing(Player.m_localPlayer)); return; }
 
             term.AddString("rist show            - level, xp, ranks and the armour the game is using");
             term.AddString("rist rank <card> <n> - force a card to exactly that rank");
@@ -88,6 +90,8 @@ namespace Rist
             term.AddString("rist spend <n>       - spend n stamina, as swinging or sprinting does; a big n empties the bar");
             term.AddString("rist stagger         - stagger this character, as a blow from a creature would");
             term.AddString("rist perfect         - send a hit into the roll in progress, which the game counts as a perfect roll");
+            term.AddString("rist parry           - pretend a good parry just happened, as Return blow reads one");
+            term.AddString("rist swing           - start a primary swing with what is in hand, as the attack key does");
             term.AddString("card ids are the first field of cards.txt: thickhide, steadyfoot, longstride...");
         }
 
@@ -395,7 +399,7 @@ namespace Rist
             term.AddString(Merges.Probe(player));
             term.AddString(LastBlow.Probe());
             term.AddString(ComboHold.Probe());
-            term.AddString(Riposte.Probe());
+            term.AddString(ReturnBlow.Probe());
             term.AddString(SecondNock.Probe());
             term.AddString(BruiseCap.Probe());
             term.AddString(FootingBack.Probe());

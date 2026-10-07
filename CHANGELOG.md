@@ -148,12 +148,16 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   already about speed. It used to be +5% damage on every weapon, close to Keen edge's own effect, so melee damage no
   longer comes from this stone at all. Melee weapons only, and the axe counts as a tool, the same split the swing-speed
   cards use.
-- **Turned blade**: the capstone is now Riposte. A parry throws a quarter of the damage it blocked back at the attacker,
-  as the same damage types, so a fire hit is returned as fire. Melee attackers only, never a player and never a boss.
-  A parry that stamina or stagger broke through throws nothing. It is a hit of its own, so it does not spend an armed
-  answering blow, and a creature it kills is credited to you. The arc behind you and the -8% block stamina that LHM-53 folded into
-  this capstone stay as companions, so nobody who carved the stone loses either; if Riposte proves too strong with them
-  the companions are one line in `Card.Companions`. It used to be the 30 degrees behind you alone.
+- **Turned blade**: the capstone is now Return blow. A good parry, a block in the first quarter second with a shield or
+  weapon that has a timed block bonus, makes your next melee swing cost no stamina, if you take it within five seconds
+  (`ReturnBlowSeconds`). One swing spends it, and a swing the game refuses keeps it. It works at an empty bar, since the
+  price is read as nothing from the moment the swing starts. Melee only: swords, knives, clubs, polearms, spears, fists and
+  axes; pickaxes and the other tools, bows and staffs do not count. A block that stamina or stagger broke through is not a
+  good parry and arms nothing. It replaces Riposte, the first draft, which threw a quarter of the blocked damage back at the
+  attacker; that code is gone. The arc behind you and the -8% block stamina that LHM-53 folded into this capstone stay
+  exactly as built, as companions, so nobody who carved the stone loses either.
+- `rist parry` pretends a good parry just happened and `rist swing` starts a swing with what is in hand, so Return blow has a
+  scenario. `rist show` prints what the last swing was priced and what it paid.
 - **Quick draw**: the capstone is now Second nock. Loose a shot and the next draw you begin within a second and a half
   starts 15% full, so the follow-up arrow comes quicker and a lone shot is drawn as it always was. It used to be +5%
   damage from bows and crossbows, a number on a stat the stone does not own. It is still a draw-speed effect on a

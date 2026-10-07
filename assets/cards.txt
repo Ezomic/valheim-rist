@@ -65,7 +65,7 @@
 #   *rowspeed               rows faster, forward and back
 #   *kill:refund            the swing that kills gives half its stamina back (value 1)
 #   *combo:hold             a weapon combo chains from a swing up to 0.6 s late instead of 0.2 s (value 1)
-#   *parry:riposte          a parry throws a quarter of the damage it blocked back at the attacker (value 1); also 30 degrees of parry behind you and -8% block stamina
+#   *parry:returnblow       a good parry makes your next melee swing cost no stamina, within 5 s (value 1); also 30 degrees of parry behind you and -8% block stamina
 #
 # Rank 5 is meant to be the moment, so a capstone should be an unlock rather than a larger
 # number wherever the game gives us one: a row of inventory, a roll that cushions a landing, levels in
@@ -192,7 +192,7 @@ steadyarm   | Steady arm     | Nothing you swing costs what it did.| *stamina:fi
 # ended where the game allows 0.2 s. It used to be +5% damage on every weapon, close to Keen edge.
 keenhand    | Keen hand      | The swing comes back sooner.      | *attackspeed:melee       | 0.03  | *combo:hold               | 1    | Z
 keenedge    | Keen edge      | The blow goes deeper.             | m_damageModifier         | 0.03  | m_attackStaminaUseModifier| -0.08 | K
-turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:riposte | 1 | X
+turnedblade | Turned blade | The parry answers back, and reaches round behind you. | m_timedBlockBonus | 0.08  | *parry:returnblow | 1 | X
 # Quick draw's capstone is the second nock: the next bow draw begun within 1.5 s of a shot starts 15%
 # full. It used to be +5% bow and crossbow damage. *damage:ranged is still a supported special.
 quickdraw   | Quick draw     | The string is back before you are.| *attackspeed:ranged      | 0.03  | *draw:second              | 1    | Y

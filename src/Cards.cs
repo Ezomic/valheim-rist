@@ -105,10 +105,10 @@ namespace Rist
                         new KeyValuePair<string, float>(BloodSworn.Refill, 1f),
                     }
                 },
-                // Turned blade's capstone is the riposte, and keeps what LHM-53 folded into it: the arc
+                // Turned blade's capstone is the return blow, and keeps what LHM-53 folded into it: the arc
                 // behind you and the -8% block stamina it always gave, all in one carving.
                 {
-                    Riposte.Key, new[]
+                    ReturnBlow.Key, new[]
                     {
                         new KeyValuePair<string, float>(Merges.ParryRear, 30f),
                         new KeyValuePair<string, float>("m_blockStaminaUseModifier", -0.08f),
@@ -463,7 +463,7 @@ namespace Rist
             // The capstones of LHM-44, each a thing you can now do rather than a number.
             { LastBlow.Key, "the swing that kills gives half its stamina back" },
             { ComboHold.Key, "a weapon combo chains from a swing 0.6 s late" },
-            { Riposte.Key, "a parry throws a quarter of what it blocked back at the attacker" },
+            { ReturnBlow.Key, "a good parry makes your next melee swing cost no stamina, for 5 s" },
             { SecondNock.Key, "the next draw within 1.5 s of a shot starts 15% full" },
             { BruiseCap.Key, "no single hit can take more than half of your maximum health" },
             { FootingBack.Key, "nothing staggers you for 3 s after you recover from a stagger" },
@@ -523,7 +523,7 @@ namespace Rist
             Engineer.Damage, Engineer.Calibrated,
             Merges.ParryRear, Merges.EitrRegen, Merges.EitrThrift, Merges.LastCast,
             Merges.StaggerDealt, Merges.StaggerSecondary,
-            LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
+            LastBlow.Key, ComboHold.Key, ReturnBlow.Key, SecondNock.Key,
             BruiseCap.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key,
             LoseThem.Key, SleepersSleepOn.Key, SteepGround.Key,
             Lookahead.Key, Gasp.Key, RidesTheWaves.Key, Whetted.Key,
@@ -539,7 +539,7 @@ namespace Rist
             AttackSpeed.UnbrokenCast, LowDraw.Silent, UnseenBlow.Stagger,
             BloodSworn.Summon, BloodSworn.Refill, EelSlick.Free, Engineer.Calibrated,
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
-            LastBlow.Key, ComboHold.Key, Riposte.Key, SecondNock.Key,
+            LastBlow.Key, ComboHold.Key, ReturnBlow.Key, SecondNock.Key,
             BruiseCap.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key, LoseThem.Key,
             SleepersSleepOn.Key, SteepGround.Key, Lookahead.Key,
             Gasp.Key, RidesTheWaves.Key, Whetted.Key,

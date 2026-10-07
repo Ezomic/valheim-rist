@@ -35,6 +35,7 @@ namespace Rist
         internal static ConfigEntry<float> GaspSwimStamina;
         internal static ConfigEntry<float> RidesTheWavesCollision;
         internal static ConfigEntry<float> BruiseCapShare;
+        internal static ConfigEntry<float> ReturnBlowSeconds;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -407,6 +408,10 @@ namespace Rist
                 "character cannot be killed by a single blow. Judged on the final damage after armour and resistances and the world's " +
                 "damage-taken setting; damage over time, drowning, the edge of the world and your own health costs are not capped. " +
                 "Clamped to 0.05..1. A hard rule for the host on a server.");
+
+            ReturnBlowSeconds = cfg.Bind("Capstones", "ReturnBlowSeconds", 5f,
+                "Turned blade's capstone: how long after a good parry (a block in the first quarter second, with a shield or weapon " +
+                "that has a timed block bonus) the next melee swing is free. One swing spends it. A hard rule for the host on a server.");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

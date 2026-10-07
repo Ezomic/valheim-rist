@@ -121,7 +121,10 @@ namespace Rist
             Patch(typeof(LastBlow.Cost));
             Patch(typeof(LastBlow.Hit));
             Patch(typeof(ComboHold.Chain));
-            Patch(typeof(Riposte.Parry));
+            Patch(typeof(ReturnBlow.Parry));
+            Patch(typeof(ReturnBlow.Begin));
+            Patch(typeof(ReturnBlow.Price));
+            Patch(typeof(ReturnBlow.Paying));
             Patch(typeof(SecondNock.Loose));
             Patch(typeof(SecondNock.Draw));
             Patch(typeof(BruiseCap.Cap));
@@ -390,6 +393,7 @@ namespace Rist
                 EelSlick.Forget();
                 Engineer.Forget();
                 LastBlow.Forget();
+                ReturnBlow.Forget();
                 SecondNock.Forget();
                 FootingBack.Forget();
                 SecondWind.Forget();
