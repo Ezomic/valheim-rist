@@ -39,6 +39,7 @@ namespace Rist
         internal static ConfigEntry<float> MomentumSeconds;
         internal static ConfigEntry<float> MomentumBonus;
         internal static ConfigEntry<float> MomentumRamp;
+        internal static ConfigEntry<bool> SilentStep;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -427,6 +428,10 @@ namespace Rist
 
             MomentumRamp = cfg.Bind("Capstones", "MomentumRamp", 1f,
                 "Long stride's capstone: the seconds Momentum takes to grow from nothing to the full bonus once the streak is earned, so it does not pop.");
+
+            SilentStep = cfg.Bind("Capstones", "SilentStep", true,
+                "Quiet wake's capstone: while crouched and moving no faster than a crouch-walk (or standing), you make no noise at all. " +
+                "Off gives the stone back its ranks only, 8% less noise each. A hard rule for the host on a server.");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

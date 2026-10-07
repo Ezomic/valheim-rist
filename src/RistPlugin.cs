@@ -131,7 +131,8 @@ namespace Rist
             Patch(typeof(FootingBack.Refuse));
             Patch(typeof(SecondWind.Spent));
             Patch(typeof(LoseThem.Drop));
-            Patch(typeof(SleepersSleepOn.Sleep));
+            Patch(typeof(SilentStep.Made));
+            Patch(typeof(SilentStep.Reported));
             Patch(typeof(Momentum.Speed));
             Patch(typeof(Momentum.Drive));
             Patch(typeof(Lookahead.Ahead));

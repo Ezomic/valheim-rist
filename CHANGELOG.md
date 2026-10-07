@@ -199,13 +199,21 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   alone. It used to be -10% noise, which is exactly Quiet wake's effect, so the two stones were each other's capstones.
   A creature's AI runs on whichever machine owns the creature and that machine holds only its own player's stones, so the
   stone is published as a flag on your character that every client reads; that flag is the shared plumbing for Soft step,
-  Quiet wake and Weatherly, and it is written only when it changes. Soft step's ranks, -8% detection each, are unchanged.
-- **Quiet wake**: the capstone is now Sleepers sleep on. A sleeping creature is not woken by you walking close, only by real
-  noise, which is what the stone's own ranks make smaller. It used to be -10% detection, which is Soft step's own effect.
-  If another player without the stone is close enough to wake it, it wakes as it always did, and a sleeper that hunts
-  players wakes as usual. This is the weakest capstone of the round, since it only matters where creatures sleep, and which
-  of them do is prefab data nobody has read yet. Quiet wake's -8% noise a rank is unchanged. The stone is published on your
-  character for the creature's owner to read, with the flag Soft step added.
+  Weatherly, and it is written only when it changes. Soft step's ranks, -8% detection each, are unchanged.
+- **Quiet wake**: the capstone is now Silent step. Crouched and moving no faster than a crouch-walk, or standing still, you
+  make no noise at all. The stone's ranks already make every noise 8% smaller each (the game's own noise modifier); this
+  drops the noise before it is recorded. The exact rule: the local character is crouching, and its flat speed is at most
+  the crouch-walk speed with ten percent of slack; then the game's two noise entry points, `Character.AddNoise` for your own
+  sounds and `Character.RPC_AddNoise` for the ones another machine reports for you (a tree you hit), are skipped. A
+  vanilla crouch-walk is already silent on foot, so what this removes is everything else a creeper does at that pace: a
+  swing, a plank, a rock struck, a roll. Standing up or moving faster than a creep leaves the game's own noise, ranks
+  included. A bow drawn from a crouch stands you up for the animation, so a shot is not silenced; Low draw is that stone's
+  job. `SilentStep` in the cfg switches the capstone off. It replaces Sleepers sleep on, the first draft, which kept
+  sleeping creatures asleep and mattered only where creatures sleep; that code and its flag are gone, and the shared flag
+  Soft step and Weatherly use no longer carries a Quiet wake bit. It used to be -10% detection, Soft step's own effect.
+  Quiet wake's -8% noise a rank is unchanged.
+- `rist crouch [off]` crouches or stands the character and `rist noise` makes a noise of range 30 from a cleared slate
+  and prints what the game recorded, so Silent step has a scenario.
 - **Long stride**: the capstone is now Momentum. After five seconds of running in a straight line you run 5% faster, until
   you stop or turn sharply. The bonus grows in over one second so it does not pop. Running means the stamina-draining sprint,
   so sneaking never counts; swimming, a ship's helm, a ship's deck, riding and rolling do not count either, and the speed

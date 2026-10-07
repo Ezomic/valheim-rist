@@ -3,7 +3,7 @@
 #
 # The same flag word as Lose them: `rist show` prints what a client would read off this character,
 #
-#   carried: lose them yes|no, sleepers sleep on yes|no, rides the waves yes|no
+#   carried: lose them yes|no, rides the waves yes|no
 #
 # and that flag is the half that decides whether the stone works on a ship another player's machine
 # owns, since the owner reads the helmsman's flag off the ZDO. The slam itself needs a boat in rough

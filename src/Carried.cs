@@ -3,11 +3,11 @@ namespace Rist
     /// <summary>
     /// What a creature's or a ship's owner needs to know about the player it is dealing with.
     ///
-    /// Three capstones change what the world does about you, and the world's logic runs on whichever client
+    /// Two capstones change what the world does about you, and the world's logic runs on whichever client
     /// owns the thing: a creature's AI on the machine that owns the creature, a ship's physics on the
     /// machine that owns the ship. That machine holds its own player's runestones and nobody else's, so
     /// the carver publishes one flag word on their own player's ZDO, which every client can read, and
-    /// the owner's patch reads it. Written once for all three, the way Blood-sworn's extra summon is
+    /// the owner's patch reads it. Written once for both, the way Blood-sworn's extra summon is
     /// published, since the shape is the same. Every client runs Rist behind Core's gate, so the patch
     /// that reads the word is present on every machine that could own the creature.
     ///
@@ -19,11 +19,10 @@ namespace Rist
         internal const string ZdoKey = "rist_carried";
 
         internal const int LoseThem = 1;
-        internal const int SleepersSleepOn = 2;
+        // 2 was Sleepers sleep on, whose capstone is gone. The bit values are kept so a mixed pair of builds still reads the others right.
         internal const int RidesTheWaves = 4;
 
         internal const string LoseThemKey = "*stealth:losethem";
-        internal const string SleepersKey = "*noise:sleepers";
         internal const string WavesKey = "*sail:waves";
 
         private static Player _publishedTo;
@@ -33,7 +32,6 @@ namespace Rist
         {
             var word = 0;
             if (Effects.Cached(LoseThemKey) > 0f) word |= LoseThem;
-            if (Effects.Cached(SleepersKey) > 0f) word |= SleepersSleepOn;
             if (Effects.Cached(WavesKey) > 0f) word |= RidesTheWaves;
             return word;
         }
@@ -79,7 +77,6 @@ namespace Rist
         internal static string Probe(Player player)
         {
             return "carried: lose them " + (Has(player, LoseThem) ? "yes" : "no")
-                   + ", sleepers sleep on " + (Has(player, SleepersSleepOn) ? "yes" : "no")
                    + ", rides the waves " + (Has(player, RidesTheWaves) ? "yes" : "no");
         }
     }

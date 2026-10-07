@@ -4,7 +4,7 @@
 # Three stones put a flag on the player's ZDO for creature and ship owners to read (Soft step, Quiet
 # wake and Weatherly), and `rist show` prints what a client would read off this character:
 #
-#   carried: lose them yes|no, sleepers sleep on yes|no, rides the waves yes|no
+#   carried: lose them yes|no, rides the waves yes|no
 #
 # That is the half a scenario can assert, and it is the half that decides whether the capstone works
 # on a creature another player's machine owns: the flag is read off the ZDO, not off this process.
