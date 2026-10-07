@@ -31,6 +31,8 @@ namespace Rist
         internal static ConfigEntry<float> PanelBottomInset;
         internal static ConfigEntry<float> SecondNockShare;
         internal static ConfigEntry<float> LastBlowShare;
+        internal static ConfigEntry<float> GaspSeconds;
+        internal static ConfigEntry<float> GaspSwimStamina;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -383,6 +385,15 @@ namespace Rist
             LastBlowShare = cfg.Bind("Capstones", "LastBlowShare", 0.5f,
                 "Steady arm's capstone: how much of the killing swing's stamina comes back, as a share of the price. " +
                 "0.5 is half. It was all of it (1.0) until the capstone review cut it (LHM-44).");
+
+            GaspSeconds = cfg.Bind("Capstones", "GaspSeconds", 12f,
+                "Tide-borne's capstone: how many seconds drowning waits after your stamina runs out in water, before its first tick. " +
+                "Vanilla waits 1. It was 6 until the capstone review doubled it (LHM-44).");
+
+            GaspSwimStamina = cfg.Bind("Capstones", "GaspSwimStamina", 0.25f,
+                "Tide-borne's capstone, second half: how much less stamina swimming costs at rank 5, as a share. 0.25 is 25% lower. " +
+                "Added by the capstone review on top of the longer wait, so Gasp lets a swimmer last longer as well as rescuing one. " +
+                "Clamped to 0.5 so a typo cannot make swimming free.");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

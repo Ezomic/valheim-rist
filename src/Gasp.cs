@@ -5,17 +5,18 @@ using UnityEngine;
 namespace Rist
 {
     /// <summary>
-    /// Tide-borne's capstone: after your stamina runs out in water, drowning damage waits six seconds
+    /// Tide-borne's capstone: after your stamina runs out in water, drowning damage waits twelve seconds
     /// before its first tick instead of one.
     ///
-    /// The sea's real hazard is the empty bar, and a swimmer who gasps reaches a boat or the shore. It
-    /// rescues and never extends range: the bar still empties exactly as fast, and the ticks that follow
-    /// the first are the game's own. It replaces -10% swim stamina, which was the stone's own stat.
+    /// The sea's real hazard is the empty bar, and a swimmer who gasps reaches a boat or the shore. The wait
+    /// rescues rather than extends: the bar empties as fast as the stone's ranks leave it, and the ticks that follow
+    /// the first are the game's own. The capstone review added a second bite, 25% less swim stamina at rank
+    /// five, as a companion (Card.CompanionsOf), so a swimmer also lasts longer, which the first draft refused.
     ///
     /// Player.OnSwimming adds the frame time to m_drownDamageTimer while the bar is empty and ticks once
-    /// it passes one second, then zeroes it. A postfix zeroes it again for the first five seconds of an
-    /// empty bar, so the original's own addition never reaches one, and from the fifth second lets it
-    /// run, which puts the first tick at the sixth. The count of empty seconds is this class's own and
+    /// it passes one second, then zeroes it. A postfix zeroes it again until the empty bar is one second short of the
+    /// wait, so the original's own addition never reaches one, and then lets it
+    /// run, which puts the first tick at the wait (12 s by default). The count of empty seconds is this class's own and
     /// restarts whenever stamina is back or the swim was broken for half a second, since OnSwimming is
     /// only called while swimming. Only the local player: drowning is worked out where the player is owned.
     /// </summary>
@@ -23,8 +24,9 @@ namespace Rist
     {
         internal const string Key = "*swim:gasp";
 
-        private const float Wait = 6f;
         private const float Broken = 0.5f;
+
+        private static float Wait => Mathf.Max(1f, RistConfig.GaspSeconds.Value);
 
         private static AccessTools.FieldRef<Player, float> _timer;
         private static bool _bound, _bindFailed;
@@ -87,10 +89,19 @@ namespace Rist
 
         internal static string Probe()
         {
+            var swim = "";
+            var player = Player.m_localPlayer;
+            if (player != null && player.GetSEMan() != null)
+            {
+                var factor = 1f;
+                player.GetSEMan().ModifySwimStaminaUsage(1f, ref factor, minZero: false);
+                swim = ", swim stamina x" + factor.ToString("0.00", CultureInfo.InvariantCulture);
+            }
+
             return Effects.Cached(Key) > 0f
                 ? "gasp: carved, drowning waits " + Wait.ToString("0", CultureInfo.InvariantCulture)
-                  + "s, held back " + _held.ToString("0.0", CultureInfo.InvariantCulture) + "s here"
-                : "gasp: not carved";
+                  + "s, held back " + _held.ToString("0.0", CultureInfo.InvariantCulture) + "s here" + swim
+                : "gasp: not carved" + swim;
         }
     }
 }

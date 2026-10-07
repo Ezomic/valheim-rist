@@ -143,6 +143,18 @@ namespace Rist
                 },
             };
 
+        /// <summary>
+        /// The companions of an effect, or null. Tide-borne's swim stamina is read from the cfg here, so a host rule
+        /// that arrives after the static table was built still counts.
+        /// </summary>
+        internal static KeyValuePair<string, float>[] CompanionsOf(string effect)
+        {
+            if (effect == Gasp.Key)
+                return new[] { new KeyValuePair<string, float>("m_swimStaminaUseModifier", -Mathf.Clamp(RistConfig.GaspSwimStamina.Value, 0f, 0.5f)) };
+
+            return Companions.TryGetValue(effect, out var also) ? also : null;
+        }
+
         /// <summary>The companions of the effect at <paramref name="rank"/>, one per line, or nothing.</summary>
         internal string DescribeAlso(int rank)
         {
@@ -156,7 +168,10 @@ namespace Rist
 
         private static string Also(string effect, float total)
         {
-            if (string.IsNullOrEmpty(effect) || !Companions.TryGetValue(effect, out var also)) return "";
+            if (string.IsNullOrEmpty(effect)) return "";
+
+            var also = CompanionsOf(effect);
+            if (also == null) return "";
 
             var lines = new List<string>();
             foreach (var pair in also) lines.Add(Format(pair.Key, total * pair.Value));
@@ -458,7 +473,7 @@ namespace Rist
             { SleepersSleepOn.Key, "a sleeping creature is woken by noise, never by you walking close" },
             { SteepGround.Key, "you hold your footing on slopes up to 46 degrees, not 38" },
             { Lookahead.Key, "the map uncovers a second circle ahead of the way you travel" },
-            { Gasp.Key, "drowning waits 6 s before its first tick, not 1" },
+            { Gasp.Key, "drowning waits 12 s before its first tick, not 1" },
             { RidesTheWaves.Key, "slams into waves do no hull damage while you hold the helm" },
             { Whetted.Key, "axes and picks lose 40% less durability" },
         };

@@ -39,7 +39,7 @@
 #   *draw:second            the next bow draw begun within 1.5 s of a shot starts 15% full (value 1)
 #   *tool:whetted           axes and pickaxes lose 40% less durability (value 1)
 #   *sail:waves             slams into waves do no hull damage while you hold the helm (value 1)
-#   *swim:gasp              after your stamina runs out in water, drowning waits 6 s before its first tick instead of 1 (value 1)
+#   *swim:gasp              after your stamina runs out in water, drowning waits 12 s before its first tick instead of 1, and swimming costs 25% less stamina (value 1)
 #   *explore:ahead          the map also uncovers a second circle ahead of the way you travel (value 1)
 #   *slope:steep            you hold your footing on slopes up to 46 degrees instead of 38 (value 1)
 #   *noise:sleepers         a sleeping creature is woken by noise and never by you walking close (value 1)
@@ -328,9 +328,9 @@ longstride  | Long stride    | Ground passes under you.          | m_speedModifi
 # centred one radius ahead of the way you walk, sail or ride. It used to be another 10% radius, the
 # stone's own stat. It is still a map stone, so it is the weakest differentiation in the round.
 farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *explore:ahead            | 1    | F
-# Tide-borne's capstone is the gasp: after your stamina runs out in water, drowning damage waits 6 s
-# before its first tick instead of 1. It used to be another 10% off swim stamina, the stone's own
-# stat. It rescues and never extends range: the bar empties as fast as it did.
+# Tide-borne's capstone is the gasp: after your stamina runs out in water, drowning damage waits 12 s
+# before its first tick instead of 1 (GaspSeconds), and swimming costs 25% less stamina (GaspSwimStamina). The
+# swim stamina bite is the old capstone back, as a companion in code, after the capstone review.
 tideborne   | Tide-borne     | The water gives way.              | m_swimSpeedModifier      | 0.06  | *swim:gasp                | 1    | O
 # Weatherly's capstone is riding the waves: slams into waves do no hull damage while you hold the helm.
 # It used to be 20% rowing speed, a second kind of speed on the stone's own job. Upside-down and

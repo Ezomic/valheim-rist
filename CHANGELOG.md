@@ -209,10 +209,10 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   extra. It used to be another 10% of radius, which is the stone's own stat, and it is still a map stone, so it is the
   weakest differentiation of the round. What it buys is ground uncovered in the direction of travel rather than a wider
   circle. The ranks' 5% radius a rank is unchanged and the two compose.
-- **Tide-borne**: the capstone is now Gasp. After your stamina runs out in water, drowning damage waits six seconds before
-  its first tick instead of one, which is time to reach a boat or the shore. The bar empties exactly as fast as before and the
-  ticks after the first are the game's own, so it rescues a swimmer and never extends their range. It used to be another
-  10% off swim stamina, which was the stone's own stat. The +6% swim speed a rank is unchanged.
+- **Tide-borne**: the capstone is now Gasp. After your stamina runs out in water, drowning damage waits twelve seconds before
+  its first tick instead of one, which is time to reach a boat or the shore. The ticks after the first are the game's own.
+  The capstone review doubled the wait from six seconds to twelve (`GaspSeconds`) and added a second bite: swimming costs
+  25% less stamina at rank five (`GaspSwimStamina`), so a swimmer also lasts longer. The +6% swim speed a rank is unchanged.
 - **Weatherly**: the capstone is now Rides the waves. Slams into waves do no hull damage while you hold the helm, which is
   the other half of staying afloat in weather: the ranks bend the sail to windward and this keeps the hull. Only the water impact is
   spared; a ship that is upside down and the Ashlands still hurt it. The ship's physics run on whichever machine owns the ship, so

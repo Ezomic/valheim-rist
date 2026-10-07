@@ -156,7 +156,8 @@ namespace Rist
             // A stone that gives two things for one price. The companions are added beside the
             // effect itself, scaled, so every consumer reads each of them as a plain effect and
             // none of them knows the other exists. Before the spread below, which returns.
-            if (Card.Companions.TryGetValue(effect, out var also))
+            var also = Card.CompanionsOf(effect);
+            if (also != null)
                 foreach (var pair in also) Add(totals, pair.Key, amount * pair.Value);
 
             if (Spread.TryGetValue(effect, out var fields))
