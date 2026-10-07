@@ -229,11 +229,19 @@ was already built as its capstone in LHM-53 and Sure-footed's Landing roll in LH
   height or a slide angle.
 - `rist momentum [s]` pretends the run has lasted that long and reads the game's own run speed factor with and without
   Momentum, and `rist run [s]` runs straight ahead in place of input and keeps the speeds before and after the streak.
-- **Far sight**: the capstone is now Lookahead. Each time the map explores, it also uncovers a second circle ahead of the
-  way you walk, sail or ride: 60% of the explore radius, centred one radius ahead of you. Standing still uncovers nothing
-  extra. It used to be another 10% of radius, which is the stone's own stat, and it is still a map stone, so it is the
-  weakest differentiation of the round. What it buys is ground uncovered in the direction of travel rather than a wider
-  circle. The ranks' 5% radius a rank is unchanged and the two compose.
+- **Far sight**: the capstone is now Spyglass, and the stone's own radius is 10% a rank instead of 5%. Hold a key (Z by
+  default, `SpyglassKey` in the cfg) and the view zooms far ahead like binoculars: the field of view eases down to a quarter
+  of its normal value (`SpyglassZoom`, 0.25) and eases back when you let go. The mouse look slows by the same factor while
+  you are zoomed so the view can still be aimed (`SpyglassSlowTurn`). It works in first and third person, on foot, on a ship or
+  on a mount, and not while chat, the console, a text field or any window is up, not while you are placing a building piece,
+  and not in a cutscene. The key, the zoom and the slow turn are your own settings even on a server, and Z was checked
+  against the vanilla bindings and every other mod here. It composes with the game's own field of view changes instead of
+  replacing them. It replaces Lookahead, the first draft, which uncovered a second map circle ahead of you; that code is gone,
+  and so is the radius-prefix guard it needed. **The ranks are now +10% explore radius each, 50% at rank five** (it was 5% a
+  rank, 25%), and the stone's line reads "Each rank: the map reveals 10% further." Anyone with ranks keeps them and gets the
+  larger circle.
+- `rist spyglass [off]` holds the spyglass as its key does, and `rist show` prints the zoom, the target field of view and the
+  camera's own.
 - **Tide-borne**: the capstone is now Gasp. After your stamina runs out in water, drowning damage waits twelve seconds before
   its first tick instead of one, which is time to reach a boat or the shore. The ticks after the first are the game's own.
   The capstone review doubled the wait from six seconds to twelve (`GaspSeconds`) and added a second bite: swimming costs

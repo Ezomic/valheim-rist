@@ -135,7 +135,8 @@ namespace Rist
             Patch(typeof(SilentStep.Reported));
             Patch(typeof(Momentum.Speed));
             Patch(typeof(Momentum.Drive));
-            Patch(typeof(Lookahead.Ahead));
+            Patch(typeof(Spyglass.Look));
+            Patch(typeof(Spyglass.Turn));
             Patch(typeof(Gasp.Swimming));
             Patch(typeof(RidesTheWaves.Slam));
             Patch(typeof(RidesTheWaves.Collide));
@@ -347,7 +348,7 @@ namespace Rist
             // the server's 0 replaces a player's 48 for the whole session and puts it back on
             // every edit - the trap Vaettir's grid angle fell into. Nothing can desync over it:
             // the host has no panel, and two players' screens have nothing to agree about.
-            Suite.Local(RistConfig.PanelBottomInset);
+            Suite.Local(RistConfig.PanelBottomInset, RistConfig.SpyglassKey, RistConfig.SpyglassZoom, RistConfig.SpyglassSlowTurn);
 
             // WeightGeneration is deliberately not in that list. It is not a shared rule about
             // what things are worth, it is a server-side instruction to re-price the ledger
@@ -397,6 +398,7 @@ namespace Rist
                 LastBlow.Forget();
                 ReturnBlow.Forget();
                 Momentum.Forget();
+                Spyglass.Forget();
                 SecondNock.Forget();
                 FootingBack.Forget();
                 SecondWind.Forget();

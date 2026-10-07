@@ -40,6 +40,9 @@ namespace Rist
         internal static ConfigEntry<float> MomentumBonus;
         internal static ConfigEntry<float> MomentumRamp;
         internal static ConfigEntry<bool> SilentStep;
+        internal static ConfigEntry<KeyCode> SpyglassKey;
+        internal static ConfigEntry<float> SpyglassZoom;
+        internal static ConfigEntry<bool> SpyglassSlowTurn;
 
         internal static ConfigEntry<bool> RemoveDeathSkillLoss;
 
@@ -432,6 +435,18 @@ namespace Rist
             SilentStep = cfg.Bind("Capstones", "SilentStep", true,
                 "Quiet wake's capstone: while crouched and moving no faster than a crouch-walk (or standing), you make no noise at all. " +
                 "Off gives the stone back its ranks only, 8% less noise each. A hard rule for the host on a server.");
+
+            SpyglassKey = cfg.Bind("Spyglass", "SpyglassKey", KeyCode.Z,
+                "Far sight's capstone: hold this key to zoom the view far ahead, like binoculars. Z is free in vanilla and in every other mod here. " +
+                "None turns the zoom off. Your own setting even on a server: it is about your hand, not a rule.");
+
+            SpyglassZoom = cfg.Bind("Spyglass", "SpyglassZoom", 0.25f,
+                "Far sight's capstone: how far the zoom goes, as a share of the normal field of view. 0.25 shows a quarter of the angle, " +
+                "so everything looks four times closer. Clamped to 0.05..1. Your own setting even on a server.");
+
+            SpyglassSlowTurn = cfg.Bind("Spyglass", "SpyglassSlowTurn", true,
+                "While zoomed, slow the mouse look by the same factor, so a quarter of the view does not swing four times as far. " +
+                "Your own setting even on a server.");
 
             MaxRank = cfg.Bind("Cards", "MaxRank", 5,
                 "How deep a single card can be taken. A card at this rank stops being " +

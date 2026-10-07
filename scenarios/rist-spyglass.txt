@@ -1,0 +1,60 @@
+# Rist: Far sight's capstone, Spyglass. Hold a key and the view zooms far ahead, like binoculars. Also the
+# stone's own radius, 10% a rank instead of 5%.
+#
+# The key itself cannot be pressed by a scenario, so `rist spyglass` holds the spyglass the way the key
+# does (it goes through the same checks: nothing is held while a window is open, a building piece is in hand
+# or a cutscene plays) and `rist spyglass off` lets go. `rist show` then prints:
+#
+#   spyglass: not carved | carved, key Z, held yes|no, zoom x0.25 of a target x0.25, target fov 16.3 of 65.0, camera fov 16.3
+#
+# The zoom eases, so every reading waits two seconds after the hold. The first number after "zoom" is where
+# the ease has got to, the second is where it is going, and the camera's own field of view is read straight
+# off the game's camera, so a zoom that never reached the camera shows up as a camera fov that did not move.
+# The default key is Z. The slowed mouse look and the refusals inside windows are read in play: hold Z, move
+# the mouse (it turns a quarter as far), open the inventory (the zoom lets go).
+#
+# THE BOUNDARY MATTERS MOST: rank four must have no spyglass.
+#
+# SINGLEPLAYER. Ranks live on the server and `rist rank` refuses on a client.
+#
+# It leaves Far sight at rank 0.
+
+clear
+god
+
+mod rist rank farsight 0
+wait 1
+mod rist show
+printed spyglass: not carved yes
+
+mod rist rank farsight 4
+wait 1
+mod rist show
+printed spyglass: not carved yes
+
+mod rist spyglass
+printed not carved yes
+
+# ---- rank 5: the key is Z, nothing held, then the zoom.
+
+mod rist rank farsight 5
+wait 1
+mod rist show
+printed spyglass: carved, key Z, held no, zoom x1.00 yes
+
+mod rist spyglass
+wait 2
+mod rist show
+printed held yes yes
+printed zoom x0.25 of a target x0.25 yes
+
+mod rist spyglass off
+wait 2
+mod rist show
+printed held no yes
+printed zoom x1.00 of a target x0.25 yes
+
+mod rist rank farsight 0
+wait 1
+mod rist show
+printed spyglass: not carved yes

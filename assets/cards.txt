@@ -40,7 +40,7 @@
 #   *tool:whetted           axes and pickaxes lose 40% less durability (value 1)
 #   *sail:waves             slams into waves do no hull damage, and collisions with rocks, ice and shore cost the hull half, while you hold the helm (value 1)
 #   *swim:gasp              after your stamina runs out in water, drowning waits 12 s before its first tick instead of 1, and swimming costs 25% less stamina (value 1)
-#   *explore:ahead          the map also uncovers a second circle ahead of the way you travel (value 1)
+#   *sight:spyglass         hold a key to zoom the view far ahead, like binoculars (value 1)
 #   *run:momentum          after 5 s of running in a straight line you run 5% faster until you stop or turn sharply (value 1)
 #   *noise:silent           crouched and creeping or still, you make no noise at all (value 1)
 #   *stealth:losethem       a creature that has lost you gives up the hunt after 12 s instead of 30 (value 1)
@@ -299,7 +299,7 @@ quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifi
 # can follow you out of this world the way move speed did. Far sight is felt only on ground
 # you have not walked; Weatherly only at sea.
 #
-# Far sight multiplies Minimap.m_exploreRadius, which is 100 in vanilla - so rank 5 is 125.
+# Far sight multiplies Minimap.m_exploreRadius, which is 100 in vanilla - so rank 5 is 150 (10% a rank, it was 5% until the capstone review).
 #
 # Weatherly is the sailing model, which is seven lines in Ship.GetWindAngleFactor: sailing
 # across the wind gives 1.0, dead up or downwind gives 0.7, and a hard cone from dot 0.75 to
@@ -324,10 +324,11 @@ quietwake   | Quiet wake     | You leave less behind you.        | m_noiseModifi
 # speed source on purpose: the 10% cap below covers the stone's ranks, and Momentum is earned by a run and
 # lost when it ends, which the cap's reasoning (always on, never noticed) does not reach.
 longstride  | Long stride    | Ground passes under you.          | m_speedModifier          | 0.02  | *run:momentum             | 1    | R
-# Far sight's capstone is the lookahead: the map also uncovers a second circle, 60% of the radius,
-# centred one radius ahead of the way you walk, sail or ride. It used to be another 10% radius, the
-# stone's own stat. It is still a map stone, so it is the weakest differentiation in the round.
-farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.05  | *explore:ahead            | 1    | F
+# Far sight's capstone is the spyglass: hold a key (Z) and the view zooms to a quarter of its field of view
+# (SpyglassKey, SpyglassZoom, SpyglassSlowTurn), like binoculars. It used to be the lookahead, a second map circle
+# ahead of the way you travel, and before that another 10% radius. The stone's own radius is 10% a rank since the
+# capstone review, 50% at rank five.
+farsight    | Far sight      | The land gives up its shape.      | *exploreradius           | 0.10  | *sight:spyglass           | 1    | F
 # Tide-borne's capstone is the gasp: after your stamina runs out in water, drowning damage waits 12 s
 # before its first tick instead of 1 (GaspSeconds), and swimming costs 25% less stamina (GaspSwimStamina). The
 # swim stamina bite is the old capstone back, as a companion in code, after the capstone review.

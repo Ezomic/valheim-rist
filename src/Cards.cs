@@ -472,7 +472,7 @@ namespace Rist
             { LoseThem.Key, "a creature that has lost you gives up the hunt after 12 s, not 30" },
             { SilentStep.Key, "crouched and creeping or still, you make no noise at all" },
             { Momentum.Key, "after 5 s of running in a straight line you run 5% faster until you stop or turn" },
-            { Lookahead.Key, "the map uncovers a second circle ahead of the way you travel" },
+            { Spyglass.Key, "hold a key to zoom the view far ahead, like binoculars" },
             { Gasp.Key, "drowning waits 12 s before its first tick, not 1" },
             { RidesTheWaves.Key, "no hull damage from wave slams, and half from rocks and ice, while you hold the helm" },
             { Whetted.Key, "axes and picks lose 40% less durability" },
@@ -526,7 +526,7 @@ namespace Rist
             LastBlow.Key, ComboHold.Key, ReturnBlow.Key, SecondNock.Key,
             BruiseCap.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key,
             LoseThem.Key, SilentStep.Key, Momentum.Key,
-            Lookahead.Key, Gasp.Key, RidesTheWaves.Key, Whetted.Key,
+            Spyglass.Key, Gasp.Key, RidesTheWaves.Key, Whetted.Key,
             "*stamina:move", "*stamina:fight",
         };
 
@@ -541,7 +541,7 @@ namespace Rist
             Sinews.LandingRoll, Merges.LastCast, Merges.StaggerSecondary,
             LastBlow.Key, ComboHold.Key, ReturnBlow.Key, SecondNock.Key,
             BruiseCap.Key, FootingBack.Key, PatchUp.Key, SecondWind.Key, LoseThem.Key,
-            SilentStep.Key, Momentum.Key, Lookahead.Key,
+            SilentStep.Key, Momentum.Key, Spyglass.Key,
             Gasp.Key, RidesTheWaves.Key, Whetted.Key,
         };
 

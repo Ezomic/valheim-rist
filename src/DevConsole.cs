@@ -79,6 +79,7 @@ namespace Rist
             if (what == "perfect") { Say(term, Player.m_localPlayer == null ? "rist: no player." : EelSlick.HitInWindow(Player.m_localPlayer)); return; }
             if (what == "parry") { Say(term, Player.m_localPlayer == null ? "rist: no player." : ReturnBlow.Simulate(Player.m_localPlayer)); return; }
             if (what == "swing") { Say(term, Player.m_localPlayer == null ? "rist: no player." : ReturnBlow.Swing(Player.m_localPlayer)); return; }
+            if (what == "spyglass") { Say(term, Spyglass.Hold(args.Length < 3 || args[2].ToLowerInvariant() != "off")); return; }
             if (what == "crouch") { Say(term, Player.m_localPlayer == null ? "rist: no player." : SilentStep.Crouch(Player.m_localPlayer, args.Length < 3 || args[2].ToLowerInvariant() != "off")); return; }
             if (what == "noise") { Say(term, Player.m_localPlayer == null ? "rist: no player." : SilentStep.Make(Player.m_localPlayer)); return; }
             if (what == "momentum") { Say(term, Player.m_localPlayer == null ? "rist: no player." : Momentum.Simulate(Player.m_localPlayer, Seconds(args, Player.m_localPlayer == null ? 0f : RistConfig.MomentumSeconds.Value + RistConfig.MomentumRamp.Value))); return; }
@@ -96,6 +97,7 @@ namespace Rist
             term.AddString("rist perfect         - send a hit into the roll in progress, which the game counts as a perfect roll");
             term.AddString("rist parry           - pretend a good parry just happened, as Return blow reads one");
             term.AddString("rist swing           - start a primary swing with what is in hand, as the attack key does");
+            term.AddString("rist spyglass [off] - hold the spyglass as its key does (or let go), and read the zoom with rist show");
             term.AddString("rist crouch [off]    - crouch (or stand up), as the key does");
             term.AddString("rist noise           - make a noise of range 30, as a jump does, and read what the game recorded");
             term.AddString("rist momentum [s]    - pretend the run has lasted s seconds and read the run speed factor with and without Momentum");
@@ -424,7 +426,7 @@ namespace Rist
             term.AddString(LoseThem.Probe());
             term.AddString(SilentStep.Probe());
             term.AddString(Momentum.Probe());
-            term.AddString(Lookahead.Probe());
+            term.AddString(Spyglass.Probe());
             term.AddString(Gasp.Probe());
             term.AddString(RidesTheWaves.Probe());
             term.AddString(Whetted.Probe());

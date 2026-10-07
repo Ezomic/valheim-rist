@@ -54,7 +54,7 @@ namespace Rist
             [HarmonyPrefix]
             private static void Widen(ref float radius)
             {
-                if (ExtraExplore > 0f && !Lookahead.Inside) radius *= 1f + ExtraExplore;
+                if (ExtraExplore > 0f) radius *= 1f + ExtraExplore;
             }
         }
 
